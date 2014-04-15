@@ -1,0 +1,21 @@
+﻿{
+    propertyEditors: [    
+		{ 
+			alias: "Our.Umbraco.Mortar",
+			name:  "Mortar",
+			editor: {
+				view: "~/App_Plugins/Mortar/Views/mortar.html",
+				valueType: "JSON"
+			}, 
+			prevalues: {
+				fields: []
+			}
+        }
+    ],
+    javascript: [
+		'~/App_Plugins/Mortar/Js/mortar.js'
+    ],
+	"css": [
+        "~/App_Plugins/Mortar/Css/mortar.css"
+    ]
+} 
