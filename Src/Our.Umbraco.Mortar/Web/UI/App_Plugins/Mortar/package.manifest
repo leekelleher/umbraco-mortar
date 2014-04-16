@@ -5,10 +5,26 @@
 			name:  "Mortar",
 			editor: {
 				view: "~/App_Plugins/Mortar/Views/mortar.html",
-				valueType: "JSON"
+				valueType: "JSON",
+				hideLabel: true
 			}, 
 			prevalues: {
-				fields: []
+				fields: [
+					{			
+						label: "Grid Layout",
+						description: "Enter page layout for your Mortar property. This should be in the format of a single HTML table with id attributes on the table cells you want to be able to add bricks to.",
+						key: "layout",
+						view: "textarea",
+						validation: [
+			 				{
+								type: "Required"         
+							}   
+						]
+					}
+				]
+			},
+			defaultConfig: {
+				"layout": "<table>\n\t<tr>\n\t\t<td id='main'></td>\n\t\t<td id='sidebar' width='25%'></td>\n\t</tr>\n</table>"
 			}
         }
     ],

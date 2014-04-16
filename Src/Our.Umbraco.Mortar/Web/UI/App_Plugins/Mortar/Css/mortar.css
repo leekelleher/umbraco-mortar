@@ -1,1 +1,130 @@
-﻿
+﻿/* Reset */
+.mortar,
+.mortar *
+{
+	-moz-box-sizing: border-box; 
+	-webkit-box-sizing: border-box; 
+	box-sizing: border-box;
+}
+
+.mortar 
+{
+    width: 100%;    
+}
+	
+/* Outer Layout */
+.mortar > table 
+{
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+}
+	
+.mortar > table > tbody > tr > td
+{
+	position: relative;
+	border: solid 3px #ccc;
+    background: #f0f0f0;
+	padding: 10px;
+	vertical-align: top;
+}
+
+.mortar > table > tbody > tr > td.enabled 
+{
+    background: transparent;
+}
+
+/* Sub Layout */
+.sub-layouts {
+    margin-bottom: 10px;
+}
+
+.sub-layout {
+    width: 100%;
+    margin: 0 0 5px;
+    border: solid 2px #ccc;
+    /* border-left: solid 30px #ccc; */
+}
+
+.sub-layout td {
+    border: solid 2px #ccc;
+    padding: 5px;
+    height: 80px;
+}
+
+/* Brick Select Box */
+.brick-select {
+    width: 100%;
+    height: 100%;
+    background: #f2f2f2;
+    text-align: center;
+    line-height: 80px;
+}
+
+.brick-select a {
+    display: inline-block;
+    color: #333;
+    font-size: 15px;
+    line-height: 15px;
+    padding: 5px;
+    margin-left: 2px;
+}
+
+.brick-select a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: #2e8aea;
+}
+
+/* Sub Layout Option */
+.sub-layout-options {
+    text-align: center;
+}
+
+.sub-layout-option {
+    display: inline-block;
+    vertical-align: bottom;
+    margin: 0 5px;
+    padding: 2px;
+    background: #f2f2f2;
+    cursor: pointer;
+}
+
+.sub-layout-option:hover {
+    background: #2e8aea;
+}
+
+.sub-layout-option table {
+    width: 50px;
+    height: 30px;
+    border-collapse: separate;
+    border-spacing: 2px;
+}
+
+.sub-layout-option td {
+    border: solid 2px #ccc;
+}
+
+.sub-layout-option:hover td {
+    border-color: #fff;
+}
+
+/* Add button */
+/*.mortar .add
+{
+    position: relative;
+	display: block;
+    color: #333;
+    background: #f2f2f2;
+	width: 30px;
+	padding: 5px;
+    margin: 0 auto;
+    text-decoration: none;
+    z-index: 1;
+}
+
+.mortar .add:hover 
+{
+	color: #fff;
+	background: #53a93f;	
+}*/

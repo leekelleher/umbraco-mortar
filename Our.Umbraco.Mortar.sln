@@ -5,6 +5,15 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.Mortar", "Src\Our.Umbraco.Mortar\Our.Umbraco.Mortar.csproj", "{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F70B6E09-0450-4683-B5CD-88EDD89B0678}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{5CF9324B-2A85-4FFE-A908-0F79E6021388}"
+	ProjectSection(SolutionItems) = preProject
+		Package.build.xml = Package.build.xml
+		Package.xml = Package.xml
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +27,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5CF9324B-2A85-4FFE-A908-0F79E6021388} = {F70B6E09-0450-4683-B5CD-88EDD89B0678}
 	EndGlobalSection
 EndGlobal
