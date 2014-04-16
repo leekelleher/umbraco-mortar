@@ -23,7 +23,7 @@
 .mortar > table > tbody > tr > td
 {
 	position: relative;
-	border: solid 3px #ccc;
+	border: solid 2px #ccc;
     background: #f0f0f0;
 	padding: 10px;
 	vertical-align: top;
@@ -39,6 +39,19 @@
     margin-bottom: 10px;
 }
 
+.sub-layout,
+.sub-layout > tbody,
+.sub-layout > tbody > tr,
+.sub-layout > tbody > tr  > td {
+    height: 100%;
+}
+
+mortar-item,
+mortar-item--link {
+    display: block;
+    height: 100%;
+}
+
 .sub-layout {
     width: 100%;
     margin: 0 0 5px;
@@ -49,16 +62,15 @@
 .sub-layout td {
     border: solid 2px #ccc;
     padding: 5px;
-    height: 80px;
 }
 
 /* Brick Select Box */
 .brick-select {
+    background: #f2f2f2;
+    text-align: right;
     width: 100%;
     height: 100%;
-    background: #f2f2f2;
-    text-align: center;
-    line-height: 80px;
+    min-height: 80px;
 }
 
 .brick-select a {
@@ -67,7 +79,6 @@
     font-size: 15px;
     line-height: 15px;
     padding: 5px;
-    margin-left: 2px;
 }
 
 .brick-select a:hover {
@@ -107,6 +118,17 @@
 
 .sub-layout-option:hover td {
     border-color: #fff;
+}
+
+/* Item */
+
+.mortar-item--link 
+{
+    background: #ccc;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    height: 100%;
 }
 
 /* Add button */
