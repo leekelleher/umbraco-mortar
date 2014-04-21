@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClientDependency.Core, Version=1.7.1.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\ClientDependency.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\Newtonsoft.Json.dll</HintPath>
@@ -64,9 +68,6 @@
     <Compile Include="Web\Controllers\MortarApiController.cs" />
     <Compile Include="ValueConverters\MortarValueConverter.cs" />
     <Compile Include="Web\PropertyEditors\MortarPropertyEditor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Web\UI\App_Plugins\Mortar\package.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web\UI\App_Plugins\Mortar\Css\mortar.css" />
