@@ -6,86 +6,253 @@
 	-webkit-box-sizing: border-box; 
 	box-sizing: border-box;
 }
-
-.mortar 
-{
-    width: 100%;    
-}
 	
-/* Outer Layout */
-.mortar > table 
+/* Layout */
+.mortar-layout > table 
 {
 	border-collapse: collapse;
 	border-spacing: 0;
 	width: 100%;
 }
 	
-.mortar > table > tbody > tr > td
+.mortar-layout > table > tbody > tr > td
 {
 	position: relative;
-	border: solid 2px #ccc;
+	border: solid 1px #ccc;
     background: #f0f0f0;
 	padding: 10px;
 	vertical-align: top;
 }
 
-.mortar > table > tbody > tr > td.enabled 
+.mortar-layout > table > tbody > tr > td.enabled 
 {
     background: transparent;
 }
 
 /* Sub Layout */
-.sub-layouts {
+.mortar-sub-layouts {
     margin-bottom: 10px;
 }
 
-.sub-layout,
-.sub-layout > tbody,
-.sub-layout > tbody > tr,
-.sub-layout > tbody > tr  > td {
+.mortar-sub-layout,
+.mortar-sub-layout > table,
+.mortar-sub-layout > table > tbody,
+.mortar-sub-layout > table > tbody > tr,
+.mortar-sub-layout > table > tbody > tr  > td {
     height: 100%;
 }
 
-mortar-item,
-mortar-item--link {
-    display: block;
-    height: 100%;
-}
-
-.sub-layout {
+.mortar-sub-layout {
+    position: relative;
+    background: #fff;
     width: 100%;
     margin: 0 0 5px;
-    border: solid 2px #ccc;
-    /* border-left: solid 30px #ccc; */
+    padding-left: 23px; /* button bar icon width - 1 */
 }
 
-.sub-layout td {
-    border: solid 2px #ccc;
+.mortar-sub-layout > table {
+    width: 100%;
+}
+
+.mortar-sub-layout td {
+    position: relative;
+    border: solid 1px #ccc;
     padding: 5px;
 }
 
-/* Brick Select Box */
-.brick-select {
+.mortar-sub-layout__cell {
+    position: relative;
     background: #f2f2f2;
-    text-align: right;
     width: 100%;
     height: 100%;
-    min-height: 80px;
 }
 
-.brick-select a {
+.mortar-sub-layout__cell-spacer {
+    height: 60px;
+}
+
+.mortar-sub-layout__button-bar a {
+    background: #fff;
+    border-left: solid 1px #ccc;
+}
+
+.mortar-sub-layout__button-bar a:first-child {
+    border-top: solid 1px #ccc;
+}
+
+.mortar-sub-layout__button-bar a:last-child {
+    border-bottom: solid 1px #ccc;
+}
+
+/* Button Bar */
+.mortar-button-bar {
+    z-index: 10;
+}
+
+.mortar-button-bar a {
     display: inline-block;
     color: #333;
+    background: #fff;
     font-size: 15px;
-    line-height: 15px;
-    padding: 5px;
+    line-height: 24px;
+    text-align: center;
+    width: 24px;
+    height: 24px;
 }
 
-.brick-select a:hover {
+.mortar-button-bar a:hover {
     text-decoration: none;
     color: #fff;
     background: #2e8aea;
 }
+
+.mortar-button-bar--vertical a {
+    display: block;
+}
+
+.mortar-button-bar--tr 
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.mortar-button-bar--tl 
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Items */
+.mortar-item {
+    width: 100%;
+    height: 100%;
+}
+
+.mortar-item--vcenter {
+    font-size: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.mortar-item--vcenter:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.mortar-item--vcenter > * {
+    font-size: 14px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.mortar-item__label {
+    line-height: 1.4;
+    padding: 20px 10px;
+}
+
+.mortar-item--link 
+{
+    background: #e2e2e2 url(../images/cross.svg) center center no-repeat;
+    background-size: 100% 100%;
+    font-weight: bold;
+    padding: 0;
+    text-align: center;
+    height: 100%;
+}
+
+.mortar-item--link .mortar-item__label {
+    background: #e2e2e2;
+}
+
+.mortar-item--richtext {
+    width: 100%;
+    height: 100%;
+}
+
+.mortar-item--richtext textarea {
+    width: 100%;
+    height: 100%;
+}
+
+.mortar-item--richtext .mce-tinymce {
+    min-height: 300px;
+    height: 100%;
+    border: 0 !important;
+}
+
+/*
+.mortar-item--richtext .mce-toolbar {
+    background: #fff !important;
+}
+
+.mortar-item--richtext .mce-btn {
+    text-shadow: none !important;
+    border: 0 !important;
+    background: transparent !important;
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.mortar-item--richtext .mce-btn button {
+    padding: 0;
+    height: 24px;
+    min-width: 24px;
+}
+
+.mortar-item--richtext .mce-flow-layout-item {
+    margin: 0 !important;
+}
+*/
+
+.mortar-item--richtext .mce-toolbar-grp {
+    position: absolute;
+    bottom: 0;
+    border-top: solid 10px #f2f2f2 !important;
+    width: 100%;
+}
+
+.mortar-item--richtext .mce-toolbar-grp:before {
+    content: "...";
+    color: #333;
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    height: 10px;
+    width: 40px;
+    margin-left: -20px;
+    text-align: center;
+    line-height: 10px;
+    font-weight: bold;
+}
+
+.mortar-item--richtext .mce-toolbar-grp .mce-toolbar {
+    display: none;
+    background: #f2f2f2 !important;
+}
+
+.mortar-item--richtext .mce-edit-area {
+    border: 0 !important;
+    padding: 10px 10px 20px;
+    background-color: #fff !important;
+    height: 100%;
+}
+
+.mortar-item--richtext textarea,
+.mortar-item--richtext .mce-edit-area iframe {
+    min-height: 250px;
+}
+
+/*.mortar-item--richtext .mce-hit-area {
+    height: 5px;
+    background: #f2f2f2;
+}*/
 
 /* Sub Layout Option */
 .sub-layout-options {
@@ -113,40 +280,9 @@ mortar-item--link {
 }
 
 .sub-layout-option td {
-    border: solid 2px #ccc;
+    border: solid 1px #ccc;
 }
 
 .sub-layout-option:hover td {
     border-color: #fff;
 }
-
-/* Item */
-
-.mortar-item--link 
-{
-    background: #ccc;
-    font-weight: bold;
-    padding: 10px;
-    text-align: center;
-    height: 100%;
-}
-
-/* Add button */
-/*.mortar .add
-{
-    position: relative;
-	display: block;
-    color: #333;
-    background: #f2f2f2;
-	width: 30px;
-	padding: 5px;
-    margin: 0 auto;
-    text-decoration: none;
-    z-index: 1;
-}
-
-.mortar .add:hover 
-{
-	color: #fff;
-	background: #53a93f;	
-}*/

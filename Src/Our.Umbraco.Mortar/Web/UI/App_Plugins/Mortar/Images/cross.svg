@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<svg viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <line stroke="#d2d2d2" id="svg_1" x1="0" y1="0" x2="640" y2="480" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"/>
+  <line stroke="#d2d2d2" id="svg_3" x1="640" y1="0" x2="0" y2="480" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"/>
+</svg>
