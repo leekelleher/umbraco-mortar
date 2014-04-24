@@ -8,8 +8,12 @@ namespace Our.Umbraco.Mortar.Models
 	[JsonConverter(typeof(MortarItemConverter))]
 	public class MortarItem
 	{
+		[JsonProperty("type")]
 		public string Type { get; set; }
-		internal string RawValue { get; set; }
+
+		[JsonProperty("value")]
+		internal object RawValue { get; set; }
+
 		internal IDictionary<string, string> AdditionalInfo { get; set; }
 
 		// Only ever used in Razor views, so can be concidered readonly

@@ -29,58 +29,58 @@
     background: transparent;
 }
 
-/* Sub Layout */
-.mortar-sub-layouts {
+/* Row */
+.mortar-rows {
     margin-bottom: 10px;
 }
 
-.mortar-sub-layout,
-.mortar-sub-layout > table,
-.mortar-sub-layout > table > tbody,
-.mortar-sub-layout > table > tbody > tr,
-.mortar-sub-layout > table > tbody > tr  > td {
+.mortar-row,
+.mortar-row > table,
+.mortar-row > table > tbody,
+.mortar-row > table > tbody > tr,
+.mortar-row > table > tbody > tr  > td {
     height: 100%;
 }
 
-.mortar-sub-layout {
+.mortar-row {
     position: relative;
     width: 100%;
     margin: 0 0 5px;
     padding-left: 23px; /* button bar icon width - 1 */
 }
 
-.mortar-sub-layout > table {
+.mortar-row > table {
     width: 100%;
     background: #fff;
 }
 
-.mortar-sub-layout td {
+.mortar-row td {
     position: relative;
     border: solid 1px #ccc;
     padding: 5px;
 }
 
-.mortar-sub-layout__cell {
+.mortar-row__cell {
     position: relative;
     background: #f2f2f2;
     width: 100%;
     height: 100%;
 }
 
-.mortar-sub-layout__cell-spacer {
+.mortar-row__cell-spacer {
     height: 60px;
 }
 
-.mortar-sub-layout__button-bar a {
+.mortar-row__button-bar a {
     background: #fff;
     border-left: solid 1px #ccc;
 }
 
-.mortar-sub-layout__button-bar a:first-child {
+.mortar-row__button-bar a:first-child {
     border-top: solid 1px #ccc;
 }
 
-.mortar-sub-layout__button-bar a:last-child {
+.mortar-row__button-bar a:last-child {
     border-bottom: solid 1px #ccc;
 }
 
@@ -225,12 +225,12 @@
     background: #f2f2f2;
 }*/
 
-/* Sub Layout Option */
-.sub-layout-options {
+/* Row Layout Option */
+.row-layout-options {
     text-align: center;
 }
 
-.sub-layout-option {
+.row-layout-option {
     display: inline-block;
     vertical-align: bottom;
     margin: 0 5px;
@@ -239,21 +239,21 @@
     cursor: pointer;
 }
 
-.sub-layout-option:hover {
+.row-layout-option:hover {
     background: #2e8aea;
 }
 
-.sub-layout-option table {
+.row-layout-option table {
     width: 50px;
     height: 30px;
     border-collapse: separate;
     border-spacing: 2px;
 }
 
-.sub-layout-option td {
+.row-layout-option td {
     border: solid 1px #ccc;
 }
 
-.sub-layout-option:hover td {
+.row-layout-option:hover td {
     border-color: #fff;
 }

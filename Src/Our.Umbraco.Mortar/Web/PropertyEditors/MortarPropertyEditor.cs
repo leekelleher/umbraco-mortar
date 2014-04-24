@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using ClientDependency.Core;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Our.Umbraco.Mortar.Models;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.Editors;
-using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core.Services;
 using Umbraco.Web.PropertyEditors;
@@ -15,6 +14,7 @@ using Constants = Umbraco.Core.Constants;
 
 namespace Our.Umbraco.Mortar.Web.PropertyEditors
 {
+	[PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/Mortar/Js/mortar.extensions.js")]
 	[PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/Mortar/Js/mortar.resources.js")]
 	[PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/Mortar/Js/mortar.controllers.js")]
 	[PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/Mortar/Js/mortar.directives.js")]
@@ -35,7 +35,9 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 			// Setup default values
 			_defaultPreValues = new Dictionary<string, object>
             {
-                {"layout", "<table>\n\t<tr>\n\t\t<td id='main'></td>\n\t\t<td id='sidebar' width='25%'></td>\n\t</tr>\n</table>"}
+                {"gridLayout", "<table>\n\t<tr>\n\t\t<td id='main'></td>\n\t\t<td id='sidebar' width='25%'></td>\n\t</tr>\n</table>"},
+				{"gridConfig", "{'main':{'layouts':[[50,50],[25,25,25,25]]},'sidebar':{'maxItems':4}}"},
+				{"defaultConfig", "{'allowedDoctypes':['Widget$']}"}
             };
 		}
 
@@ -48,8 +50,14 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 		internal class MortarPreValueEditor : PreValueEditor
 		{
-			[PreValueField("layout", "Grid Layout", "textarea", Description = "Enter page layout for your Mortar property. This should be in the format of a single HTML table with id attributes on the table cells you want to be able to add bricks to.")]
-			public string Layout { get; set; }
+			[PreValueField("gridLayout", "Grid Layout", "textarea", Description = "Enter page layout for your Mortar property. This should be in the format of a single HTML table with id attributes on the table cells you want to be able to add items to.")]
+			public string GridLayout { get; set; }
+
+			[PreValueField("gridConfig", "Grid Config", "/App_Plugins/Mortar/Views/mortar.jsonTextarea.html", Description = "Configure each cell of the grid layout. This should be in the form of a JSON object with sub config objects for each grid layout cell with an ID.")]
+			public string GridConfig { get; set; }
+
+			[PreValueField("defaultConfig", "Default Config", "/App_Plugins/Mortar/Views/mortar.jsonTextarea.html", Description = "Provide a default config that applies to all grid cells. This should be in the form of a JSON object.")]
+			public string DefaultConfig { get; set; }
 		}
 		
 		#endregion
@@ -69,6 +77,9 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 			public override string ConvertDbToString(Property property, PropertyType propertyType, IDataTypeService dataTypeService)
 			{
+				if (property.Value == null)
+					return string.Empty;
+
 				var value = JsonConvert.DeserializeObject<MortarValue>(property.Value.ToString());
 
 				foreach (var key in value.Keys)
@@ -77,7 +88,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 					{
 						foreach (var item in row.Items)
 						{
-							if (item != null && !item.RawValue.IsNullOrWhiteSpace())
+							if (item != null && item.RawValue != null)
 							{
 								switch (item.Type.ToLowerInvariant())
 								{
@@ -107,25 +118,36 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 											var contentType = ApplicationContext.Current.Services.ContentTypeService.GetContentType(docTypeAlias);
 
 											// Loop through properties
-											var propValues = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
-											var propValueKeys = propValues.Keys.ToArray();
+											var propValues = ((JObject)item.RawValue);
+											var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
 											foreach (var propKey in propValueKeys)
 											{
 												// Lookup the property type on the content type
-												var propType = contentType.PropertyTypes.First(x => x.Alias == propKey);
+												var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
 
-												// Create a fake property using the property abd stored value
-												var prop = new Property(propType, item.RawValue);
+												if (propType == null)
+												{
+													if (propKey != "name")
+													{
+														// Property missing so just delete the value
+														propValues[propKey] = null;
+													}
+												}
+												else
+												{
+													// Create a fake property using the property abd stored value
+													var prop = new Property(propType, propValues[propKey] == null ? null : propValues[propKey].ToString());
 
-												// Lookup the property editor
-												var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
+													// Lookup the property editor
+													var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
-												// Get the editor to do it's conversion, and store it back
-												propValues[propKey] = propEditor.ValueEditor.ConvertDbToString(prop, propType, dataTypeService);
+													// Get the editor to do it's conversion, and store it back
+													propValues[propKey] = propEditor.ValueEditor.ConvertDbToString(prop, propType, dataTypeService);
+												}
 											}
 
 											// Serialize the dictionary back
-											item.RawValue = JsonConvert.SerializeObject(propValues);
+											item.RawValue = propValues;
 										}
 										break;
 								}
@@ -143,6 +165,9 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 			public override object ConvertDbToEditor(Property property, PropertyType propertyType, IDataTypeService dataTypeService)
 			{
+				if (property.Value == null)
+					return string.Empty;
+
 				var value = JsonConvert.DeserializeObject<MortarValue>(property.Value.ToString());
 
 				foreach (var key in value.Keys)
@@ -151,7 +176,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 					{
 						foreach (var item in row.Items)
 						{
-							if (item != null && !item.RawValue.IsNullOrWhiteSpace())
+							if (item != null && item.RawValue != null)
 							{
 								switch (item.Type.ToLowerInvariant())
 								{
@@ -184,28 +209,42 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 											var contentType = ApplicationContext.Current.Services.ContentTypeService.GetContentType(docTypeAlias);
 
 											// Loop through properties
-											var propValues = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
-											var propValueKeys = propValues.Keys.ToArray();
-											foreach (var propKey in propValueKeys)
+											var propValues = item.RawValue as JObject;
+											if (propValues != null)
 											{
-												// Lookup the property type on the content type
-												var propType = contentType.PropertyTypes.First(x => x.Alias == propKey);
-												
-												// Create a fake property using the property abd stored value
-												var prop = new Property(propType, item.RawValue);
+												var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
+												foreach (var propKey in propValueKeys)
+												{
+													// Lookup the property type on the content type
+													var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
 
-												// Lookup the property editor
-												var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
-												
-												// Get the editor to do it's conversion
-												var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType, dataTypeService);
-												
-												// Store the value back
-												propValues[propKey] = (newValue == null) ? null : newValue.ToString();
+													if (propType == null)
+													{
+														if (propKey != "name")
+														{
+															// Property missing so just remove the value
+															propValues[propKey] = null;
+														}
+													}
+													else
+													{
+														// Create a fake property using the property abd stored value
+														var prop = new Property(propType, propValues[propKey] == null ? null : propValues[propKey].ToString());
+
+														// Lookup the property editor
+														var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
+
+														// Get the editor to do it's conversion
+														var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType, dataTypeService);
+
+														// Store the value back
+														propValues[propKey] = (newValue == null) ? null : newValue.ToString();
+													}
+												}
+
+												// Serialize the dictionary back
+												item.RawValue = propValues;
 											}
-
-											// Serialize the dictionary back
-											item.RawValue = JsonConvert.SerializeObject(propValues);
 										}
 										break;
 								}
@@ -214,7 +253,9 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 					}
 				}
 
-				return value;
+				property.Value = JsonConvert.SerializeObject(value);
+
+				return base.ConvertDbToEditor(property, propertyType, dataTypeService);
 			}
 
 			public override object ConvertEditorToDb(ContentPropertyData editorValue, object currentValue)
@@ -230,7 +271,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 					{
 						foreach (var item in row.Items)
 						{
-							if (item != null && !item.RawValue.IsNullOrWhiteSpace())
+							if (item != null && item.RawValue != null)
 							{
 								switch (item.Type.ToLowerInvariant())
 								{
@@ -254,34 +295,45 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 										{
 											// Ftech the doc type
 											var docTypeAlias = item.AdditionalInfo["docType"];
-											var contentType = PublishedContentType.Get(PublishedItemType.Content, docTypeAlias);
+											var contentType = ApplicationContext.Current.Services.ContentTypeService.GetContentType(docTypeAlias);
 
 											// Loop through doc type properties
-											var propValues = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
-											var propValueKeys = propValues.Keys.ToArray();
+											var propValues = ((JObject)item.RawValue);
+											var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
 											foreach (var propKey in propValueKeys)
 											{
 												// Fetch the current property type
-												var propType = contentType.GetPropertyType(propKey);
+												var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
 
-												// Fetch the property types prevalue
-												var propPreValues = ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeId);
-												
-												// Lookup the property editor
-												var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
-												
-												// Create a fake content property data object
-												var contentPropData = new ContentPropertyData(item.RawValue, propPreValues, new Dictionary<string, object>());
+												if (propType == null)
+												{
+													if (propKey != "name")
+													{
+														// Property missing so just remove the value
+														propValues[propKey] = null;
+													}
+												}
+												else
+												{
+													// Fetch the property types prevalue
+													var propPreValues = ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId);
 
-												// Get the property editor to do it's conversion
-												var newValue = propEditor.ValueEditor.ConvertEditorToDb(contentPropData, propValues[propKey]);
+													// Lookup the property editor
+													var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
-												// Store the value back
-												propValues[propKey] = (newValue == null) ? null : newValue.ToString();
+													// Create a fake content property data object
+													var contentPropData = new ContentPropertyData(propValues[propKey] == null ? null : propValues[propKey].ToString(), propPreValues, new Dictionary<string, object>());
+
+													// Get the property editor to do it's conversion
+													var newValue = propEditor.ValueEditor.ConvertEditorToDb(contentPropData, propValues[propKey]);
+
+													// Store the value back
+													propValues[propKey] = (newValue == null) ? null : newValue.ToString();
+												}
 											}
 
 											// Serialize the dictionary back
-											item.RawValue = JsonConvert.SerializeObject(propValues);
+											item.RawValue = propValues;
 										}
 										break;
 								}

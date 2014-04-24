@@ -30,7 +30,7 @@ namespace Our.Umbraco.Mortar.JsonConverters
 			var item = new MortarItem
 			{
 				Type = tempDictionary["type"].ToString(),
-				RawValue = tempDictionary["value"] == null ? null : tempDictionary["value"].ToString(),
+				RawValue = tempDictionary["value"],
 				AdditionalInfo = tempDictionary.Where(x => x.Key != "type" && x.Key != "value")
 					.ToDictionary(k => k.Key, v => v.Value.ToString())
 			};
@@ -46,7 +46,7 @@ namespace Our.Umbraco.Mortar.JsonConverters
 				var jObj = new JObject
 				{
 					{"type", item.Type}, 
-					{"value", item.RawValue}
+					{"value", JToken.FromObject(item.RawValue) }
 				};
 
 				foreach (var key in item.AdditionalInfo.Keys)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Our.Umbraco.Mortar.Models;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
@@ -47,7 +48,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 						{
 							foreach (var item in row.Items)
 							{
-								if (item != null && !item.RawValue.IsNullOrWhiteSpace())
+								if (item != null && item.RawValue != null)
 								{
 									switch (item.Type.ToLowerInvariant())
 									{
@@ -60,7 +61,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 											break;
 										case "link":
 											int nodeId;
-											if (int.TryParse(item.RawValue, out nodeId))
+											if (int.TryParse(item.RawValue.ToString(), out nodeId))
 												item.Value = Umbraco.TypedContent(nodeId);
 											break;
 										case "doctype":
@@ -72,7 +73,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 												var contentType = PublishedContentType.Get(PublishedItemType.Content, docTypeAlias);
 												var properties = new List<IPublishedProperty>();
 
-												var propValues = JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
+												var propValues = ((JObject) item.RawValue).ToObject<Dictionary<string, object>>(); // JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
 												foreach (var jProp in propValues)
 												{
 													var propType = contentType.GetPropertyType(jProp.Key);

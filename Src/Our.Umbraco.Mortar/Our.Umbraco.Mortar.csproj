@@ -74,8 +74,10 @@
     <Content Include="Web\UI\App_Plugins\Mortar\Images\cross.svg" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\jquery.hoverIntent.minified.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.controllers.js" />
+    <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.extensions.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.resources.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.directives.js" />
+    <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.jsonTextarea.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.docTypeDialog.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.html" />
   </ItemGroup>

@@ -11,13 +11,19 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
 
             // Probably not best practise to talk to parent scope directly, but hey...
             $scope.model = $scope.$parent.$parent.model;
-
-            console.log($scope);
+            $scope.dialogOptions = $scope.$parent.dialogOptions;
 
             $scope.docTypes = [];
             $scope.dialogMode = "selectDocType";
             $scope.selectedDocType = null;
             $scope.node = null;
+            $scope.nameProperty = {
+                hideLabel: false,
+                alias: "name",
+                label: "Name",
+                description: "Give this piece content a name.",
+                value: ""
+            };
 
             $scope.selectDocType = function () {
                 $scope.dialogMode = "edit";
@@ -25,15 +31,19 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
                 loadNode();
             };
 
-            $scope.save = function() {
+            $scope.save = function () {
                 // Copy property values to scope model value
                 if ($scope.node) {
-                    var value = {};
+                    var value = {
+                        name: $scope.nameProperty.value
+                    };
                     for (var t = 0; t < $scope.node.tabs.length; t++) {
                         var tab = $scope.node.tabs[t];
                         for (var p = 0; p < tab.properties.length; p++) {
                             var prop = tab.properties[p];
-                            value[prop.alias] = prop.value;
+                            if (typeof prop.value !== "function") {
+                                value[prop.alias] = prop.value;
+                            }
                         }
                     }
                     $scope.model.value = value;
@@ -51,6 +61,7 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
 
                     // Merge current value
                     if ($scope.model.value) {
+                        $scope.nameProperty.value = $scope.model.value.name;
                         for (var t = 0; t < data.tabs.length; t++) {
                             var tab = data.tabs[t];
                             for (var p = 0; p < tab.properties.length; p++) {
@@ -65,7 +76,6 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
                     // Assign the model to scope
                     $scope.node = data;
 
-                    //
                     editorState.set($scope.node);
                 });
             };
@@ -77,7 +87,7 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
             } else {
                 $scope.dialogMode = "selectDocType";
                 // No data type, so load a list to choose from
-                mortarResources.getContentTypes().then(function (docTypes) {
+                mortarResources.getContentTypes($scope.dialogOptions.allowedDoctypes).then(function (docTypes) {
                     $scope.docTypes = docTypes;
                 });
             }
@@ -85,3 +95,4 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
         }
 
     ]);
+
