@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
 namespace Our.Umbraco.Mortar.Models
@@ -9,6 +10,6 @@ namespace Our.Umbraco.Mortar.Models
 		public string Layout { get; set; }
 
 		[JsonProperty("items")]
-		public IEnumerable<MortarItem> Items { get; set; }
+		public ReadOnlyCollection<MortarItem> Items { get; set; }
 	}
 }
