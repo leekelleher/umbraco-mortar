@@ -35,6 +35,12 @@ namespace Our.Umbraco.Mortar.ValueConverters
 				{
 					var value = JsonConvert.DeserializeObject<MortarValue>(source.ToString());
 
+					// This isn't ideal. We should just leave the ID as 0, but the Umbraco.Field
+					// helper requires it to be a valid ID. Looking in the helper, it uses the
+					// current published content request to lookup the id, so we are just doing
+					// the same so we can bypass the checks we need to get past.
+					// NB Stephan thinks doing this here may cause problems, but it seems to work
+					// ok for the time being
 					var currentPageId = UmbracoContext.Current.PublishedContentRequest != null
 						? UmbracoContext.Current.PublishedContentRequest.PublishedContent.Id
 						: 0;
@@ -73,15 +79,28 @@ namespace Our.Umbraco.Mortar.ValueConverters
 												var contentType = PublishedContentType.Get(PublishedItemType.Content, docTypeAlias);
 												var properties = new List<IPublishedProperty>();
 
+												// Convert all the properties
 												var propValues = ((JObject) item.RawValue).ToObject<Dictionary<string, object>>(); // JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
 												foreach (var jProp in propValues)
 												{
 													var propType = contentType.GetPropertyType(jProp.Key);
-													var prop = PublishedProperty.GetDetached(propType.Nested(propertyType), jProp.Value == null ? "" : jProp.Value.ToString(), preview);
-													properties.Add(prop);
+													if (propType != null)
+													{
+														var prop = PublishedProperty.GetDetached(propType.Nested(propertyType),
+															jProp.Value == null ? "" : jProp.Value.ToString(), preview);
+														properties.Add(prop);
+													}
 												}
 
-												item.Value = new NestedPublishedContent(currentPageId, contentType, properties.ToArray());
+												// Parse out the name manually
+												object nameObj = null;
+												if (propValues.TryGetValue("name", out nameObj))
+												{
+													// Do nothing, we just want to parse out the name if we can
+												}
+
+												item.Value = new NestedPublishedContent(currentPageId, contentType, properties.ToArray(), 
+													nameObj == null ? null : nameObj.ToString());
 											}
 											break;
 									}

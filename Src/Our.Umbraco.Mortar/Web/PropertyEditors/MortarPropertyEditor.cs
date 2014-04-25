@@ -238,7 +238,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 														var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType, dataTypeService);
 
 														// Store the value back
-														propValues[propKey] = (newValue == null) ? null : newValue.ToString();
+														propValues[propKey] = (newValue == null) ? null : JToken.FromObject(newValue);
 													}
 												}
 
@@ -328,7 +328,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 													var newValue = propEditor.ValueEditor.ConvertEditorToDb(contentPropData, propValues[propKey]);
 
 													// Store the value back
-													propValues[propKey] = (newValue == null) ? null : newValue.ToString();
+													propValues[propKey] = (newValue == null) ? null : JToken.FromObject(newValue);
 												}
 											}
 

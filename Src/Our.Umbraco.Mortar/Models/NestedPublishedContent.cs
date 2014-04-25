@@ -13,14 +13,17 @@ namespace Our.Umbraco.Mortar.Models
 		private readonly int _parentContentId;
 		private readonly PublishedContentType _contentType;
 		private readonly IPublishedProperty[] _properties;
+		private readonly string _name;
 
 		public NestedPublishedContent(int parentContentId,
 			PublishedContentType contentType, 
-			IPublishedProperty[] properties)
+			IPublishedProperty[] properties,
+			string name = null)
 		{
 			_parentContentId = parentContentId;
 			_contentType = contentType;
 			_properties = properties;
+			_name = name;
 		}
 
 		public override PublishedItemType ItemType
@@ -70,7 +73,7 @@ namespace Our.Umbraco.Mortar.Models
 
 		public override string Name
 		{
-			get { throw new NotImplementedException(); }
+			get { return _name; }
 		}
 
 		public override string UrlName
