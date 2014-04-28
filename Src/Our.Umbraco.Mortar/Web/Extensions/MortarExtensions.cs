@@ -26,7 +26,8 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			});
 		}
 
-		public static HtmlString RenderMortarItem(this HtmlHelper helper, RenderMortarItemViewModel item, 
+		public static HtmlString RenderMortarItem(this HtmlHelper helper, MortarRow row,
+			MortarItem item, 
 			string viewPath = "",
 			string actionName = "")
 		{
@@ -34,22 +35,29 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 				viewPath = viewPath.TrimEnd('/') + "/";
 
 			if (string.IsNullOrWhiteSpace(actionName))
-				actionName = item.Item.Value.DocumentTypeAlias;
+				actionName = item.Value.DocumentTypeAlias;
 
 			var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
-			if (umbracoHelper.SurfaceControllerExists(item.Item.Value.DocumentTypeAlias + "Surface", actionName))
+			if (umbracoHelper.SurfaceControllerExists(item.Value.DocumentTypeAlias + "Surface", actionName))
 			{
 				return helper.Action(actionName, 
-					item.Item.Value.DocumentTypeAlias + "Surface",
+					item.Value.DocumentTypeAlias + "Surface",
 					new
 					{
-						mortarModel = item.Item.Value, 
-						mortarRow = item.Row,
+						mortarModel = item.Value,
+						mortarRow = row,
 						mortarViewPath = viewPath
 					});
 			}
 
-			return helper.Partial(viewPath + item.Item.Value.DocumentTypeAlias, item.Item.Value);
+			return helper.Partial(viewPath + item.Value.DocumentTypeAlias, item.Value);
+		}
+
+		public static HtmlString RenderMortarItem(this HtmlHelper helper, RenderMortarItemViewModel item,
+			string viewPath = "",
+			string actionName = "")
+		{
+			return helper.RenderMortarItem(item.Row, item.Item, viewPath, actionName);
 		}
 	}
 
