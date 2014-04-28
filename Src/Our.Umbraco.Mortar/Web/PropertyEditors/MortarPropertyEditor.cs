@@ -253,6 +253,8 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 					}
 				}
 
+				// We serialize back down as we want the editor to handle
+				// the data as a generic object type, not our specific classes
 				property.Value = JsonConvert.SerializeObject(value);
 
 				return base.ConvertDbToEditor(property, propertyType, dataTypeService);

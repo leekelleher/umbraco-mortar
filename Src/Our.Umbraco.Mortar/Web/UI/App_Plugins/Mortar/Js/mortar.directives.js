@@ -193,7 +193,7 @@ angular.module("umbraco.directives").directive('mortarRow',
                     "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr' ng-hide=\"hasValue(" + j + ")\">" +
                     "<a href='#' ng-click=\"setCellType('" + j + "','richtext')\" prevent-default><i class='icon-edit' /></a>" +
                     "<a href='#' ng-click=\"setCellType('" + j + "','link')\" prevent-default><i class='icon-link' /></a>" +
-                    "<a href='#' ng-click=\"setCellType('" + j + "','doctype')\" prevent-default><i class='icon-settings' /></a>" +
+                    "<a href='#' ng-click=\"setCellType('" + j + "','doctype')\" prevent-default><i class='icon-code' /></a>" +
                     "</div>" +
                     "<div class='mortar-row__cell-spacer' ng-hide=\"hasValue(" + j + ")\" />" +
                     "<mortar-item model='model.items[" + j + "]' layout-config='layoutConfig' />" +
@@ -685,7 +685,7 @@ angular.module("umbraco.directives").directive('mortarDoctypeItem',
             replace: true,
             template: "<div class='mortar-item--link mortar-item--vcenter'>" +
                 "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
-                "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-settings' /></a>" +
+                "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-code' /></a>" +
                 "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
                 "</div>" +
                 "<div class='mortar-item__label'>{{model.value['name']}}</div>" +
