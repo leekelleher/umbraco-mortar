@@ -59,6 +59,18 @@ angular.module("umbraco.directives").directive('mortarLayout',
                     && $scope.model.value[cellId].length > 0;
             };
 
+            $scope.rowHasMaxItems = function (cellId) {
+
+                var maxItems = 0;
+                if (cellId in $scope.model.layoutConfig && "maxItems" in $scope.model.layoutConfig[cellId]) {
+                    maxItems = $scope.model.layoutConfig[cellId].maxItems;
+                }
+
+                return !(maxItems == 0
+                    || typeof $scope.model.value[cellId] === "undefined"
+                    || maxItems > $scope.model.value[cellId].length);
+            };
+
             // Setup sorting
             var makeRowsSortable = function() {
 
@@ -109,7 +121,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                     rowLayouts = rowLayouts.concat($scope.model.layoutConfig[id].layouts);
                 }
 
-                var rowLayoutsContainer = $("<div class='row-layout-options' />");
+                var rowLayoutsContainer = $("<div class='row-layout-options' ng-hide=\"rowHasMaxItems('" + id + "')\" />");
                 for (var i = 0; i < rowLayouts.length; i++) {
                     var lnk = $("<a class='row-layout-option' ng-click=\"addRow('" + id + "', '" + rowLayouts[i].join() + "')\" prevent-default />");
                     var tbl = $("<table />");
