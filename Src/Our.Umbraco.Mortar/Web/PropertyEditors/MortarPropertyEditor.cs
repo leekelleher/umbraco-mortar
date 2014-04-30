@@ -77,10 +77,13 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 			public override string ConvertDbToString(Property property, PropertyType propertyType, IDataTypeService dataTypeService)
 			{
-				if (property.Value == null)
+				if (property.Value == null || string.IsNullOrWhiteSpace(property.Value.ToString()))
 					return string.Empty;
 
 				var value = JsonConvert.DeserializeObject<MortarValue>(property.Value.ToString());
+
+				if (value == null)
+					return string.Empty;
 
 				foreach (var key in value.Keys)
 				{
@@ -265,10 +268,13 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 			public override object ConvertEditorToDb(ContentPropertyData editorValue, object currentValue)
 			{
-				if (editorValue.Value == null)
+				if (editorValue.Value == null || string.IsNullOrWhiteSpace(editorValue.Value.ToString()))
 					return null;
 
 				var value = JsonConvert.DeserializeObject<MortarValue>(editorValue.Value.ToString());
+
+				if (value == null)
+					return null;
 
 				foreach (var key in value.Keys)
 				{
