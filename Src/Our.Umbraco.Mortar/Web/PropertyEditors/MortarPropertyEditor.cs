@@ -165,7 +165,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 			public override object ConvertDbToEditor(Property property, PropertyType propertyType, IDataTypeService dataTypeService)
 			{
-				if (property.Value == null)
+				if (property.Value == null || string.IsNullOrWhiteSpace(property.Value.ToString()))
 					return string.Empty;
 
 				var value = JsonConvert.DeserializeObject<MortarValue>(property.Value.ToString());
