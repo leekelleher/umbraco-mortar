@@ -181,7 +181,7 @@ angular.module("umbraco.directives").directive('mortarRow',
             // Create the toolbar
             template.append($("<div class='mortar-row__button-bar mortar-button-bar mortar-button-bar--vertical mortar-button-bar--tl'>" +
                 "<a href='#' ng-click=\"$parent.removeRow(cellId, $parent.$index)\" prevent-default><i class='icon-delete' /></a>" +
-                "<a href='#' class='mortar-row__sort' prevent-default><i class='icon-list' /></a>" +
+                "<a href='#' class='mortar-row__sort' ng-show='$parent.model.value[cellId].length > 1' prevent-default><i class='icon-list' /></a>" +
                 "</div>"));
 
             // Create the table
