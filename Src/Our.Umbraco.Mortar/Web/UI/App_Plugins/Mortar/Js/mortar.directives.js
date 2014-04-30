@@ -59,6 +59,18 @@ angular.module("umbraco.directives").directive('mortarLayout',
                     && $scope.model.value[cellId].length > 0;
             };
 
+            $scope.rowHasMaxItems = function (cellId) {
+
+                var maxItems = 0;
+                if (cellId in $scope.model.layoutConfig && "maxItems" in $scope.model.layoutConfig[cellId]) {
+                    maxItems = $scope.model.layoutConfig[cellId].maxItems;
+                }
+
+                return !(maxItems == 0
+                    || typeof $scope.model.value[cellId] === "undefined"
+                    || maxItems > $scope.model.value[cellId].length);
+            };
+
             // Setup sorting
             var makeRowsSortable = function() {
 
@@ -109,7 +121,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                     rowLayouts = rowLayouts.concat($scope.model.layoutConfig[id].layouts);
                 }
 
-                var rowLayoutsContainer = $("<div class='row-layout-options' />");
+                var rowLayoutsContainer = $("<div class='row-layout-options' ng-hide=\"rowHasMaxItems('" + id + "')\" />");
                 for (var i = 0; i < rowLayouts.length; i++) {
                     var lnk = $("<a class='row-layout-option' ng-click=\"addRow('" + id + "', '" + rowLayouts[i].join() + "')\" prevent-default />");
                     var tbl = $("<table />");
@@ -181,7 +193,7 @@ angular.module("umbraco.directives").directive('mortarRow',
             // Create the toolbar
             template.append($("<div class='mortar-row__button-bar mortar-button-bar mortar-button-bar--vertical mortar-button-bar--tl'>" +
                 "<a href='#' ng-click=\"$parent.removeRow(cellId, $parent.$index)\" prevent-default><i class='icon-delete' /></a>" +
-                "<a href='#' class='mortar-row__sort' prevent-default><i class='icon-list' /></a>" +
+                "<a href='#' class='mortar-row__sort' ng-show='$parent.model.value[cellId].length > 1' prevent-default><i class='icon-list' /></a>" +
                 "</div>"));
 
             // Create the table
