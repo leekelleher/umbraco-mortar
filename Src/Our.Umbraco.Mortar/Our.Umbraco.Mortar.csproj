@@ -62,7 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JsonConverters\MortarItemConverter.cs" />
-    <Compile Include="Models\NestedPublishedContent.cs" />
+    <Compile Include="Models\DetachedPublishedContent.cs" />
     <Compile Include="Models\MortarItem.cs" />
     <Compile Include="Models\MortarRow.cs" />
     <Compile Include="Models\MortarValue.cs" />

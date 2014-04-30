@@ -63,7 +63,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 											var rtePropType = new PublishedPropertyType("bodyText", Constants.PropertyEditors.TinyMCEAlias);
 											var rteContentType = new PublishedContentType(-1, "MortarRichtext", new[] {rtePropType});
 											var rteProp = PublishedProperty.GetDetached(rtePropType.Nested(propertyType), item.RawValue, preview);
-											item.Value = new NestedPublishedContent(currentPageId, rteContentType, new[] { rteProp });
+											item.Value = new DetachedPublishedContent(null, rteContentType, new[] { rteProp });
 											break;
 										case "link":
 											int nodeId;
@@ -99,8 +99,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 													// Do nothing, we just want to parse out the name if we can
 												}
 
-												item.Value = new NestedPublishedContent(currentPageId, contentType, properties.ToArray(), 
-													nameObj == null ? null : nameObj.ToString());
+												item.Value = new DetachedPublishedContent(nameObj == null ? null : nameObj.ToString(), contentType, properties.ToArray());
 											}
 											break;
 									}
