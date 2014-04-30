@@ -170,6 +170,9 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 				var value = JsonConvert.DeserializeObject<MortarValue>(property.Value.ToString());
 
+				if (value == null)
+					return string.Empty;
+
 				foreach (var key in value.Keys)
 				{
 					foreach (var row in value[key])
