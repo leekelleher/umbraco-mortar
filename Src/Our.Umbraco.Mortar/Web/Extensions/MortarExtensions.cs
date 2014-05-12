@@ -28,6 +28,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 
 		public static HtmlString RenderMortarItem(this HtmlHelper helper, MortarRow row,
 			MortarItem item,
+			int index = default(int),
 			string viewPath = "",
 			string actionName = "")
 		{
@@ -46,6 +47,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 					controllerName,
 					new
 					{
+						mortarIndex = index,
 						mortarModel = item.Value,
 						mortarRow = row,
 						mortarViewPath = viewPath
@@ -59,7 +61,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			string viewPath = "",
 			string actionName = "")
 		{
-			return helper.RenderMortarItem(item.Row, item.Item, viewPath, actionName);
+			return helper.RenderMortarItem(item.Row, item.Item, item.Index, viewPath, actionName);
 		}
 	}
 

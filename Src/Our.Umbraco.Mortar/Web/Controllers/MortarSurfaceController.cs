@@ -6,14 +6,19 @@ namespace Our.Umbraco.Mortar.Web.Controllers
 {
 	public abstract class MortarSurfaceController : SurfaceController
 	{
-		public MortarRow MortarRow
+		public int MortarIndex
 		{
-			get { return ControllerContext.RouteData.Values["mortarRow"] as MortarRow; }
+			get { return ControllerContext.RouteData.Values["mortarIndex"] as int? ?? default(int); }
 		}
 
 		public IPublishedContent MortarModel
 		{
 			get { return ControllerContext.RouteData.Values["mortarModel"] as IPublishedContent; }
+		}
+
+		public MortarRow MortarRow
+		{
+			get { return ControllerContext.RouteData.Values["mortarRow"] as MortarRow; }
 		}
 
 		public string MortarViewPath
