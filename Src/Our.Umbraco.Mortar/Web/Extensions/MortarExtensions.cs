@@ -37,11 +37,13 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			if (string.IsNullOrWhiteSpace(actionName))
 				actionName = item.Value.DocumentTypeAlias;
 
+			var controllerName = string.Concat(item.Value.DocumentTypeAlias, "Surface");
 			var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
-			if (umbracoHelper.SurfaceControllerExists(item.Value.DocumentTypeAlias + "Surface", actionName))
+
+			if (umbracoHelper.SurfaceControllerExists(controllerName, actionName, true))
 			{
-				return helper.Action(actionName, 
-					item.Value.DocumentTypeAlias + "Surface",
+				return helper.Action(actionName,
+					controllerName,
 					new
 					{
 						mortarModel = item.Value,
