@@ -19,8 +19,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 	[PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/Mortar/Js/mortar.controllers.js")]
 	[PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/Mortar/Js/mortar.directives.js")]
 	[PropertyEditorAsset(ClientDependencyType.Css, "/App_Plugins/Mortar/Css/mortar.css")]
-	[PropertyEditor("Our.Umbraco.Mortar", "Mortar", "/App_Plugins/Mortar/Views/mortar.html", 
-		HideLabel = true, ValueType = "JSON")]
+	[PropertyEditor("Our.Umbraco.Mortar", "Mortar", "/App_Plugins/Mortar/Views/mortar.html", HideLabel = true, ValueType = "JSON")]
 	public class MortarPropertyEditor : PropertyEditor
 	{
 		private IDictionary<string, object> _defaultPreValues;
@@ -34,11 +33,11 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 		{
 			// Setup default values
 			_defaultPreValues = new Dictionary<string, object>
-            {
-                {"gridLayout", "<table>\n\t<tr>\n\t\t<td id='main'></td>\n\t\t<td id='sidebar' width='25%'></td>\n\t</tr>\n</table>"},
-				{"gridConfig", "{'main':{'layouts':[[50,50],[25,25,25,25]]},'sidebar':{'maxItems':4}}"},
-				{"defaultConfig", "{'allowedDoctypes':['Widget$']}"}
-            };
+			{
+				{ "gridLayout", "<table>\n\t<tr>\n\t\t<td id='main'></td>\n\t\t<td id='sidebar' width='25%'></td>\n\t</tr>\n</table>" },
+				{ "gridConfig", "{'main':{'layouts':[[50,50],[25,25,25,25]]},'sidebar':{'maxItems':4}}" },
+				{ "defaultConfig", "{'allowedDoctypes':['Widget$']}" }
+			};
 		}
 
 		#region Pre Value Editor
@@ -59,7 +58,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 			[PreValueField("defaultConfig", "Default Config", "/App_Plugins/Mortar/Views/mortar.jsonTextarea.html", Description = "Provide a default config that applies to all grid cells. This should be in the form of a JSON object.")]
 			public string DefaultConfig { get; set; }
 		}
-		
+
 		#endregion
 
 		#region Value Editor
@@ -110,7 +109,9 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 										// Get the editor to do it's conversion, and store the value back
 										item.RawValue = rtePropEditor.ValueEditor.ConvertDbToString(rteProp, rtePropType, dataTypeService);
+
 										break;
+
 									case "doctype":
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
@@ -152,6 +153,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 											// Serialize the dictionary back
 											item.RawValue = propValues;
 										}
+
 										break;
 								}
 							}
@@ -189,22 +191,24 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 									case "richtext":
 										// Create a fake DTD
 										var rteDtd = new DataTypeDefinition(-1, Constants.PropertyEditors.TinyMCEAlias);
-										
+
 										// Create a fake property type
 										var rtePropType = new PropertyType(rteDtd) { Alias = "bodyText" };
-										
+
 										// Create a fake property
 										var rteProp = new Property(rtePropType, item.RawValue);
 
 										// Lookup the property editor
 										var rtePropEditor = PropertyEditorResolver.Current.GetByAlias(Constants.PropertyEditors.TinyMCEAlias);
-										
+
 										// Get the editor to do it's conversion
 										var rteNewValue = rtePropEditor.ValueEditor.ConvertDbToEditor(rteProp, rtePropType, dataTypeService);
 
 										// Store the value back
 										item.RawValue = rteNewValue == null ? null : rteNewValue.ToString();
+
 										break;
+
 									case "doctype":
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
@@ -252,6 +256,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 												item.RawValue = propValues;
 											}
 										}
+
 										break;
 								}
 							}
@@ -289,7 +294,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 									case "richtext":
 										// Lookup the property editor
 										var rtePropEditor = PropertyEditorResolver.Current.GetByAlias(Constants.PropertyEditors.TinyMCEAlias);
-										
+
 										// Create a fake content property data object (note, we don't have a prevalue, so passing in null)
 										var rteContentPropData = new ContentPropertyData(item.RawValue, null, new Dictionary<string, object>());
 
@@ -298,7 +303,9 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 										// Store the value back
 										item.RawValue = rteNewValue == null ? null : rteNewValue.ToString();
+
 										break;
+
 									case "doctype":
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
@@ -346,6 +353,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 											// Serialize the dictionary back
 											item.RawValue = propValues;
 										}
+
 										break;
 								}
 							}

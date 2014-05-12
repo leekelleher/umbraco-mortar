@@ -46,14 +46,14 @@ namespace Our.Umbraco.Mortar.Web.Controllers
 			}
 			else if (Guid.TryParse(dtdId, out guidDtdId))
 			{
-				dtd = Services.DataTypeService.GetDataTypeDefinitionById(guidDtdId); 
+				dtd = Services.DataTypeService.GetDataTypeDefinitionById(guidDtdId);
 			}
 			else
 			{
 				return null;
 			}
 
-			if(dtd == null)
+			if (dtd == null)
 				return null;
 
 			// Convert to editor config

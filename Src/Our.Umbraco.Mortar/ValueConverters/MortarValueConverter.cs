@@ -61,17 +61,21 @@ namespace Our.Umbraco.Mortar.ValueConverters
 										case "richtext":
 											// Do we need to create a fake doctype?
 											var rtePropType = new PublishedPropertyType("bodyText", Constants.PropertyEditors.TinyMCEAlias);
-											var rteContentType = new PublishedContentType(-1, "MortarRichtext", new[] {rtePropType});
+											var rteContentType = new PublishedContentType(-1, "MortarRichtext", new[] { rtePropType });
 											var rteProp = PublishedProperty.GetDetached(rtePropType.Nested(propertyType), item.RawValue, preview);
 											item.Value = new DetachedPublishedContent(null, rteContentType, new[] { rteProp });
+
 											break;
+
 										case "link":
 											int nodeId;
 											if (int.TryParse(item.RawValue.ToString(), out nodeId))
 												item.Value = Umbraco.TypedContent(nodeId);
+
 											break;
+
 										case "doctype":
-											if (item.AdditionalInfo.ContainsKey("docType") 
+											if (item.AdditionalInfo.ContainsKey("docType")
 												&& item.AdditionalInfo["docType"] != null
 												&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
 											{
@@ -80,7 +84,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 												var properties = new List<IPublishedProperty>();
 
 												// Convert all the properties
-												var propValues = ((JObject) item.RawValue).ToObject<Dictionary<string, object>>(); // JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
+												var propValues = ((JObject)item.RawValue).ToObject<Dictionary<string, object>>(); // JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
 												foreach (var jProp in propValues)
 												{
 													var propType = contentType.GetPropertyType(jProp.Key);
@@ -101,6 +105,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 												item.Value = new DetachedPublishedContent(nameObj == null ? null : nameObj.ToString(), contentType, properties.ToArray());
 											}
+
 											break;
 									}
 								}

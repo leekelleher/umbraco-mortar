@@ -18,7 +18,7 @@ namespace Our.Umbraco.Mortar.Web.Controllers
 
 		public string MortarViewPath
 		{
-			get { return ControllerContext.RouteData.Values["mortarViewPath"] as string ?? ""; }
+			get { return ControllerContext.RouteData.Values["mortarViewPath"] as string ?? string.Empty; }
 		}
 	}
 }

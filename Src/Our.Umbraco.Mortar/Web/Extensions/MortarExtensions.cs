@@ -27,7 +27,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 		}
 
 		public static HtmlString RenderMortarItem(this HtmlHelper helper, MortarRow row,
-			MortarItem item, 
+			MortarItem item,
 			string viewPath = "",
 			string actionName = "")
 		{
@@ -61,5 +61,5 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 		}
 	}
 
-	
+
 }
