@@ -10,6 +10,8 @@ angular.module("umbraco.directives").directive('mortarLayout',
             $scope.model.value = $scope.model.value || {};
             $scope.model.layoutConfig = $scope.model.config.gridConfig;
 
+            console.log($scope.model);
+
             // Merge in the defauult config
             if (typeof $scope.model.config.defaultConfig !== "undefined") {
                 for (var key in $scope.model.layoutConfig) {
@@ -170,6 +172,12 @@ angular.module("umbraco.directives").directive('mortarRow',
 
         var link = function($scope, element, attrs, ctrl) {
 
+            $scope.isAllowed = function (contentType) {
+                return !$scope.layoutConfig.allowedContentTypes || $.grep($scope.layoutConfig.allowedContentTypes, function (itm, idx) {
+                    return itm.toLowerCase() == contentType.toLowerCase();
+                }).length > 0;
+            };
+
             $scope.hasValue = function (cellIndex) {
                 var value =  $scope.model.items != undefined &&
                     $scope.model.items[cellIndex] != undefined &&
@@ -203,9 +211,9 @@ angular.module("umbraco.directives").directive('mortarRow',
                 tr.append($("<td width='" + rowLayout[j] + "%'>" +
                     "<div class='mortar-row__cell'>" +
                     "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr' ng-hide=\"hasValue(" + j + ")\">" +
-                    "<a href='#' ng-click=\"setCellType('" + j + "','richtext')\" prevent-default><i class='icon-edit' /></a>" +
-                    "<a href='#' ng-click=\"setCellType('" + j + "','link')\" prevent-default><i class='icon-link' /></a>" +
-                    "<a href='#' ng-click=\"setCellType('" + j + "','doctype')\" prevent-default><i class='icon-code' /></a>" +
+                    "<a href='#' ng-click=\"setCellType('" + j + "','richtext')\" ng-show=\"isAllowed('richtext')\" prevent-default><i class='icon-edit' /></a>" +
+                    "<a href='#' ng-click=\"setCellType('" + j + "','link')\" ng-show=\"isAllowed('link')\" prevent-default><i class='icon-link' /></a>" +
+                    "<a href='#' ng-click=\"setCellType('" + j + "','docType')\" ng-show=\"isAllowed('docType')\" prevent-default><i class='icon-code' /></a>" +
                     "</div>" +
                     "<div class='mortar-row__cell-spacer' ng-hide=\"hasValue(" + j + ")\" />" +
                     "<mortar-item model='model.items[" + j + "]' layout-config='layoutConfig' />" +
@@ -258,7 +266,18 @@ angular.module("umbraco.directives").directive('mortarItem',
 
                 // Add new item
                 if (newValue !== undefined && newValue !== null) {
-                    var el = $compile("<mortar-" + newValue.type + "-item model='model' layout-config='layoutConfig' />")($scope);
+
+                    // Temporary fix because we renamed 'doctype' to 'docType'
+                    if (newValue.type == "doctype" || newValue.type == "doc-type")
+                        newValue.type = "docType";
+
+                    // Convert pascal case to hyphenated string
+                    var name = newValue.type.replace(/[a-z][A-Z]/g, function (str, offset) {
+                        return str[0] + '-' + str[1].toLowerCase();
+                    });
+
+                    // Render the item
+                    var el = $compile("<mortar-" + name + "-item model='model' layout-config='layoutConfig' />")($scope);
                     element.append(el);
                 }
 
@@ -654,7 +673,7 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
         }
 ]);
 
-angular.module("umbraco.directives").directive('mortarDoctypeItem',
+angular.module("umbraco.directives").directive('mortarDocTypeItem',
     function ($compile, $routeParams, dialogService, editorState) {
 
         var link = function ($scope, element, attrs, ctrl) {
@@ -673,7 +692,7 @@ angular.module("umbraco.directives").directive('mortarDoctypeItem',
                     template: "/App_Plugins/Mortar/Views/mortar.docTypeDialog.html",
                     scope: $scope,
                     show: true,
-                    allowedDoctypes: $scope.layoutConfig.allowedDoctypes,
+                    allowedDocTypes: $scope.layoutConfig.allowedDocTypes,
                     callback: callback,
                     closeCallback: callback
                 });

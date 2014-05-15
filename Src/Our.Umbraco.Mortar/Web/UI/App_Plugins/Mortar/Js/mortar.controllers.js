@@ -87,7 +87,7 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
             } else {
                 $scope.dialogMode = "selectDocType";
                 // No data type, so load a list to choose from
-                mortarResources.getContentTypes($scope.dialogOptions.allowedDoctypes).then(function (docTypes) {
+                mortarResources.getContentTypes($scope.dialogOptions.allowedDocTypes).then(function (docTypes) {
                     $scope.docTypes = docTypes;
                 });
             }
