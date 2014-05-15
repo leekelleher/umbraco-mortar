@@ -28,7 +28,6 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
             $scope.selectDocType = function () {
                 $scope.dialogMode = "edit";
                 $scope.dialogData = $scope.selectedDocType.alias;
-                //$scope.model.docType = $scope.selectedDocType.alias;
                 loadNode();
             };
 
