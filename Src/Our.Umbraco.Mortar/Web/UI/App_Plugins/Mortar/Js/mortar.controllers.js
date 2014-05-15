@@ -27,7 +27,8 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
 
             $scope.selectDocType = function () {
                 $scope.dialogMode = "edit";
-                $scope.model.docType = $scope.selectedDocType.alias; // Maybe alias?
+                $scope.dialogData = $scope.selectedDocType.alias;
+                //$scope.model.docType = $scope.selectedDocType.alias;
                 loadNode();
             };
 
@@ -46,28 +47,28 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
                             }
                         }
                     }
-                    $scope.model.value = value;
+                    $scope.dialogData.value = value;
                 } else {
-                    $scope.model.value = null;
+                    $scope.dialogData.value = null;
                 }
 
                 $scope.submit($scope.dialogData);
             };
 
             function loadNode() {
-                contentResource.getScaffold(-20, $scope.model.docType).then(function (data) {
+                contentResource.getScaffold(-20, $scope.dialogData.docType).then(function (data) {
                     // Remove the last tab
                     data.tabs.pop();
 
                     // Merge current value
-                    if ($scope.model.value) {
-                        $scope.nameProperty.value = $scope.model.value.name;
+                    if ($scope.dialogData.value) {
+                        $scope.nameProperty.value = $scope.dialogData.value.name;
                         for (var t = 0; t < data.tabs.length; t++) {
                             var tab = data.tabs[t];
                             for (var p = 0; p < tab.properties.length; p++) {
                                 var prop = tab.properties[p];
-                                if ($scope.model.value[prop.alias]) {
-                                    prop.value = $scope.model.value[prop.alias];
+                                if ($scope.dialogData.value[prop.alias]) {
+                                    prop.value = $scope.dialogData.value[prop.alias];
                                 }
                             }
                         }
@@ -80,14 +81,17 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
                 });
             };
 
+            if ($scope.docTypes.length == 1) {
+                $scope.dialogData.docType = $scope.docTypes[0];
+            }
 
-            if ($scope.model.docType) {
+            if ($scope.dialogData.docType) {
                 $scope.dialogMode = "edit";
                 loadNode();
             } else {
                 $scope.dialogMode = "selectDocType";
                 // No data type, so load a list to choose from
-                mortarResources.getContentTypes($scope.dialogOptions.allowedDocTypes).then(function (docTypes) {
+                mortarResources.getContentTypes($scope.dialogOptions.allowedDocTypes).then(function(docTypes) {
                     $scope.docTypes = docTypes;
                 });
             }

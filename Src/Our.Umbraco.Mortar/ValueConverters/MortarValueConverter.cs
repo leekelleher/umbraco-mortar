@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Our.Umbraco.Mortar.Helpers;
 using Our.Umbraco.Mortar.Models;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
@@ -35,23 +36,18 @@ namespace Our.Umbraco.Mortar.ValueConverters
 				{
 					var value = JsonConvert.DeserializeObject<MortarValue>(source.ToString());
 
-					// This isn't ideal. We should just leave the ID as 0, but the Umbraco.Field
-					// helper requires it to be a valid ID. Looking in the helper, it uses the
-					// current published content request to lookup the id, so we are just doing
-					// the same so we can bypass the checks we need to get past.
-					// NB Stephan thinks doing this here may cause problems, but it seems to work
-					// ok for the time being
-					var currentPageId = UmbracoContext.Current.PublishedContentRequest != null
-						? UmbracoContext.Current.PublishedContentRequest.PublishedContent.Id
-						: 0;
-
 					// We get the JSON converter to do some initial conversion, but
 					// created the IPublishedContent values requires some context
 					// so we have to do them in an additional loop here
 					foreach (var key in value.Keys)
 					{
+						var rowOptionsDocTypeAlias = MortarHelper.GetRowOptionsDocType(propertyType.DataTypeId, key);
+
 						foreach (var row in value[key])
 						{
+							if (!string.IsNullOrWhiteSpace(rowOptionsDocTypeAlias))
+								row.Options = ConvertDataToSource_DocType(propertyType, rowOptionsDocTypeAlias, row.RawOptions, preview);
+
 							foreach (var item in row.Items)
 							{
 								if (item != null && item.RawValue != null)
@@ -59,53 +55,19 @@ namespace Our.Umbraco.Mortar.ValueConverters
 									switch (item.Type.ToLowerInvariant())
 									{
 										case "richtext":
-											// Do we need to create a fake doctype?
-											var rtePropType = new PublishedPropertyType("bodyText", Constants.PropertyEditors.TinyMCEAlias);
-											var rteContentType = new PublishedContentType(-1, "MortarRichtext", new[] { rtePropType });
-											var rteProp = PublishedProperty.GetDetached(rtePropType.Nested(propertyType), item.RawValue, preview);
-											item.Value = new DetachedPublishedContent(null, rteContentType, new[] { rteProp });
-
+											item.Value = ConvertDataToSource_Richtext(propertyType, item.RawValue, preview); 
 											break;
-
 										case "link":
-											int nodeId;
-											if (int.TryParse(item.RawValue.ToString(), out nodeId))
-												item.Value = Umbraco.TypedContent(nodeId);
-
+											item.Value = ConvertDataToSource_Link(propertyType, item.RawValue, preview);
 											break;
-
 										case "doctype":
 											if (item.AdditionalInfo.ContainsKey("docType")
 												&& item.AdditionalInfo["docType"] != null
 												&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
 											{
 												var docTypeAlias = item.AdditionalInfo["docType"];
-												var contentType = PublishedContentType.Get(PublishedItemType.Content, docTypeAlias);
-												var properties = new List<IPublishedProperty>();
-
-												// Convert all the properties
-												var propValues = ((JObject)item.RawValue).ToObject<Dictionary<string, object>>(); // JsonConvert.DeserializeObject<Dictionary<string, object>>(item.RawValue);
-												foreach (var jProp in propValues)
-												{
-													var propType = contentType.GetPropertyType(jProp.Key);
-													if (propType != null)
-													{
-														var prop = PublishedProperty.GetDetached(propType.Nested(propertyType),
-															jProp.Value == null ? "" : jProp.Value.ToString(), preview);
-														properties.Add(prop);
-													}
-												}
-
-												// Parse out the name manually
-												object nameObj = null;
-												if (propValues.TryGetValue("name", out nameObj))
-												{
-													// Do nothing, we just want to parse out the name if we can
-												}
-
-												item.Value = new DetachedPublishedContent(nameObj == null ? null : nameObj.ToString(), contentType, properties.ToArray());
+												item.Value = ConvertDataToSource_DocType(propertyType, docTypeAlias, item.RawValue, preview);
 											}
-
 											break;
 									}
 								}
@@ -122,6 +84,50 @@ namespace Our.Umbraco.Mortar.ValueConverters
 			}
 
 			return null;
+		}
+
+		protected IPublishedContent ConvertDataToSource_Richtext(PublishedPropertyType propertyType, object value, bool preview)
+		{
+			var rtePropType = new PublishedPropertyType("bodyText", Constants.PropertyEditors.TinyMCEAlias);
+			var rteContentType = new PublishedContentType(-1, "MortarRichtext", new[] { rtePropType });
+			var rteProp = PublishedProperty.GetDetached(rtePropType.Nested(propertyType), value, preview);
+			return new DetachedPublishedContent(null, rteContentType, new[] { rteProp });
+		}
+
+		protected IPublishedContent ConvertDataToSource_Link(PublishedPropertyType propertyType, object value, bool preview)
+		{
+			int nodeId;
+			return int.TryParse(value.ToString(), out nodeId) 
+				? Umbraco.TypedContent(nodeId) 
+				: null;
+		}
+
+		protected IPublishedContent ConvertDataToSource_DocType(PublishedPropertyType propertyType, string docTypeAlias, object value, bool preview)
+		{
+			var contentType = PublishedContentType.Get(PublishedItemType.Content, docTypeAlias);
+			var properties = new List<IPublishedProperty>();
+
+			// Convert all the properties
+			var propValues = ((JObject)value).ToObject<Dictionary<string, object>>();
+			foreach (var jProp in propValues)
+			{
+				var propType = contentType.GetPropertyType(jProp.Key);
+				if (propType != null)
+				{
+					var prop = PublishedProperty.GetDetached(propType.Nested(propertyType),
+						jProp.Value == null ? "" : jProp.Value.ToString(), preview);
+					properties.Add(prop);
+				}
+			}
+
+			// Parse out the name manually
+			object nameObj = null;
+			if (propValues.TryGetValue("name", out nameObj))
+			{
+				// Do nothing, we just want to parse out the name if we can
+			}
+
+			return new DetachedPublishedContent(nameObj == null ? null : nameObj.ToString(), contentType, properties.ToArray());
 		}
 	}
 }

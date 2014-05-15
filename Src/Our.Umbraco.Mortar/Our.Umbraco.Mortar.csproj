@@ -67,6 +67,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\MortarHelper.cs" />
     <Compile Include="JsonConverters\MortarItemConverter.cs" />
     <Compile Include="Models\DetachedPublishedContent.cs" />
     <Compile Include="Models\MortarItem.cs" />
@@ -87,6 +88,7 @@
     <Content Include="Web\UI\App_Plugins\Mortar\Js\jquery.hoverIntent.minified.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.controllers.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.extensions.js" />
+    <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.services.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.resources.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.directives.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.jsonTextarea.html" />

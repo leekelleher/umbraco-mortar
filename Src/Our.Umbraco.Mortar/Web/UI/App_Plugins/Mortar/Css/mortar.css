@@ -68,7 +68,7 @@
 }
 
 .mortar-row__cell-spacer {
-    height: 60px;
+    height: 62px;
 }
 
 .mortar-row__button-bar {
@@ -146,8 +146,8 @@
 }
 
 .mortar-item__label {
-    line-height: 1.4;
-    padding: 20px 10px;
+    line-height: 20px;
+    padding: 21px 10px;
 }
 
 .mortar-item--link 

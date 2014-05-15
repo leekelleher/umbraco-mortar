@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json;
+using Umbraco.Core.Models;
 
 namespace Our.Umbraco.Mortar.Models
 {
@@ -20,6 +21,13 @@ namespace Our.Umbraco.Mortar.Models
 					.ToList().AsReadOnly();
 			}
 		}
+
+		[JsonProperty("options")]
+		internal object RawOptions { get; set; }
+
+		// Only ever used in Razor views, so can be concidered readonly
+		[JsonIgnore]
+		public IPublishedContent Options { get; internal set; }
 
 		[JsonProperty("items")]
 		public ReadOnlyCollection<MortarItem> Items { get; set; }
