@@ -32,6 +32,9 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			string viewPath = "",
 			string actionName = "")
 		{
+			if (item == null)
+				return new HtmlString(string.Empty);
+
 			if (!string.IsNullOrWhiteSpace(viewPath))
 				viewPath = viewPath.TrimEnd('/') + "/";
 
@@ -64,6 +67,4 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			return helper.RenderMortarItem(item.Row, item.Item, item.Index, viewPath, actionName);
 		}
 	}
-
-
 }
