@@ -35,6 +35,9 @@
       <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\ClientDependency.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="interfaces">
+      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\Newtonsoft.Json.dll</HintPath>
@@ -74,9 +77,11 @@
     <Compile Include="Models\MortarRow.cs" />
     <Compile Include="Models\MortarValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Web\Boostrapper.cs" />
     <Compile Include="Web\Controllers\MortarApiController.cs" />
     <Compile Include="ValueConverters\MortarValueConverter.cs" />
     <Compile Include="Web\Controllers\MortarSurfaceController.cs" />
+    <Compile Include="Web\Extensions\ContentTypeServiceExtensions.cs" />
     <Compile Include="Web\Extensions\MortarExtensions.cs" />
     <Compile Include="Web\Extensions\UmbracoHelperExtensions.cs" />
     <Compile Include="Web\PropertyEditors\MortarPropertyEditor.cs" />

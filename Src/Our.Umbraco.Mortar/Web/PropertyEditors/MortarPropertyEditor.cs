@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ClientDependency.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Our.Umbraco.Mortar.Helpers;
 using Our.Umbraco.Mortar.Models;
+using Our.Umbraco.Mortar.Web.Extensions;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.Editors;
@@ -111,12 +113,14 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 										item.RawValue = ConvertDbToString_Fake(Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue);
 										break;
 									case "doctype":
+										Guid docTypeGuid;
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
-											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
+											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace()
+											&& Guid.TryParse(item.AdditionalInfo["docType"], out docTypeGuid))
 										{
 											// Lookup the doctype
-											var docTypeAlias = item.AdditionalInfo["docType"];
+											var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
 											item.RawValue = ConvertDbToString_DocType(docTypeAlias, item.RawValue);
 										}
 										break;
@@ -225,12 +229,14 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 										item.RawValue = ConvertDbToEditor_Fake(Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue);
 										break;
 									case "doctype":
+										Guid docTypeGuid;
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
-											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
+											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace()
+											&& Guid.TryParse(item.AdditionalInfo["docType"], out docTypeGuid))
 										{
 											// Lookup the doctype
-											var docTypeAlias = item.AdditionalInfo["docType"];
+											var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
 											item.RawValue = ConvertDbToEditor_DocType(docTypeAlias, item.RawValue);
 										}
 										break;
@@ -347,12 +353,14 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 										item.RawValue = ConvertEditorToDb_Fake(Constants.PropertyEditors.TextboxMultipleAlias, item.RawValue);
 										break;
 									case "doctype":
+										Guid docTypeGuid;
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
-											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
+											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace()
+											&& Guid.TryParse(item.AdditionalInfo["docType"], out docTypeGuid))
 										{
-											// Ftech the doc type
-											var docTypeAlias = item.AdditionalInfo["docType"];
+											// Lookup the doctype
+											var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
 
 											// Serialize the dictionary back
 											item.RawValue = ConvertEditorToDb_DocType(docTypeAlias, item.RawValue);

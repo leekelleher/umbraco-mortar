@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Our.Umbraco.Mortar.Helpers;
 using Our.Umbraco.Mortar.Models;
+using Our.Umbraco.Mortar.Web.Extensions;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -67,11 +68,14 @@ namespace Our.Umbraco.Mortar.ValueConverters
 											item.Value = ConvertDataToSource_Media(propertyType, item.RawValue, preview);
 											break;
 										case "doctype":
+											Guid docTypeGuid;
 											if (item.AdditionalInfo.ContainsKey("docType")
 												&& item.AdditionalInfo["docType"] != null
-												&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
+												&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace()
+												&& Guid.TryParse(item.AdditionalInfo["docType"], out docTypeGuid))
 											{
-												var docTypeAlias = item.AdditionalInfo["docType"];
+												// Lookup the doctype
+												var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
 												item.Value = ConvertDataToSource_DocType(propertyType, docTypeAlias, item.RawValue, preview);
 											}
 											break;

@@ -71,7 +71,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 
 			return (bool)ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
 				string.Join("_", new[] { "Our.Umbraco.Mortar.Web.Extensions.UmbracoHelperExtensions.SurfaceControllerExists", name, actionName }),
-				() => { return SurfaceControllerExists(helper, name, actionName); });
+				() => SurfaceControllerExists(helper, name, actionName));
 		}
 	}
 }

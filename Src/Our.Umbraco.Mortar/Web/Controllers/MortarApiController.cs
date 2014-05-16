@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+using Our.Umbraco.Mortar.Web.Extensions;
 using Umbraco.Core.Models;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Web.Editors;
@@ -14,6 +15,15 @@ namespace Our.Umbraco.Mortar.Web.Controllers
 	[PluginController("MortarApi")]
 	public class MortarApiController : UmbracoAuthorizedJsonController
 	{
+		[HttpGet]
+		public object GetContentTypeAliasByGuid([ModelBinder] Guid guid)
+		{
+			return new
+			{
+				alias = Services.ContentTypeService.GetAliasByGuid(guid)
+			};
+		}
+
 		[HttpGet]
 		public IEnumerable<object> GetContentTypes([ModelBinder] string[] allowedContentTypes)
 		{
