@@ -21,7 +21,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                 }
             }
 
-            console.log($scope.model);
+            //console.log($scope.model);
 
             $scope.removeRow = function (cellId, index) {
                 $scope.model.value[cellId].splice(index, 1);
