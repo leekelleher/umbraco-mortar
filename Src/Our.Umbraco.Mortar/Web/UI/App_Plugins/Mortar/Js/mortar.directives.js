@@ -728,6 +728,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
 
                 var dialogConfig = {
                     scope: $scope,
+                    onlyImages: true,
                     callback: function (data) {
                         $scope.model.value = data.id;
                         $scope.node.url = data.image;
