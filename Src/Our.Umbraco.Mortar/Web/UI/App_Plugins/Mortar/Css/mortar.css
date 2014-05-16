@@ -150,7 +150,9 @@
     padding: 21px 10px;
 }
 
-.mortar-item--link 
+.mortar-item--link,
+.mortar-item--media,
+.mortar-item--embed
 {
     background: #e2e2e2 url(../images/cross.svg) center center no-repeat;
     background-size: 100% 100%;
@@ -160,8 +162,25 @@
     height: 100%;
 }
 
-.mortar-item--link .mortar-item__label {
+.mortar-item--link .mortar-item__label,
+.mortar-item--media .mortar-item__label  {
     background: #e2e2e2;
+}
+
+.mortar-item__embed {
+    width: 100%;
+    height: 100%;
+}
+
+.mortar-item__embed > * {
+    vertical-align: bottom;
+    width: 100%;
+    height: 100%;
+    min-height: 330px;
+}
+
+.mortar-item__image {
+    width: 100%;
 }
 
 .mortar-item--richtext {

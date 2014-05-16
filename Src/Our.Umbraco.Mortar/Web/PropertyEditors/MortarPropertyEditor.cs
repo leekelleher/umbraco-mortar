@@ -105,7 +105,10 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 								switch (item.Type.ToLowerInvariant())
 								{
 									case "richtext":
-										item.RawValue = ConvertDbToString_Richtext(item.RawValue);
+										item.RawValue = ConvertDbToString_Fake(Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue);
+										break;
+									case "embed":
+										item.RawValue = ConvertDbToString_Fake(Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue);
 										break;
 									case "doctype":
 										if (item.AdditionalInfo.ContainsKey("docType")
@@ -130,21 +133,21 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 				return base.ConvertDbToString(property, propertyType, dataTypeService);
 			}
 
-			protected object ConvertDbToString_Richtext(object value)
+			protected object ConvertDbToString_Fake(string propEditorAlias, string propAlias, object value)
 			{
 				// Create a fake DTD
-				var rteDtd = new DataTypeDefinition(-1, Constants.PropertyEditors.TinyMCEAlias);
+				var fakeDtd = new DataTypeDefinition(-1, propEditorAlias);
 
 				// Create a fake property type
-				var rtePropType = new PropertyType(rteDtd) { Alias = "bodyText" };
+				var fakePropType = new PropertyType(fakeDtd) { Alias = propAlias };
 
 				// Create a fake property
-				var rteProp = new Property(rtePropType, value);
+				var fakeProp = new Property(fakePropType, value);
 
 				// Lookup the property editor
-				var rtePropEditor = PropertyEditorResolver.Current.GetByAlias(Constants.PropertyEditors.TinyMCEAlias);
+				var fakePropEditor = PropertyEditorResolver.Current.GetByAlias(propEditorAlias);
 
-				return rtePropEditor.ValueEditor.ConvertDbToString(rteProp, rtePropType, ApplicationContext.Current.Services.DataTypeService);
+				return fakePropEditor.ValueEditor.ConvertDbToString(fakeProp, fakePropType, ApplicationContext.Current.Services.DataTypeService);
 			}
 
 			protected object ConvertDbToString_DocType(string docTypeAlias, object value)
@@ -216,7 +219,10 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 								switch (item.Type.ToLowerInvariant())
 								{
 									case "richtext":
-										item.RawValue = ConvertDbToEditor_Richtext(item.RawValue);
+										item.RawValue = ConvertDbToEditor_Fake(Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue);
+										break;
+									case "embed":
+										item.RawValue = ConvertDbToEditor_Fake(Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue);
 										break;
 									case "doctype":
 										if (item.AdditionalInfo.ContainsKey("docType")
@@ -241,25 +247,25 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 				return base.ConvertDbToEditor(property, propertyType, dataTypeService);
 			}
 
-			protected object ConvertDbToEditor_Richtext(object value)
+			protected object ConvertDbToEditor_Fake(string propEditorAlias, string propAlias, object value)
 			{
 				// Create a fake DTD
-				var rteDtd = new DataTypeDefinition(-1, Constants.PropertyEditors.TinyMCEAlias);
+				var fakeDtd = new DataTypeDefinition(-1, propEditorAlias);
 
 				// Create a fake property type
-				var rtePropType = new PropertyType(rteDtd) { Alias = "bodyText" };
+				var fakePropType = new PropertyType(fakeDtd) { Alias = propAlias };
 
 				// Create a fake property
-				var rteProp = new Property(rtePropType, value);
+				var fakeProp = new Property(fakePropType, value);
 
 				// Lookup the property editor
-				var rtePropEditor = PropertyEditorResolver.Current.GetByAlias(Constants.PropertyEditors.TinyMCEAlias);
+				var fakePropEditor = PropertyEditorResolver.Current.GetByAlias(propEditorAlias);
 
 				// Get the editor to do it's conversion
-				var rteNewValue = rtePropEditor.ValueEditor.ConvertDbToEditor(rteProp, rtePropType, ApplicationContext.Current.Services.DataTypeService);
+				var fakeNewValue = fakePropEditor.ValueEditor.ConvertDbToEditor(fakeProp, fakePropType, ApplicationContext.Current.Services.DataTypeService);
 
 				// Store the value back
-				return rteNewValue == null ? null : rteNewValue.ToString();
+				return fakeNewValue == null ? null : fakeNewValue.ToString();
 			}
 
 			protected object ConvertDbToEditor_DocType(string docTypeAlias, object value)
@@ -335,7 +341,10 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 								switch (item.Type.ToLowerInvariant())
 								{
 									case "richtext":
-										item.RawValue = ConvertEditorToDb_Richtext(item.RawValue);
+										item.RawValue = ConvertEditorToDb_Fake(Constants.PropertyEditors.TinyMCEAlias, item.RawValue);
+										break;
+									case "embed":
+										item.RawValue = ConvertEditorToDb_Fake(Constants.PropertyEditors.TextboxMultipleAlias, item.RawValue);
 										break;
 									case "doctype":
 										if (item.AdditionalInfo.ContainsKey("docType")
@@ -358,19 +367,19 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 				return JsonConvert.SerializeObject(value);
 			}
 
-			protected object ConvertEditorToDb_Richtext(object value)
+			protected object ConvertEditorToDb_Fake(string propEditorAlias, object value)
 			{
 				// Lookup the property editor
-				var rtePropEditor = PropertyEditorResolver.Current.GetByAlias(Constants.PropertyEditors.TinyMCEAlias);
+				var fakePropEditor = PropertyEditorResolver.Current.GetByAlias(propEditorAlias);
 
 				// Create a fake content property data object (note, we don't have a prevalue, so passing in null)
-				var rteContentPropData = new ContentPropertyData(value, null, new Dictionary<string, object>());
+				var fakeContentPropData = new ContentPropertyData(value, null, new Dictionary<string, object>());
 
 				// Get the property editor to do it's conversion
-				var rteNewValue = rtePropEditor.ValueEditor.ConvertEditorToDb(rteContentPropData, value);
+				var fakeNewValue = fakePropEditor.ValueEditor.ConvertEditorToDb(fakeContentPropData, value);
 
 				// Store the value back
-				return rteNewValue == null ? null : rteNewValue.ToString();
+				return fakeNewValue == null ? null : fakeNewValue.ToString();
 			}
 
 			protected object ConvertEditorToDb_DocType(string docTypeAlias, object value)

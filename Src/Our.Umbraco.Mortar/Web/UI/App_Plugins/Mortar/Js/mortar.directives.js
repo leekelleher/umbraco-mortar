@@ -238,6 +238,8 @@ angular.module("umbraco.directives").directive('mortarRow',
                         "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr' ng-hide=\"hasValue(" + j + ")\">" +
                         "<a href='#' ng-click=\"setCellType('" + j + "','richtext')\" ng-show=\"isAllowed('richtext')\" prevent-default><i class='icon-edit' /></a>" +
                         "<a href='#' ng-click=\"setCellType('" + j + "','link')\" ng-show=\"isAllowed('link')\" prevent-default><i class='icon-link' /></a>" +
+                        "<a href='#' ng-click=\"setCellType('" + j + "','media')\" ng-show=\"isAllowed('media')\" prevent-default><i class='icon-picture' /></a>" +
+                        "<a href='#' ng-click=\"setCellType('" + j + "','embed')\" ng-show=\"isAllowed('embed')\" prevent-default><i class='icon-display' /></a>" +
                         "<a href='#' ng-click=\"setCellType('" + j + "','docType')\" ng-show=\"isAllowed('docType')\" prevent-default><i class='icon-code' /></a>" +
                         "</div>" +
                         "<div class='mortar-row__cell-spacer' ng-hide=\"hasValue(" + j + ")\" />" +
@@ -323,101 +325,6 @@ angular.module("umbraco.directives").directive('mortarItem',
         };
 
     });
-
-angular.module("umbraco.directives").directive('mortarLinkItem',
-    [
-        "$compile",
-        "$routeParams",
-        "dialogService",
-        "notificationsService",
-        "entityResource",
-        "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
-
-            var link = function ($scope, element, attrs, ctrl) {
-
-                // Setup model
-                $scope.node = {
-                    name: "..."
-                };
-
-                $scope.configure = function () {
-                    dialogService.treePicker(dialogConfig);
-                };
-
-                $scope.remove = function() {
-                    $scope.model = null;
-                };
-
-                var dialogConfig = {
-                    scope: $scope,
-                    entityType: "Document",
-                    section: "content",
-                    treeAlias: "content",
-                    multiPicker: false,
-                    callback: function (data) {
-                        $scope.model.value = data.id;
-                        $scope.node = data;
-                    }
-                };
-
-                function init() {
-                    if ($scope.model.value && $scope.model.value != "-1") {
-                        // Grab the node from the id
-                        entityResource.getById($scope.model.value, "Document").then(function (data) {
-                            $scope.node = data;
-                        });
-                    } else if ($scope.model.value && $scope.model.value == "-1") {
-                        // Set model value back to empty
-                        $scope.model.value = "";
-                        // Show the content dialog
-                        $scope.configure();
-                    }
-                }
-
-                if ($scope.layoutConfig && "pickerDtdId" in $scope.layoutConfig) {
-                    mortarResources.getDataTypePreValues($scope.layoutConfig.pickerDtdId).then(function(pickerConfig) {
-                        // We only realy want to know where the picker should start
-                        if (pickerConfig.startNode.type == "content") {
-                            if (pickerConfig.startNode.query) {
-                                var rootId = $routeParams.id;
-                                entityResource.getByQuery(pickerConfig.startNode.query, rootId, "Document").then(function (ent) {
-                                    dialogConfig.startNodeId = ent.id;
-                                    init();
-                                });
-                            } else {
-                                dialogConfig.startNodeId = pickerConfig.startNode.id;
-                                init();
-                            }
-                        } else {
-                            init();
-                        }
-                    });
-                } else {
-                    init();
-                }
-
-            };
-
-            return {
-                restrict: "E",
-                replace: true,
-                template: "<div class='mortar-item--link mortar-item--vcenter'>" +
-                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
-                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-link' /></a>" +
-                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
-                    "</div>" +
-                    "<div class='mortar-item__label'>{{node.name}}</div>" +
-                    "</div>",
-                scope: {
-                    model: '=',
-                    layoutConfig: '='
-                },
-                link: link
-            };
-
-        }
-    ]);
 
 angular.module("umbraco.directives").directive('mortarRichtextItem',
     [
@@ -697,7 +604,232 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
             };
 
         }
-]);
+    ]);
+
+angular.module("umbraco.directives").directive('mortarLinkItem',
+    [
+        "$compile",
+        "$routeParams",
+        "dialogService",
+        "notificationsService",
+        "entityResource",
+        "Our.Umbraco.Mortar.Resources.mortarResources",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+
+            var link = function ($scope, element, attrs, ctrl) {
+
+                // Setup model
+                $scope.node = {
+                    name: "..."
+                };
+
+                $scope.configure = function () {
+                    dialogService.treePicker(dialogConfig);
+                };
+
+                $scope.remove = function () {
+                    $scope.model = null;
+                };
+
+                var dialogConfig = {
+                    scope: $scope,
+                    entityType: "Document",
+                    section: "content",
+                    treeAlias: "content",
+                    multiPicker: false,
+                    callback: function (data) {
+                        $scope.model.value = data.id;
+                        $scope.node = data;
+                    }
+                };
+
+                function init() {
+                    if ($scope.model.value && $scope.model.value != "-1") {
+                        // Grab the node from the id
+                        entityResource.getById($scope.model.value, "Document").then(function (data) {
+                            $scope.node = data;
+                        });
+                    } else if ($scope.model.value && $scope.model.value == "-1") {
+                        // Set model value back to empty
+                        $scope.model.value = "";
+                        // Show the content dialog
+                        $scope.configure();
+                    }
+                }
+
+                if ($scope.layoutConfig && "pickerDtdId" in $scope.layoutConfig) {
+                    mortarResources.getDataTypePreValues($scope.layoutConfig.pickerDtdId).then(function (pickerConfig) {
+                        // We only realy want to know where the picker should start
+                        if (pickerConfig.startNode.type == "content") {
+                            if (pickerConfig.startNode.query) {
+                                var rootId = $routeParams.id;
+                                entityResource.getByQuery(pickerConfig.startNode.query, rootId, "Document").then(function (ent) {
+                                    dialogConfig.startNodeId = ent.id;
+                                    init();
+                                });
+                            } else {
+                                dialogConfig.startNodeId = pickerConfig.startNode.id;
+                                init();
+                            }
+                        } else {
+                            init();
+                        }
+                    });
+                } else {
+                    init();
+                }
+
+            };
+
+            return {
+                restrict: "E",
+                replace: true,
+                template: "<div class='mortar-item--link mortar-item--vcenter'>" +
+                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
+                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-link' /></a>" +
+                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
+                    "</div>" +
+                    "<div class='mortar-item__label'>{{node.name}}</div>" +
+                    "</div>",
+                scope: {
+                    model: '=',
+                    layoutConfig: '='
+                },
+                link: link
+            };
+
+        }
+    ]);
+
+angular.module("umbraco.directives").directive('mortarMediaItem',
+    [
+        "$compile",
+        "$routeParams",
+        "dialogService",
+        "notificationsService",
+        "entityResource",
+        "Our.Umbraco.Mortar.Resources.mortarResources",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+
+            var link = function ($scope, element, attrs, ctrl) {
+
+                // Setup model
+                $scope.node = {
+                    url: ""
+                };
+
+                $scope.configure = function () {
+                    dialogService.mediaPicker(dialogConfig);
+                };
+
+                $scope.remove = function () {
+                    $scope.model = null;
+                };
+
+                var dialogConfig = {
+                    scope: $scope,
+                    callback: function (data) {
+                        $scope.model.value = data.id;
+                        $scope.node.url = data.image;
+                    }
+                };
+
+                function init() {
+                    if ($scope.model.value && $scope.model.value != "-1") {
+                        // Grab the node from the id
+                        entityResource.getById($scope.model.value, "Media").then(function (data) {
+                            $scope.node.url = data.metaData.UmbracoFile;
+                        });
+                    } else if ($scope.model.value && $scope.model.value == "-1") {
+                        // Set model value back to empty
+                        $scope.model.value = "";
+                        // Show the content dialog
+                        $scope.configure();
+                    }
+                }
+
+                init();
+
+            };
+
+            return {
+                restrict: "E",
+                replace: true,
+                template: "<div class='mortar-item--media mortar-item--vcenter'>" +
+                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
+                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-picture' /></a>" +
+                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
+                    "</div>" +
+                    "<div class='mortar-item__label' ng-hide='node.url'>...</div>" +
+                    "<img class='mortar-item__image' ng-show='node.url' ng-src='{{node.url}}' />" +
+                    "</div>",
+                scope: {
+                    model: '=',
+                    layoutConfig: '='
+                },
+                link: link
+            };
+
+        }
+    ]);
+
+angular.module("umbraco.directives").directive('mortarEmbedItem',
+    [
+        "$compile",
+        "$routeParams",
+        "dialogService",
+        "notificationsService",
+        "entityResource",
+        "Our.Umbraco.Mortar.Resources.mortarResources",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+
+            var link = function ($scope, element, attrs, ctrl) {
+
+                // Setup model
+                $scope.configure = function () {
+                    dialogService.embedDialog(dialogConfig);
+                };
+
+                $scope.remove = function () {
+                    $scope.model = null;
+                };
+
+                var dialogConfig = {
+                    scope: $scope,
+                    callback: function (data) {
+                        $scope.model.value = data;
+                    }
+                };
+
+                if ($scope.model.value && $scope.model.value == "-1") {
+                    // Set model value back to empty
+                    $scope.model.value = "";
+                    // Show the content dialog
+                    $scope.configure();
+                }
+
+            };
+
+            return {
+                restrict: "E",
+                replace: true,
+                template: "<div class='mortar-item--embed mortar-item--vcenter'>" +
+                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
+                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-display' /></a>" +
+                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
+                    "</div>" +
+                    "<div class='mortar-item__label' ng-hide='model.value'>...</div>" +
+                    "<div class=\"mortar-item__embed\" ng-show='model.value' ng-bind-html-unsafe=\"model.value\"></div>" +
+                    "</div>",
+                scope: {
+                    model: '=',
+                    layoutConfig: '='
+                },
+                link: link
+            };
+
+        }
+    ]);
 
 angular.module("umbraco.directives").directive('mortarDocTypeItem',
     [

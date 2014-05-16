@@ -55,10 +55,16 @@ namespace Our.Umbraco.Mortar.ValueConverters
 									switch (item.Type.ToLowerInvariant())
 									{
 										case "richtext":
-											item.Value = ConvertDataToSource_Richtext(propertyType, item.RawValue, preview); 
+											item.Value = ConvertDataToSource_Fake(propertyType, "MortarRichtext", Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue, preview); 
+											break;
+										case "embed":
+											item.Value = ConvertDataToSource_Fake(propertyType, "MortarEmbed", Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue, preview);
 											break;
 										case "link":
 											item.Value = ConvertDataToSource_Link(propertyType, item.RawValue, preview);
+											break;
+										case "media":
+											item.Value = ConvertDataToSource_Media(propertyType, item.RawValue, preview);
 											break;
 										case "doctype":
 											if (item.AdditionalInfo.ContainsKey("docType")
@@ -86,12 +92,12 @@ namespace Our.Umbraco.Mortar.ValueConverters
 			return null;
 		}
 
-		protected IPublishedContent ConvertDataToSource_Richtext(PublishedPropertyType propertyType, object value, bool preview)
+		protected IPublishedContent ConvertDataToSource_Fake(PublishedPropertyType propertyType, string docTypeAlias, string propEditorAlias, string propAlias, object value, bool preview)
 		{
-			var rtePropType = new PublishedPropertyType("bodyText", Constants.PropertyEditors.TinyMCEAlias);
-			var rteContentType = new PublishedContentType(-1, "MortarRichtext", new[] { rtePropType });
-			var rteProp = PublishedProperty.GetDetached(rtePropType.Nested(propertyType), value, preview);
-			return new DetachedPublishedContent(null, rteContentType, new[] { rteProp });
+			var fakePropType = new PublishedPropertyType(propAlias, propEditorAlias);
+			var fakeContentType = new PublishedContentType(-1, docTypeAlias, new[] { fakePropType });
+			var fakeProp = PublishedProperty.GetDetached(fakePropType.Nested(propertyType), value, preview);
+			return new DetachedPublishedContent(null, fakeContentType, new[] { fakeProp });
 		}
 
 		protected IPublishedContent ConvertDataToSource_Link(PublishedPropertyType propertyType, object value, bool preview)
@@ -99,6 +105,14 @@ namespace Our.Umbraco.Mortar.ValueConverters
 			int nodeId;
 			return int.TryParse(value.ToString(), out nodeId) 
 				? Umbraco.TypedContent(nodeId) 
+				: null;
+		}
+
+		protected IPublishedContent ConvertDataToSource_Media(PublishedPropertyType propertyType, object value, bool preview)
+		{
+			int nodeId;
+			return int.TryParse(value.ToString(), out nodeId)
+				? Umbraco.TypedMedia(nodeId)
 				: null;
 		}
 
