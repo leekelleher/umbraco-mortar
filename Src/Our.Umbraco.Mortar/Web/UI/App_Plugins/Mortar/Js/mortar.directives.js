@@ -715,6 +715,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
 
                 // Setup model
                 $scope.node = {
+                    name: "...",
                     url: ""
                 };
 
@@ -731,6 +732,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                     onlyImages: true,
                     callback: function (data) {
                         $scope.model.value = data.id;
+                        $scope.node.name = data.name;
                         $scope.node.url = data.image;
                     }
                 };
@@ -739,7 +741,16 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                     if ($scope.model.value && $scope.model.value != "-1") {
                         // Grab the node from the id
                         entityResource.getById($scope.model.value, "Media").then(function (data) {
-                            $scope.node.url = data.metaData.UmbracoFile;
+                            $scope.node.name = data.name;
+
+                            // Only set the URL if it's an image
+                            var url = data.metaData.UmbracoFile;
+                            if (url) {
+                                var regex = /\.(jpg|jpeg|png|gif)$/gi;
+                                if (regex.test(url)) {
+                                    $scope.node.url = url;
+                                }
+                            }
                         });
                     } else if ($scope.model.value && $scope.model.value == "-1") {
                         // Set model value back to empty
@@ -761,7 +772,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                     "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-picture' /></a>" +
                     "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
                     "</div>" +
-                    "<div class='mortar-item__label' ng-hide='node.url'>...</div>" +
+                    "<div class='mortar-item__label' ng-hide='node.url'>{{node.name}}</div>" +
                     "<img class='mortar-item__image' ng-show='node.url' ng-src='{{node.url}}' />" +
                     "</div>",
                 scope: {
