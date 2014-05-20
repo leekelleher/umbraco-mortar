@@ -25,7 +25,7 @@ namespace Our.Umbraco.Mortar.Models
 		[JsonProperty("options")]
 		internal object RawOptions { get; set; }
 
-		// Only ever used in Razor views, so can be concidered readonly
+		// Only ever used in Razor views, so can be considered readonly
 		[JsonIgnore]
 		public IPublishedContent Options { get; internal set; }
 
