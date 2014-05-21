@@ -83,6 +83,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataResolvers\MortarDataResolver.cs" />
     <Compile Include="Helpers\MortarHelper.cs" />
     <Compile Include="JsonConverters\MortarItemConverter.cs" />
     <Compile Include="Models\DetachedPublishedContent.cs" />
