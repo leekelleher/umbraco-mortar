@@ -23,9 +23,11 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 	[PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/Mortar/Js/mortar.controllers.js")]
 	[PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/Mortar/Js/mortar.directives.js")]
 	[PropertyEditorAsset(ClientDependencyType.Css, "/App_Plugins/Mortar/Css/mortar.css")]
-	[PropertyEditor("Our.Umbraco.Mortar", "Mortar", "/App_Plugins/Mortar/Views/mortar.html", HideLabel = true, ValueType = "JSON")]
+	[PropertyEditor(MortarPropertyEditor.PropertyEditorAlias, "Mortar", "/App_Plugins/Mortar/Views/mortar.html", HideLabel = true, ValueType = "JSON")]
 	public class MortarPropertyEditor : PropertyEditor
 	{
+		public const string PropertyEditorAlias = "Our.Umbraco.Mortar";
+
 		private IDictionary<string, object> _defaultPreValues;
 		public override IDictionary<string, object> DefaultPreValues
 		{
