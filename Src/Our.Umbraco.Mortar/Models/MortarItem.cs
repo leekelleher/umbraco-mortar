@@ -16,7 +16,7 @@ namespace Our.Umbraco.Mortar.Models
 
 		internal IDictionary<string, string> AdditionalInfo { get; set; }
 
-		// Only ever used in Razor views, so can be concidered readonly
+		// Only ever used in Razor views, so can be considered readonly
 		[JsonIgnore]
 		public IPublishedContent Value { get; internal set; }
 	}
