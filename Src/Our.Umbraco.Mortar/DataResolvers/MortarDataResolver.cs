@@ -207,6 +207,12 @@ namespace Our.Umbraco.Mortar.DataResolvers
 
 			foreach (var propertyValue in propertyValues)
 			{
+				if (propertyValue.Key.InvariantEquals("name"))
+				{
+					propertyItemData.Add(propertyValue.Key, propertyValue.Value);
+					continue;
+				}
+
 				var propertyType = content.ContentType.GetPropertyType(propertyValue.Key);
 				if (propertyType == null)
 					continue;
