@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Our.Umbraco.Mortar.Models;
@@ -13,6 +16,7 @@ using Umbraco.Courier.Core.Enums;
 using Umbraco.Courier.Core.Helpers;
 using Umbraco.Courier.DataResolvers;
 using Umbraco.Courier.ItemProviders;
+using Umbraco.Web;
 
 namespace Our.Umbraco.Mortar.DataResolvers
 {
@@ -24,6 +28,21 @@ namespace Our.Umbraco.Mortar.DataResolvers
 			Packaging
 		}
 
+		public MortarDataResolver()
+		{
+			// HACK: Turns out that `PublishedProperty.GetDetached` requires `UmbracoContext.Current`,
+			// however `UmbracoContext.Current` is null during the extraction process.
+			// So it looks like we have no choice but to fake it.
+			// Hat-Tip: https://gist.github.com/sniffdk/7600822
+			if (UmbracoContext.Current == null)
+			{
+				if (HttpContext.Current == null)
+					HttpContext.Current = new HttpContext(new HttpRequest("", "http://tempuri.org", ""), new HttpResponse(new StringWriter()));
+
+				UmbracoContext.EnsureContext(new HttpContextWrapper(HttpContext.Current), ApplicationContext.Current, true);
+			}
+		}
+
 		public override string EditorAlias
 		{
 			get
@@ -32,31 +51,44 @@ namespace Our.Umbraco.Mortar.DataResolvers
 			}
 		}
 
-		public override void ExtractingDataType(DataType item)
-		{
-			base.ExtractingDataType(item);
-		}
-
 		public override void ExtractingProperty(Item item, ContentProperty propertyData)
 		{
-			base.ExtractingProperty(item, propertyData);
-		}
-
-		public override void PackagingDataType(DataType item)
-		{
-			base.PackagingDataType(item);
-
-			// AddDataTypeDependencies - get the DocTypeAliases and add them as dependencies
+			ResolvePropertyData(item, propertyData, Direction.Extracting);
 		}
 
 		public override void PackagingProperty(Item item, ContentProperty propertyData)
+		{
+			ResolvePropertyData(item, propertyData, Direction.Packaging);
+		}
+
+		private object ConvertIdentifier(object value, Item item, IdentifierReplaceDirection direction, Guid providerId)
+		{
+			if (value != null && !string.IsNullOrWhiteSpace(value.ToString()))
+			{
+				var guid = Dependencies.ConvertIdentifier(value.ToString(), direction);
+
+				if (direction == IdentifierReplaceDirection.FromNodeIdToGuid)
+					item.Dependencies.Add(guid, providerId);
+
+				return guid;
+			}
+
+			return value;
+		}
+
+		private PublishedPropertyType CreateFakePropertyType(int dataTypeId, string propertyEditorAlias)
+		{
+			return new PublishedPropertyType(null, new PropertyType(new DataTypeDefinition(-1, propertyEditorAlias) { Id = dataTypeId }));
+		}
+
+		private void ResolvePropertyData(Item item, ContentProperty propertyData, Direction direction)
 		{
 			if (propertyData == null || propertyData.Value == null)
 				return;
 
 			// just look at the amount of dancing around we have to do in order to fake a `PublishedPropertyType`?!
 			var dataTypeId = PersistenceManager.Default.GetNodeId(propertyData.DataType, NodeObjectTypes.DataType);
-			var fakePropertyType = this.CreateFakePropertyType(dataTypeId, this.EditorAlias);
+			var fakePropertyType = CreateFakePropertyType(dataTypeId, EditorAlias);
 
 			var converter = new MortarValueConverter();
 			var mortarValue = (MortarValue)converter.ConvertDataToSource(fakePropertyType, propertyData.Value, false);
@@ -71,133 +103,44 @@ namespace Our.Umbraco.Mortar.DataResolvers
 					foreach (var mortarRow in mortarBlock.Value)
 					{
 						if (mortarRow.Options != null)
-						{
-							// TODO: [LK] Process the row options
-						}
+							mortarRow.RawOptions = ResolveMultiplePropertyItemData(item, fakeItemProvider, mortarRow.Options, mortarRow.RawOptions, direction);
 
 						foreach (var mortarItem in mortarRow.Items)
 						{
 							switch (mortarItem.Type.ToUpperInvariant())
 							{
 								case "DOCTYPE":
-									// TODO: [LK] Process the DocType
-
+									// resolve the doctype alias/guid
 									if (mortarItem.AdditionalInfo.ContainsKey("docType"))
-										mortarItem.AdditionalInfo["docType"] = mortarItem.Value.DocumentTypeAlias;
-
-									// get the DocType schema (from Alias)
-									var contentType = mortarItem.Value.ContentType;
-
-									// make a dictionary from RawValue
-									var converted = new Dictionary<string, object>();
-									var propValues = ((JObject)mortarItem.RawValue).ToObject<Dictionary<string, object>>();
-
-									// loop the properties
-									foreach (var jProp in propValues)
 									{
-										var propType = contentType.GetPropertyType(jProp.Key);
-
-										if (jProp.Key == "name")
-										{
-											converted.Add("name", jProp.Value);
-											continue;
-										}
-
-										if (propType == null)
-											continue;
-
-										// create fake courier item
-										var fakeItem1 = new ContentPropertyData()
-										{
-											ItemId = item.ItemId,
-											Name = string.Format("{0} [{1}: Nested {2} ({3})]", new[] { item.Name, this.EditorAlias, propType.PropertyEditorAlias, propType.PropertyTypeAlias }),
-											Data = new List<ContentProperty>
-											{
-												new ContentProperty
-												{
-													Alias =  propType.PropertyTypeAlias,
-													DataType = PersistenceManager.Default.GetUniqueId(propType.DataTypeId, NodeObjectTypes.DataType),
-													PropertyEditorAlias = propType.PropertyEditorAlias,
-													Value = jProp.Value
-												}
-											}
-										};
-
-										// run the 'fake' item through Courier's data resolvers
-										ResolutionManager.Instance.PackagingItem(fakeItem1, fakeItemProvider);
-
-										// pass up the dependencies and resources
-										item.Dependencies.AddRange(fakeItem1.Dependencies);
-										item.Resources.AddRange(fakeItem1.Resources);
-
-										// add a dependency for the property's data-type
-										//propValues[jProp.Key] = fakeItem1.Data.FirstOrDefault().Value;
-										converted.Add(jProp.Key, fakeItem1.Data.FirstOrDefault().Value);
+										if (direction == Direction.Packaging)
+											mortarItem.AdditionalInfo["docType"] = mortarItem.Value.DocumentTypeAlias;
+										else if (direction == Direction.Extracting)
+											mortarItem.AdditionalInfo["docType"] = PersistenceManager.Default.GetUniqueId(mortarItem.Value.DocumentTypeId, NodeObjectTypes.DocumentType).ToString();
 									}
 
-									// store back to RawValue
-									mortarItem.RawValue = JObject.FromObject(converted);
+									// resolve the value's properties
+									mortarItem.RawValue = ResolveMultiplePropertyItemData(item, fakeItemProvider, mortarItem.Value, mortarItem.RawValue, direction);
 
 									break;
 
 								case "EMBED":
-									// we don't need Courier to process the embed code - it's just HTML
+									// we don't need Courier to process the embed code - it's pure HTML
 									break;
 
 								case "LINK":
-									// TODO: [LK] Process the Content Picker
-									if (mortarItem.RawValue != null && !string.IsNullOrWhiteSpace(mortarItem.RawValue.ToString()))
-									{
-										var documentGuid = Dependencies.ConvertIdentifier(mortarItem.RawValue.ToString(), IdentifierReplaceDirection.FromNodeIdToGuid);
-
-										item.Dependencies.Add(documentGuid, ProviderIDCollection.documentItemProviderGuid);
-
-										mortarItem.RawValue = documentGuid;
-									}
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, IdentifierReplaceDirection.FromNodeIdToGuid, ProviderIDCollection.documentItemProviderGuid);
 									break;
 
 								case "MEDIA":
-									if (mortarItem.RawValue != null && !string.IsNullOrWhiteSpace(mortarItem.RawValue.ToString()))
-									{
-										var mediaGuid = Dependencies.ConvertIdentifier(mortarItem.RawValue.ToString(), IdentifierReplaceDirection.FromNodeIdToGuid);
-
-										item.Dependencies.Add(mediaGuid, ProviderIDCollection.mediaItemProviderGuid);
-
-										mortarItem.RawValue = mediaGuid;
-									}
-
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, IdentifierReplaceDirection.FromNodeIdToGuid, ProviderIDCollection.mediaItemProviderGuid);
 									break;
 
 								case "RICHTEXT":
+									var property = mortarItem.Value.GetProperty("bodyText");
+									var propertyType = mortarItem.Value.ContentType.GetPropertyType(property.PropertyTypeAlias);
 
-									var bodyText = mortarItem.Value.GetProperty("bodyText");
-
-									// create a 'fake' item for Courier to process
-									var fakeItem2 = new ContentPropertyData()
-									{
-										ItemId = item.ItemId,
-										Name = string.Format("{0} [{1}: Nested {2} ({3})]", new[] { item.Name, this.EditorAlias, Constants.PropertyEditors.TinyMCEAlias, bodyText.PropertyTypeAlias }),
-										Data = new List<ContentProperty>
-										{
-											new ContentProperty
-											{
-												Alias = bodyText.PropertyTypeAlias,
-												//DataType = PersistenceManager.Default.GetUniqueId(property.DataTypeId, NodeObjectTypes.DataType),
-												PropertyEditorAlias = Constants.PropertyEditors.TinyMCEAlias,
-												Value = bodyText.DataValue
-											}
-										}
-									};
-
-									// run the 'fake' item through Courier's data resolvers
-									ResolutionManager.Instance.PackagingItem(fakeItem2, fakeItemProvider);
-
-									// pass up the dependencies and resources
-									item.Dependencies.AddRange(fakeItem2.Dependencies);
-									item.Resources.AddRange(fakeItem2.Resources);
-
-									// add a dependency for the property's data-type
-									mortarItem.RawValue = fakeItem2.Data.FirstOrDefault().Value;
+									mortarItem.RawValue = ResolvePropertyItemData(item, fakeItemProvider, propertyType, mortarItem.RawValue, Guid.Empty, direction);
 
 									break;
 
@@ -212,9 +155,70 @@ namespace Our.Umbraco.Mortar.DataResolvers
 			}
 		}
 
-		private PublishedPropertyType CreateFakePropertyType(int dataTypeId, string propertyEditorAlias)
+		private object ResolvePropertyItemData(Item item, PropertyItemProvider propertyItemProvider, PublishedPropertyType propertyType, object value, Guid dataTypeGuid, Direction direction = Direction.Packaging)
 		{
-			return new PublishedPropertyType(null, new PropertyType(new DataTypeDefinition(-1, propertyEditorAlias) { Id = dataTypeId }));
+			// create a 'fake' item for Courier to process
+			var fakeItem = new ContentPropertyData()
+			{
+				ItemId = item.ItemId,
+				Name = string.Format("{0} [{1}: Nested {2} ({3})]", item.Name, EditorAlias, propertyType.PropertyEditorAlias, propertyType.PropertyTypeAlias),
+				Data = new List<ContentProperty>
+				{
+					new ContentProperty
+					{
+						Alias = propertyType.PropertyTypeAlias,
+						DataType = dataTypeGuid,
+						PropertyEditorAlias = propertyType.PropertyEditorAlias,
+						Value = value
+					}
+				}
+			};
+
+			if (direction == Direction.Packaging)
+			{
+				// run the 'fake' item through Courier's data resolvers
+				ResolutionManager.Instance.PackagingItem(fakeItem, propertyItemProvider);
+
+				// pass up the dependencies
+				if (fakeItem.Dependencies != null && fakeItem.Dependencies.Count > 0)
+					item.Dependencies.AddRange(fakeItem.Dependencies);
+
+				// pass up the resources
+				if (fakeItem.Resources != null && fakeItem.Resources.Count > 0)
+					item.Resources.AddRange(fakeItem.Resources);
+			}
+			else if (direction == Direction.Extracting)
+			{
+				// run the 'fake' item through Courier's data resolvers
+				ResolutionManager.Instance.ExtractingItem(fakeItem, propertyItemProvider);
+			}
+
+			// return the resolved data from the 'fake' item
+			if (fakeItem.Data != null && fakeItem.Data.Any())
+				return fakeItem.Data.FirstOrDefault().Value;
+
+			return value;
+		}
+
+		private JObject ResolveMultiplePropertyItemData(Item item, PropertyItemProvider propertyItemProvider, IPublishedContent content, object rawValue, Direction direction = Direction.Packaging)
+		{
+			var propertyItemData = new Dictionary<string, object>();
+			var propertyValues = ((JObject)rawValue).ToObject<Dictionary<string, object>>();
+
+			foreach (var propertyValue in propertyValues)
+			{
+				var propertyType = content.ContentType.GetPropertyType(propertyValue.Key);
+				if (propertyType == null)
+					continue;
+
+				var dataTypeGuid = PersistenceManager.Default.GetUniqueId(propertyType.DataTypeId, NodeObjectTypes.DataType);
+
+				var value = ResolvePropertyItemData(item, propertyItemProvider, propertyType, propertyValue.Value, dataTypeGuid, direction);
+
+				propertyItemData.Add(propertyValue.Key, value);
+			}
+
+			return JObject.FromObject(propertyItemData);
 		}
 	}
 }
