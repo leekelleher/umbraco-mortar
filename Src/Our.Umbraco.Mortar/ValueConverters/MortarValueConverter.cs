@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Our.Umbraco.Mortar.Helpers;
 using Our.Umbraco.Mortar.Models;
 using Our.Umbraco.Mortar.Web.Extensions;
+using Our.Umbraco.Mortar.Web.PropertyEditors;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -26,7 +27,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 		public override bool IsConverter(PublishedPropertyType propertyType)
 		{
-			return propertyType.PropertyEditorAlias == "Our.Umbraco.Mortar";
+			return propertyType.PropertyEditorAlias.InvariantEquals(MortarPropertyEditor.PropertyEditorAlias);
 		}
 
 		public override object ConvertDataToSource(PublishedPropertyType propertyType, object source, bool preview)
