@@ -161,7 +161,7 @@ namespace Our.Umbraco.Mortar.DataResolvers
 			var fakeItem = new ContentPropertyData()
 			{
 				ItemId = item.ItemId,
-				Name = string.Format("{0} [{1}: Nested {2} ({3})]", item.Name, EditorAlias, propertyType.PropertyEditorAlias, propertyType.PropertyTypeAlias),
+				Name = string.Format("{0} [{1}: {2} ({3})]", item.Name, EditorAlias, propertyType.PropertyEditorAlias, propertyType.PropertyTypeAlias),
 				Data = new List<ContentProperty>
 				{
 					new ContentProperty
