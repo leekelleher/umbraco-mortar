@@ -710,6 +710,8 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
         "Our.Umbraco.Mortar.Resources.mortarResources",
         function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
 
+            var imgExtPattern = /\.(jpg|jpeg|png|gif)$/gi;
+
             var link = function ($scope, element, attrs, ctrl) {
 
                 // Setup model
@@ -732,7 +734,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                     callback: function (data) {
                         $scope.model.value = data.id;
                         $scope.node.name = data.name;
-                        $scope.node.url = data.image;
+                        $scope.node.url = data.image.replace(imgExtPattern, "_thumb.jpg");
                     }
                 };
 
@@ -745,9 +747,8 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                             // Only set the URL if it's an image
                             var url = data.metaData.UmbracoFile;
                             if (url) {
-                                var regex = /\.(jpg|jpeg|png|gif)$/gi;
-                                if (regex.test(url)) {
-                                    $scope.node.url = url;
+                                if (imgExtPattern.test(url)) {
+                                    $scope.node.url = url.replace(imgExtPattern, "_thumb.jpg");
                                 }
                             }
                         });
