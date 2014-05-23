@@ -61,16 +61,20 @@ namespace Our.Umbraco.Mortar.DataResolvers
 			ResolvePropertyData(item, propertyData, Direction.Packaging);
 		}
 
-		private object ConvertIdentifier(object value, Item item, IdentifierReplaceDirection direction, Guid providerId)
+		private object ConvertIdentifier(object value, Item item, Direction direction, Guid providerId)
 		{
 			if (value != null && !string.IsNullOrWhiteSpace(value.ToString()))
 			{
-				var guid = Dependencies.ConvertIdentifier(value.ToString(), direction);
-
-				if (direction == IdentifierReplaceDirection.FromNodeIdToGuid)
+				if (direction == Direction.Packaging)
+				{
+					var guid = Dependencies.ConvertIdentifier(value.ToString(), IdentifierReplaceDirection.FromNodeIdToGuid);
 					item.Dependencies.Add(guid, providerId);
-
-				return guid;
+					return guid;
+				}
+				else if (direction == Direction.Extracting)
+				{
+					return Dependencies.ConvertIdentifier(value.ToString(), IdentifierReplaceDirection.FromGuidToNodeId);
+				}
 			}
 
 			return value;
@@ -129,11 +133,11 @@ namespace Our.Umbraco.Mortar.DataResolvers
 									break;
 
 								case "LINK":
-									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, IdentifierReplaceDirection.FromNodeIdToGuid, ProviderIDCollection.documentItemProviderGuid);
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.documentItemProviderGuid);
 									break;
 
 								case "MEDIA":
-									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, IdentifierReplaceDirection.FromNodeIdToGuid, ProviderIDCollection.mediaItemProviderGuid);
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.mediaItemProviderGuid);
 									break;
 
 								case "RICHTEXT":
