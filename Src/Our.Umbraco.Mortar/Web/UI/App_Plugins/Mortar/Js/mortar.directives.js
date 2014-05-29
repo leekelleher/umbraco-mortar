@@ -1,8 +1,8 @@
 ﻿/* Directives */
 angular.module("umbraco.directives").directive('mortarLayout',
-    function($timeout, $compile, $routeParams, dialogService, notificationsService) {
+    function ($timeout, $compile, $routeParams, dialogService, notificationsService) {
 
-        var link = function($scope, element, attrs, ctrl) {
+        var link = function ($scope, element, attrs, ctrl) {
 
             // Setup scope
             $scope.model = $scope.model || {};
@@ -27,7 +27,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                 $scope.model.value[cellId].splice(index, 1);
             };
 
-            $scope.addRow = function(cellId, layout) {
+            $scope.addRow = function (cellId, layout) {
 
                 // See if we have a max items config
                 var maxItems = 0;
@@ -50,7 +50,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                     makeRowsSortable();
 
                 } else {
-                    
+
                     // Oops, too many items
                     notificationsService.error("Container already has the maximum number of items allowed.");
                 }
@@ -74,7 +74,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
             };
 
             // Setup sorting
-            var makeRowsSortable = function() {
+            var makeRowsSortable = function () {
 
                 $("#mortar-" + $scope.model.id + " .mortar-rows.ui-sortable").sortable("destroy");
                 $("#mortar-" + $scope.model.id + " .mortar-rows")
@@ -86,7 +86,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                             $scope.$broadcast("mortar_sorting");
                         },
                         stop: function (e, ui) {
-                            
+
                             $scope.$broadcast("mortar_sorted");
 
                             var cell = $(ui.item).closest("td[id]").attr("id");
@@ -106,7 +106,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                     });
 
             };
-            
+
             // Convert the template into an angular template
             var template = $("<div />").append($scope.model.config.gridLayout);
 
@@ -173,7 +173,7 @@ angular.module("umbraco.directives").directive('mortarRow',
         "Our.Umbraco.Mortar.Services.docTypeDialogService",
         function ($compile, docTypeDialogService) {
 
-            var link = function($scope, element, attrs, ctrl) {
+            var link = function ($scope, element, attrs, ctrl) {
 
                 $scope.model.options = $scope.model.options || {};
 
@@ -183,13 +183,12 @@ angular.module("umbraco.directives").directive('mortarRow',
 
                 $scope.showOptions = function () {
                     docTypeDialogService.open({
-                        scope: $scope,
                         requireName: false,
                         allowedDocTypes: [$scope.layoutConfig.rowOptionsDocType],
                         dialogData: {
                             value: $scope.model.options
                         },
-                        callback: function(data) {
+                        callback: function (data) {
                             $scope.model.options = data.value;
                         }
                     });
@@ -202,7 +201,7 @@ angular.module("umbraco.directives").directive('mortarRow',
                 };
 
                 $scope.hasValue = function (cellIndex) {
-                    var value =  $scope.model.items != undefined &&
+                    var value = $scope.model.items != undefined &&
                         $scope.model.items[cellIndex] != undefined &&
                         $scope.model.items[cellIndex] != null;
                     return value;
@@ -274,7 +273,7 @@ angular.module("umbraco.directives").directive('mortarRow',
                 }
             };
 
-    }
+        }
     ]);
 
 /* 
@@ -282,7 +281,7 @@ angular.module("umbraco.directives").directive('mortarRow',
  creation of the correct mortar item type
 */
 angular.module("umbraco.directives").directive('mortarItem',
-    function($compile, $routeParams, dialogService, notificationsService, entityResource) {
+    function ($compile, $routeParams, dialogService, notificationsService, entityResource) {
 
         var link = function ($scope, element, attrs, ctrl) {
 
@@ -336,7 +335,7 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
         "Our.Umbraco.Mortar.Resources.mortarResources",
         function ($q, $timeout, tinyMceService, assetsService, angularHelper, stylesheetResource, mortarResources) {
 
-            var guid = function() {
+            var guid = function () {
                 function _p8(s) {
                     var p = (Math.random().toString(16) + "000000000").substr(2, 8);
                     return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
@@ -428,11 +427,11 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
                         }
 
                         //queue rules loading
-                        angular.forEach(editorConfig.stylesheets, function(val, key) {
+                        angular.forEach(editorConfig.stylesheets, function (val, key) {
                             stylesheets.push("../css/" + val + ".css?" + new Date().getTime());
 
-                            await.push(stylesheetResource.getRulesByName(val).then(function(rules) {
-                                angular.forEach(rules, function(rule) {
+                            await.push(stylesheetResource.getRulesByName(val).then(function (rules) {
+                                angular.forEach(rules, function (rule) {
                                     var r = {};
                                     r.title = rule.name;
                                     if (rule.selector[0] == ".") {
@@ -494,10 +493,10 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
 
                                     // Hookup hover
                                     $(editor.editorContainer).find(".mce-toolbar-grp").hoverIntent({
-                                        over: function() {
+                                        over: function () {
                                             $(this).find(".mce-toolbar").slideDown("fast");
                                         },
-                                        out: function() {
+                                        out: function () {
                                             $(this).find(".mce-toolbar").slideUp("fast");
                                         },
                                         interval: 50,
@@ -633,7 +632,6 @@ angular.module("umbraco.directives").directive('mortarLinkItem',
                 };
 
                 var dialogConfig = {
-                    scope: $scope,
                     entityType: "Document",
                     section: "content",
                     treeAlias: "content",
@@ -712,8 +710,6 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
         "Our.Umbraco.Mortar.Resources.mortarResources",
         function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
 
-            var imgExtPattern = /\.(jpg|jpeg|png|gif)$/gi;
-
             var link = function ($scope, element, attrs, ctrl) {
 
                 // Setup model
@@ -731,12 +727,11 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                 };
 
                 var dialogConfig = {
-                    scope: $scope,
                     onlyImages: true,
                     callback: function (data) {
                         $scope.model.value = data.id;
                         $scope.node.name = data.name;
-                        $scope.node.url = data.image.replace(imgExtPattern, "_thumb.jpg");
+                        $scope.node.url = data.image + "?width=100&height=100";
                     }
                 };
 
@@ -747,11 +742,8 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                             $scope.node.name = data.name;
 
                             // Only set the URL if it's an image
-                            var url = data.metaData.UmbracoFile;
-                            if (url) {
-                                if (imgExtPattern.test(url)) {
-                                    $scope.node.url = url.replace(imgExtPattern, "_thumb.jpg");
-                                }
+                            if (typeof data.metaData.umbracoFile !== "undefined") {
+                                $scope.node.url = data.metaData.umbracoFile.Value + "?width=100&height=100";
                             }
                         });
                     } else if ($scope.model.value && $scope.model.value == "-1") {
@@ -809,7 +801,6 @@ angular.module("umbraco.directives").directive('mortarEmbedItem',
                 };
 
                 var dialogConfig = {
-                    scope: $scope,
                     callback: function (data) {
                         $scope.model.value = data;
                     }
@@ -852,16 +843,15 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
 
             var link = function ($scope, element, attrs, ctrl) {
 
-                $scope.configure = function ()
-                {
+                $scope.configure = function () {
                     docTypeDialogService.open({
-                        scope: $scope,
                         allowedDocTypes: $scope.layoutConfig.allowedDocTypes,
                         dialogData: {
                             docType: $scope.model.docType,
                             value: $scope.model.value
                         },
-                        callback: function(data) {
+                        callback: function (data) {
+                            console.log(data);
                             $scope.model.docType = data.docType;
                             $scope.model.value = data.value;
                         }
@@ -911,7 +901,7 @@ angular.module("umbraco.directives").directive('jsonTextarea', function () {
                     return angular.toJson(modelValue, true);
                 } catch (e) {
                     return modelValue;
-                } 
+                }
             });
             ctrl.$parsers.unshift(function (viewValue) {
                 try {

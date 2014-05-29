@@ -9,8 +9,6 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
 
         function ($scope, editorState, contentResource, contentTypeResource, mortarResources) {
 
-            // Probably not best practise to talk to parent scope directly, but hey...
-            $scope.model = $scope.$parent.$parent.model;
             $scope.dialogOptions = $scope.$parent.dialogOptions;
 
             $scope.docTypes = [];
