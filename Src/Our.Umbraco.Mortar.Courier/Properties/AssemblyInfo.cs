@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A set of tools to support Mortar with Umbraco Courier")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Umbrella Inc Ltd")]
-[assembly: AssemblyProduct("Our.Umbraco.Mortar.Courier")]
+[assembly: AssemblyProduct("Our.Umbraco.Mortar")]
 [assembly: AssemblyCopyright("Copyright \xa9 Lee Kelleher, Umbrella Inc Ltd 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
