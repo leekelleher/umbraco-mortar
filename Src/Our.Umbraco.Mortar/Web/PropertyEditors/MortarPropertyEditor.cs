@@ -163,29 +163,33 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 				// Loop through properties
 				var propValues = ((JObject)value);
 				var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
-				foreach (var propKey in propValueKeys)
+				if (contentType != null && contentType.PropertyTypes != null)
 				{
-					// Lookup the property type on the content type
-					var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
-
-					if (propType == null)
+					foreach (var propKey in propValueKeys)
 					{
-						if (propKey != "name")
+						// Lookup the property type on the content type
+						var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+
+						if (propType == null)
 						{
-							// Property missing so just delete the value
-							propValues[propKey] = null;
+							if (propKey != "name")
+							{
+								// Property missing so just delete the value
+								propValues[propKey] = null;
+							}
 						}
-					}
-					else
-					{
-						// Create a fake property using the property abd stored value
-						var prop = new Property(propType, propValues[propKey] == null ? null : propValues[propKey].ToString());
+						else
+						{
+							// Create a fake property using the property abd stored value
+							var prop = new Property(propType, propValues[propKey] == null ? null : propValues[propKey].ToString());
 
-						// Lookup the property editor
-						var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
+							// Lookup the property editor
+							var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
-						// Get the editor to do it's conversion, and store it back
-						propValues[propKey] = propEditor.ValueEditor.ConvertDbToString(prop, propType, ApplicationContext.Current.Services.DataTypeService);
+							// Get the editor to do it's conversion, and store it back
+							propValues[propKey] = propEditor.ValueEditor.ConvertDbToString(prop, propType,
+								ApplicationContext.Current.Services.DataTypeService);
+						}
 					}
 				}
 
@@ -284,33 +288,37 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 				var propValues = value as JObject;
 				if (propValues != null)
 				{
-					var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
-					foreach (var propKey in propValueKeys)
+					if (contentType != null && contentType.PropertyTypes != null)
 					{
-						// Lookup the property type on the content type
-						var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
-
-						if (propType == null)
+						var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
+						foreach (var propKey in propValueKeys)
 						{
-							if (propKey != "name")
+							// Lookup the property type on the content type
+							var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+
+							if (propType == null)
 							{
-								// Property missing so just remove the value
-								propValues[propKey] = null;
+								if (propKey != "name")
+								{
+									// Property missing so just remove the value
+									propValues[propKey] = null;
+								}
 							}
-						}
-						else
-						{
-							// Create a fake property using the property abd stored value
-							var prop = new Property(propType, propValues[propKey] == null ? null : propValues[propKey].ToString());
+							else
+							{
+								// Create a fake property using the property abd stored value
+								var prop = new Property(propType, propValues[propKey] == null ? null : propValues[propKey].ToString());
 
-							// Lookup the property editor
-							var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
+								// Lookup the property editor
+								var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
-							// Get the editor to do it's conversion
-							var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType, ApplicationContext.Current.Services.DataTypeService);
+								// Get the editor to do it's conversion
+								var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType,
+									ApplicationContext.Current.Services.DataTypeService);
 
-							// Store the value back
-							propValues[propKey] = (newValue == null) ? null : JToken.FromObject(newValue);
+								// Store the value back
+								propValues[propKey] = (newValue == null) ? null : JToken.FromObject(newValue);
+							}
 						}
 					}
 				}
@@ -399,35 +407,42 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 				// Loop through doc type properties
 				var propValues = ((JObject)value);
 				var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
-				foreach (var propKey in propValueKeys)
+				if (contentType != null && contentType.PropertyTypes != null)
 				{
-					// Fetch the current property type
-					var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
-
-					if (propType == null)
+					foreach (var propKey in propValueKeys)
 					{
-						if (propKey != "name")
+						// Fetch the current property type
+						var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+
+						if (propType == null)
 						{
-							// Property missing so just remove the value
-							propValues[propKey] = null;
+							if (propKey != "name")
+							{
+								// Property missing so just remove the value
+								propValues[propKey] = null;
+							}
 						}
-					}
-					else
-					{
-						// Fetch the property types prevalue
-						var propPreValues = ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId);
+						else
+						{
+							// Fetch the property types prevalue
+							var propPreValues =
+								ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(
+									propType.DataTypeDefinitionId);
 
-						// Lookup the property editor
-						var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
+							// Lookup the property editor
+							var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
-						// Create a fake content property data object
-						var contentPropData = new ContentPropertyData(propValues[propKey] == null ? null : propValues[propKey].ToString(), propPreValues, new Dictionary<string, object>());
+							// Create a fake content property data object
+							var contentPropData = new ContentPropertyData(
+								propValues[propKey] == null ? null : propValues[propKey].ToString(), propPreValues,
+								new Dictionary<string, object>());
 
-						// Get the property editor to do it's conversion
-						var newValue = propEditor.ValueEditor.ConvertEditorToDb(contentPropData, propValues[propKey]);
+							// Get the property editor to do it's conversion
+							var newValue = propEditor.ValueEditor.ConvertEditorToDb(contentPropData, propValues[propKey]);
 
-						// Store the value back
-						propValues[propKey] = (newValue == null) ? null : JToken.FromObject(newValue);
+							// Store the value back
+							propValues[propKey] = (newValue == null) ? null : JToken.FromObject(newValue);
+						}
 					}
 				}
 

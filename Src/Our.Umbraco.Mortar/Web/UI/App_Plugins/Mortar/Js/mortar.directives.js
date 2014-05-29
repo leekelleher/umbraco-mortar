@@ -536,7 +536,9 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
                                 tinyMceService.createInsertEmbeddedMedia(editor, $scope);
 
                                 //Create the insert link plugin
-                                tinyMceService.createLinkPicker(editor, $scope);
+                                if (typeof tinyMceService.createLinkPicker !== "undefined") {
+                                    tinyMceService.createLinkPicker(editor, $scope);
+                                }
 
                                 //Create the insert macro plugin
                                 tinyMceService.createInsertMacro(editor, $scope);
