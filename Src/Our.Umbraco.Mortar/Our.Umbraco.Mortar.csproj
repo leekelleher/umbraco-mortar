@@ -69,18 +69,6 @@
       <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\Umbraco.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Umbraco.Courier.Core">
-      <HintPath>..\..\Packages\Umbraco.Courier\Umbraco.Courier.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Umbraco.Courier.DataResolvers">
-      <HintPath>..\..\Packages\Umbraco.Courier\Umbraco.Courier.DataResolvers.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Umbraco.Courier.Providers">
-      <HintPath>..\..\Packages\Umbraco.Courier\Umbraco.Courier.Providers.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\MortarHelper.cs" />
