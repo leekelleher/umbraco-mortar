@@ -18,7 +18,7 @@ using Umbraco.Courier.DataResolvers;
 using Umbraco.Courier.ItemProviders;
 using Umbraco.Web;
 
-namespace Our.Umbraco.Mortar.DataResolvers
+namespace Our.Umbraco.Mortar.Courier.DataResolvers
 {
 	public class MortarDataResolver : PropertyDataResolverProvider
 	{
