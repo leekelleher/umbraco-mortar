@@ -26,7 +26,7 @@ namespace Our.Umbraco.Mortar.Web
 			foreach (var dataType in e.SavedEntities)
 			{
 				ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheItem(
-					"Our.Umbraco.Mortar.Web.Extensions.ContentTypeServiceExtensions.GetAliasById_" + dataType.Key);
+					string.Concat("Our.Umbraco.Mortar.Web.Extensions.ContentTypeServiceExtensions.GetAliasById_", dataType.Key));
 
 				ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheItem(
 					string.Concat("Our.Umbraco.Mortar.Helpers.MortarHelper.GetRowOptionsDocType_GetPreValuesCollectionByDataTypeId_", dataType.Id));
