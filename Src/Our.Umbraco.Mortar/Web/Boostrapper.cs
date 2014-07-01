@@ -8,15 +8,9 @@ using Umbraco.Core.Services;
 
 namespace Our.Umbraco.Mortar.Web
 {
-	public class Boostrapper : IApplicationEventHandler
+	public class Boostrapper : ApplicationEventHandler
 	{
-		public void OnApplicationInitialized(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
-		{ }
-
-		public void OnApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
-		{ }
-
-		public void OnApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
+		protected override void ApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
 		{
 			DataTypeService.Saved += ExpireMortarCache;
 		}
