@@ -14,8 +14,11 @@ namespace Our.Umbraco.Mortar.Helpers
 	{
 		public static string GetRowOptionsDocType(int dtdId, string cellId)
 		{
-			return GetRowOptionsDocType(ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(
-				dtdId), cellId);
+			var preValueCollection = (PreValueCollection)ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
+				string.Concat("Our.Umbraco.Mortar.Helpers.MortarHelper.GetRowOptionsDocType_GetPreValuesCollectionByDataTypeId_", dtdId),
+				() => ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(dtdId));
+
+			return GetRowOptionsDocType(preValueCollection, cellId);
 		}
 
 		public static string GetRowOptionsDocType(PreValueCollection preValueCollection, string cellId)
