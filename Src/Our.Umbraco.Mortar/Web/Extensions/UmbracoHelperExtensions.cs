@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Umbraco.Core;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
 
@@ -11,54 +12,66 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 {
 	internal static class UmbracoHelperExtensions
 	{
-		public static bool SurfaceControllerExists(this UmbracoHelper helper, string name, string actionName = "Index")
+		public static bool SurfaceControllerExists(this UmbracoHelper helper, string controllerName, string actionName = "Index")
 		{
-			// Setup dummy route data
-			var rd = new RouteData();
-			rd.DataTokens.Add("area", "umbraco");
-			rd.DataTokens.Add("umbraco", "true");
-
-			// Setup dummy request context
-			var rc = new RequestContext(
-				new HttpContextWrapper(HttpContext.Current),
-				rd);
-
-			// Get controller factory
-			var cf = ControllerBuilder.Current.GetControllerFactory();
-
-			// Try and create the controller
-			try
+			using (var timer = DisposableTimer.DebugDuration<UmbracoHelper>(string.Format("SurfaceControllerExists ({0}, {1})", controllerName, actionName)))
 			{
-				var ctrl = cf.CreateController(rc, name);
-				if (ctrl == null)
-					return false;
+				// Setup dummy route data
+				var rd = new RouteData();
+				rd.DataTokens.Add("area", "umbraco");
+				rd.DataTokens.Add("umbraco", "true");
 
-				var ctrlInstance = ctrl as SurfaceController;
-				if (ctrlInstance == null)
-					return false;
+				// Setup dummy request context
+				var rc = new RequestContext(
+					new HttpContextWrapper(HttpContext.Current),
+					rd);
 
-				foreach (var method in ctrlInstance.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
-					.Where(x => typeof(ActionResult).IsAssignableFrom(x.ReturnType)))
+				// Get controller factory
+				var cf = ControllerBuilder.Current.GetControllerFactory();
+
+				// Try and create the controller
+				try
 				{
-					if (method.Name == actionName)
+					var ctrl = cf.CreateController(rc, controllerName);
+					if (ctrl == null)
+						return false;
+
+					var ctrlInstance = ctrl as SurfaceController;
+					if (ctrlInstance == null)
+						return false;
+
+					foreach (var method in ctrlInstance.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
+						.Where(x => typeof(ActionResult).IsAssignableFrom(x.ReturnType)))
 					{
-						return true;
+						if (method.Name == actionName)
+						{
+							return true;
+						}
+
+						var attr = method.GetCustomAttribute<ActionNameAttribute>();
+						if (attr != null && attr.Name == actionName)
+						{
+							return true;
+						}
 					}
 
-					var attr = method.GetCustomAttribute<ActionNameAttribute>();
-					if (attr != null && attr.Name == actionName)
-					{
-						return true;
-					}
+					return false;
 				}
+				catch (Exception ex)
+				{
+					return false;
+				}
+			}
+		}
 
-				return false;
-			}
-			catch (Exception ex)
-			{
-				return false;
-			}
+		public static bool SurfaceControllerExists(this UmbracoHelper helper, string name, string actionName = "Index", bool cacheResult = true)
+		{
+			if (!cacheResult)
+				return SurfaceControllerExists(helper, name, actionName);
+
+			return (bool)ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
+				string.Join("_", new[] { "Our.Umbraco.Mortar.Web.Extensions.UmbracoHelperExtensions.SurfaceControllerExists", name, actionName }),
+				() => SurfaceControllerExists(helper, name, actionName));
 		}
 	}
 }
-

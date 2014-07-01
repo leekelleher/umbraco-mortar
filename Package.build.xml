@@ -20,7 +20,7 @@
 	****************************************
   -->
   <PropertyGroup>
-	  <PackageVersion>0.1.1</PackageVersion>
+    <PackageVersion>0.2.2</PackageVersion>
     <BuildConfiguration>Debug</BuildConfiguration>
     <ProjectName>Our.Umbraco.Mortar</ProjectName>
   </PropertyGroup>

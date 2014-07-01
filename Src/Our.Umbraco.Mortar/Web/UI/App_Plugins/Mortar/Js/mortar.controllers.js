@@ -9,8 +9,6 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
 
         function ($scope, editorState, contentResource, contentTypeResource, mortarResources) {
 
-            // Probably not best practise to talk to parent scope directly, but hey...
-            $scope.model = $scope.$parent.$parent.model;
             $scope.dialogOptions = $scope.$parent.dialogOptions;
 
             $scope.docTypes = [];
@@ -27,7 +25,7 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
 
             $scope.selectDocType = function () {
                 $scope.dialogMode = "edit";
-                $scope.model.docType = $scope.selectedDocType.alias; // Maybe alias?
+                $scope.dialogData.docType = $scope.selectedDocType.guid;
                 loadNode();
             };
 
@@ -46,49 +44,55 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
                             }
                         }
                     }
-                    $scope.model.value = value;
+                    $scope.dialogData.value = value;
                 } else {
-                    $scope.model.value = null;
+                    $scope.dialogData.value = null;
                 }
 
                 $scope.submit($scope.dialogData);
             };
 
             function loadNode() {
-                contentResource.getScaffold(-20, $scope.model.docType).then(function (data) {
-                    // Remove the last tab
-                    data.tabs.pop();
+                mortarResources.getContentAliasByGuid($scope.dialogData.docType).then(function (data1) {
+                    contentResource.getScaffold(-20, data1.alias).then(function (data) {
+                        // Remove the last tab
+                        data.tabs.pop();
 
-                    // Merge current value
-                    if ($scope.model.value) {
-                        $scope.nameProperty.value = $scope.model.value.name;
-                        for (var t = 0; t < data.tabs.length; t++) {
-                            var tab = data.tabs[t];
-                            for (var p = 0; p < tab.properties.length; p++) {
-                                var prop = tab.properties[p];
-                                if ($scope.model.value[prop.alias]) {
-                                    prop.value = $scope.model.value[prop.alias];
+                        // Merge current value
+                        if ($scope.dialogData.value) {
+                            $scope.nameProperty.value = $scope.dialogData.value.name;
+                            for (var t = 0; t < data.tabs.length; t++) {
+                                var tab = data.tabs[t];
+                                for (var p = 0; p < tab.properties.length; p++) {
+                                    var prop = tab.properties[p];
+                                    if ($scope.dialogData.value[prop.alias]) {
+                                        prop.value = $scope.dialogData.value[prop.alias];
+                                    }
                                 }
                             }
-                        }
-                    };
+                        };
 
-                    // Assign the model to scope
-                    $scope.node = data;
+                        // Assign the model to scope
+                        $scope.node = data;
 
-                    editorState.set($scope.node);
+                        editorState.set($scope.node);
+                    });
                 });
             };
 
-
-            if ($scope.model.docType) {
+            if ($scope.dialogData.docType) {
                 $scope.dialogMode = "edit";
                 loadNode();
             } else {
                 $scope.dialogMode = "selectDocType";
                 // No data type, so load a list to choose from
-                mortarResources.getContentTypes($scope.dialogOptions.allowedDoctypes).then(function (docTypes) {
+                mortarResources.getContentTypes($scope.dialogOptions.allowedDocTypes).then(function (docTypes) {
                     $scope.docTypes = docTypes;
+                    if ($scope.docTypes.length == 1) {
+                        $scope.dialogData.docType = $scope.docTypes[0].guid;
+                        $scope.dialogMode = "edit";
+                        loadNode();
+                    }
                 });
             }
 

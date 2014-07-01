@@ -27,21 +27,26 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 		}
 
 		public static HtmlString RenderMortarItem(this HtmlHelper helper, MortarRow row,
-			MortarItem item, 
+			MortarItem item,
 			string viewPath = "",
 			string actionName = "")
 		{
+			if (item == null)
+				return new HtmlString(string.Empty);
+
 			if (!string.IsNullOrWhiteSpace(viewPath))
 				viewPath = viewPath.TrimEnd('/') + "/";
 
 			if (string.IsNullOrWhiteSpace(actionName))
 				actionName = item.Value.DocumentTypeAlias;
 
+			var controllerName = string.Concat(item.Value.DocumentTypeAlias, "Surface");
 			var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
-			if (umbracoHelper.SurfaceControllerExists(item.Value.DocumentTypeAlias + "Surface", actionName))
+
+			if (umbracoHelper.SurfaceControllerExists(controllerName, actionName, true))
 			{
-				return helper.Action(actionName, 
-					item.Value.DocumentTypeAlias + "Surface",
+				return helper.Action(actionName,
+					controllerName,
 					new
 					{
 						mortarModel = item.Value,
@@ -60,6 +65,4 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			return helper.RenderMortarItem(item.Row, item.Item, viewPath, actionName);
 		}
 	}
-
-	
 }

@@ -45,8 +45,8 @@ namespace Our.Umbraco.Mortar.JsonConverters
 			{
 				var jObj = new JObject
 				{
-					{"type", item.Type}, 
-					{"value", JToken.FromObject(item.RawValue) }
+					{ "type", item.Type },
+					{ "value", JToken.FromObject(item.RawValue) }
 				};
 
 				foreach (var key in item.AdditionalInfo.Keys)

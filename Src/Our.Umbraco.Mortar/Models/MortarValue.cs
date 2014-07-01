@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Our.Umbraco.Mortar.Models
 {
@@ -32,5 +34,8 @@ namespace Our.Umbraco.Mortar.Models
 		public MortarValue(SerializationInfo serializationInfo, StreamingContext streamingContext)
 			: base(serializationInfo, streamingContext)
 		{ }
+
+		//[JsonProperty("dtdGuid")]
+		//public Guid DtdGuid { get; set; }
 	}
 }

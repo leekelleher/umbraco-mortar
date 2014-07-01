@@ -12,7 +12,9 @@ namespace Our.Umbraco.Mortar.Web.ViewModels
 		}
 
 		public int Index { get; private set; }
+
 		public MortarRow Row { get; private set; }
+
 		public MortarItem Item { get; private set; }
 
 		public int Width

@@ -1,8 +1,8 @@
 ﻿/* Directives */
 angular.module("umbraco.directives").directive('mortarLayout',
-    function($timeout, $compile, $routeParams, dialogService, notificationsService) {
+    function ($timeout, $compile, $routeParams, dialogService, notificationsService) {
 
-        var link = function($scope, element, attrs, ctrl) {
+        var link = function ($scope, element, attrs, ctrl) {
 
             // Setup scope
             $scope.model = $scope.model || {};
@@ -21,11 +21,13 @@ angular.module("umbraco.directives").directive('mortarLayout',
                 }
             }
 
+            //console.log($scope.model);
+
             $scope.removeRow = function (cellId, index) {
                 $scope.model.value[cellId].splice(index, 1);
             };
 
-            $scope.addRow = function(cellId, layout) {
+            $scope.addRow = function (cellId, layout) {
 
                 // See if we have a max items config
                 var maxItems = 0;
@@ -48,7 +50,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                     makeRowsSortable();
 
                 } else {
-                    
+
                     // Oops, too many items
                     notificationsService.error("Container already has the maximum number of items allowed.");
                 }
@@ -72,7 +74,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
             };
 
             // Setup sorting
-            var makeRowsSortable = function() {
+            var makeRowsSortable = function () {
 
                 $("#mortar-" + $scope.model.id + " .mortar-rows.ui-sortable").sortable("destroy");
                 $("#mortar-" + $scope.model.id + " .mortar-rows")
@@ -84,7 +86,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                             $scope.$broadcast("mortar_sorting");
                         },
                         stop: function (e, ui) {
-                            
+
                             $scope.$broadcast("mortar_sorted");
 
                             var cell = $(ui.item).closest("td[id]").attr("id");
@@ -104,7 +106,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                     });
 
             };
-            
+
             // Convert the template into an angular template
             var template = $("<div />").append($scope.model.config.gridLayout);
 
@@ -166,88 +168,120 @@ angular.module("umbraco.directives").directive('mortarLayout',
     });
 
 angular.module("umbraco.directives").directive('mortarRow',
-    function($compile, $routeParams, dialogService, notificationsService, entityResource) {
+    [
+        "$compile",
+        "Our.Umbraco.Mortar.Services.docTypeDialogService",
+        function ($compile, docTypeDialogService) {
 
-        var link = function($scope, element, attrs, ctrl) {
+            var link = function ($scope, element, attrs, ctrl) {
 
-            $scope.hasValue = function (cellIndex) {
-                var value =  $scope.model.items != undefined &&
-                    $scope.model.items[cellIndex] != undefined &&
-                    $scope.model.items[cellIndex] != null;
-                return value;
-            };
+                $scope.model.options = $scope.model.options || {};
 
-            $scope.setCellType = function (cellIndex, type) {
-                $scope.model.items = $scope.model.items || new Array($scope.model.layout.split(',').length);
-                $scope.model.items[cellIndex] = {
-                    type: type,
-                    value: "-1" // We set to -1 so that directives know they are being created as a result of a click, and can peform specific init code
+                $scope.canShowOptions = function () {
+                    return "rowOptionsDocType" in $scope.layoutConfig && $scope.layoutConfig.rowOptionsDocType;
                 };
+
+                $scope.showOptions = function () {
+                    docTypeDialogService.open({
+                        requireName: false,
+                        allowedDocTypes: [$scope.layoutConfig.rowOptionsDocType],
+                        dialogData: {
+                            value: $scope.model.options
+                        },
+                        callback: function (data) {
+                            $scope.model.options = data.value;
+                        }
+                    });
+                };
+
+                $scope.isAllowed = function (contentType) {
+                    return !$scope.layoutConfig.allowedContentTypes || $.grep($scope.layoutConfig.allowedContentTypes, function (itm, idx) {
+                        return itm.toLowerCase() == contentType.toLowerCase();
+                    }).length > 0;
+                };
+
+                $scope.hasValue = function (cellIndex) {
+                    var value = $scope.model.items != undefined &&
+                        $scope.model.items[cellIndex] != undefined &&
+                        $scope.model.items[cellIndex] != null;
+                    return value;
+                };
+
+                $scope.setCellType = function (cellIndex, type) {
+                    $scope.model.items = $scope.model.items || new Array($scope.model.layout.split(',').length);
+                    $scope.model.items[cellIndex] = {
+                        type: type,
+                        value: "-1" // We set to -1 so that directives know they are being created as a result of a click, and can peform specific init code
+                    };
+                };
+
+                var rowLayout = $scope.model.layout.split(',');
+
+                // Convert the template into an angular template
+                var template = $("<div />");
+
+                // Create the toolbar
+                template.append($("<div class='mortar-row__button-bar mortar-button-bar mortar-button-bar--vertical mortar-button-bar--tl'>" +
+                    "<a href='#' ng-click=\"$parent.removeRow(cellId, $parent.$index)\" prevent-default><i class='icon-delete' /></a>" +
+                    "<a href='#' class='mortar-row__options' ng-click=\"showOptions()\" ng-show='canShowOptions()' prevent-default><i class='icon-settings' /></a>" +
+                    "<a href='#' class='mortar-row__sort' ng-show='$parent.model.value[cellId].length > 1' prevent-default><i class='icon-list' /></a>" +
+                    "</div>"));
+
+                // Create the table
+                var tbl = $("<table />");
+                var tr = $("<tr />");
+                for (var j = 0; j < rowLayout.length; j++) {
+                    tr.append($("<td width='" + rowLayout[j] + "%'>" +
+                        "<div class='mortar-row__cell'>" +
+                        "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr' ng-hide=\"hasValue(" + j + ")\">" +
+                        "<a href='#' ng-click=\"setCellType('" + j + "','richtext')\" ng-show=\"isAllowed('richtext')\" prevent-default><i class='icon-edit' /></a>" +
+                        "<a href='#' ng-click=\"setCellType('" + j + "','link')\" ng-show=\"isAllowed('link')\" prevent-default><i class='icon-link' /></a>" +
+                        "<a href='#' ng-click=\"setCellType('" + j + "','media')\" ng-show=\"isAllowed('media')\" prevent-default><i class='icon-picture' /></a>" +
+                        "<a href='#' ng-click=\"setCellType('" + j + "','embed')\" ng-show=\"isAllowed('embed')\" prevent-default><i class='icon-display' /></a>" +
+                        "<a href='#' ng-click=\"setCellType('" + j + "','docType')\" ng-show=\"isAllowed('docType')\" prevent-default><i class='icon-code' /></a>" +
+                        "</div>" +
+                        "<div class='mortar-row__cell-spacer' ng-hide=\"hasValue(" + j + ")\" />" +
+                        "<mortar-item model='model.items[" + j + "]' layout-config='layoutConfig' />" +
+                        "</div>" +
+                        "</td>"));
+                }
+                tbl.append(tr);
+                template.append(tbl);
+
+                // Compile the template
+                var templateEl = angular.element(template.html());
+                var compiled = $compile(templateEl);
+
+                // Attach the HTML
+                element.append(templateEl);
+
+                // Set template
+                compiled($scope);
+
             };
 
-            var rowLayout = $scope.model.layout.split(',');
+            return {
+                restrict: "E",
+                replace: true,
+                transclude: true,
+                template: "<div class='mortar-rows__item mortar-row' />",
+                link: link,
+                scope: {
+                    model: '=',
+                    cellId: '@',
+                    layoutConfig: '=',
+                }
+            };
 
-            // Convert the template into an angular template
-            var template = $("<div />");
-
-            // Create the toolbar
-            template.append($("<div class='mortar-row__button-bar mortar-button-bar mortar-button-bar--vertical mortar-button-bar--tl'>" +
-                "<a href='#' ng-click=\"$parent.removeRow(cellId, $parent.$index)\" prevent-default><i class='icon-delete' /></a>" +
-                "<a href='#' class='mortar-row__sort' ng-show='$parent.model.value[cellId].length > 1' prevent-default><i class='icon-list' /></a>" +
-                "</div>"));
-
-            // Create the table
-            var tbl = $("<table />");
-            var tr = $("<tr />");
-            for (var j = 0; j < rowLayout.length; j++) {
-                tr.append($("<td width='" + rowLayout[j] + "%'>" +
-                    "<div class='mortar-row__cell'>" +
-                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr' ng-hide=\"hasValue(" + j + ")\">" +
-                    "<a href='#' ng-click=\"setCellType('" + j + "','richtext')\" prevent-default><i class='icon-edit' /></a>" +
-                    "<a href='#' ng-click=\"setCellType('" + j + "','link')\" prevent-default><i class='icon-link' /></a>" +
-                    "<a href='#' ng-click=\"setCellType('" + j + "','doctype')\" prevent-default><i class='icon-code' /></a>" +
-                    "</div>" +
-                    "<div class='mortar-row__cell-spacer' ng-hide=\"hasValue(" + j + ")\" />" +
-                    "<mortar-item model='model.items[" + j + "]' layout-config='layoutConfig' />" +
-                    "</div>" +
-                    "</td>"));
-            }
-            tbl.append(tr);
-            template.append(tbl);
-
-            // Compile the template
-            var templateEl = angular.element(template.html());
-            var compiled = $compile(templateEl);
-
-            // Attach the HTML
-            element.append(templateEl);
-
-            // Set template
-            compiled($scope);
-
-        };
-
-        return {
-            restrict: "E",
-            replace: true,
-            transclude: true,
-            template: "<div class='mortar-rows__item mortar-row' />",
-            link: link,
-            scope: {
-                model: '=',
-                cellId: '@',
-                layoutConfig: '=',
-            }
-        };
-
-    });
+        }
+    ]);
 
 /* 
  The role of the mortarItem is to delegate the
  creation of the correct mortar item type
 */
 angular.module("umbraco.directives").directive('mortarItem',
-    function($compile, $routeParams, dialogService, notificationsService, entityResource) {
+    function ($compile, $routeParams, dialogService, notificationsService, entityResource) {
 
         var link = function ($scope, element, attrs, ctrl) {
 
@@ -258,7 +292,18 @@ angular.module("umbraco.directives").directive('mortarItem',
 
                 // Add new item
                 if (newValue !== undefined && newValue !== null) {
-                    var el = $compile("<mortar-" + newValue.type + "-item model='model' layout-config='layoutConfig' />")($scope);
+
+                    // Temporary fix because we renamed 'doctype' to 'docType'
+                    if (newValue.type == "doctype" || newValue.type == "doc-type")
+                        newValue.type = "docType";
+
+                    // Convert pascal case to hyphenated string
+                    var name = newValue.type.replace(/[a-z][A-Z]/g, function (str, offset) {
+                        return str[0] + '-' + str[1].toLowerCase();
+                    });
+
+                    // Render the item
+                    var el = $compile("<mortar-" + name + "-item model='model' layout-config='layoutConfig' />")($scope);
                     element.append(el);
                 }
 
@@ -279,101 +324,6 @@ angular.module("umbraco.directives").directive('mortarItem',
 
     });
 
-angular.module("umbraco.directives").directive('mortarLinkItem',
-    [
-        "$compile",
-        "$routeParams",
-        "dialogService",
-        "notificationsService",
-        "entityResource",
-        "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
-
-            var link = function ($scope, element, attrs, ctrl) {
-
-                // Setup model
-                $scope.node = {
-                    name: "..."
-                };
-
-                $scope.configure = function () {
-                    dialogService.treePicker(dialogConfig);
-                };
-
-                $scope.remove = function() {
-                    $scope.model = null;
-                };
-
-                var dialogConfig = {
-                    scope: $scope,
-                    entityType: "Document",
-                    section: "content",
-                    treeAlias: "content",
-                    multiPicker: false,
-                    callback: function (data) {
-                        $scope.model.value = data.id;
-                        $scope.node = data;
-                    }
-                };
-
-                function init() {
-                    if ($scope.model.value && $scope.model.value != "-1") {
-                        // Grab the node from the id
-                        entityResource.getById($scope.model.value, "Document").then(function (data) {
-                            $scope.node = data;
-                        });
-                    } else if ($scope.model.value && $scope.model.value == "-1") {
-                        // Set model value back to empty
-                        $scope.model.value = "";
-                        // Show the content dialog
-                        $scope.configure();
-                    }
-                }
-
-                if ($scope.layoutConfig && "pickerDtdId" in $scope.layoutConfig) {
-                    mortarResources.getDataTypePreValues($scope.layoutConfig.pickerDtdId).then(function(pickerConfig) {
-                        // We only realy want to know where the picker should start
-                        if (pickerConfig.startNode.type == "content") {
-                            if (pickerConfig.startNode.query) {
-                                var rootId = $routeParams.id;
-                                entityResource.getByQuery(pickerConfig.startNode.query, rootId, "Document").then(function (ent) {
-                                    dialogConfig.startNodeId = ent.id;
-                                    init();
-                                });
-                            } else {
-                                dialogConfig.startNodeId = pickerConfig.startNode.id;
-                                init();
-                            }
-                        } else {
-                            init();
-                        }
-                    });
-                } else {
-                    init();
-                }
-
-            };
-
-            return {
-                restrict: "E",
-                replace: true,
-                template: "<div class='mortar-item--link mortar-item--vcenter'>" +
-                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
-                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-link' /></a>" +
-                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
-                    "</div>" +
-                    "<div class='mortar-item__label'>{{node.name}}</div>" +
-                    "</div>",
-                scope: {
-                    model: '=',
-                    layoutConfig: '='
-                },
-                link: link
-            };
-
-        }
-    ]);
-
 angular.module("umbraco.directives").directive('mortarRichtextItem',
     [
         "$q",
@@ -385,7 +335,7 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
         "Our.Umbraco.Mortar.Resources.mortarResources",
         function ($q, $timeout, tinyMceService, assetsService, angularHelper, stylesheetResource, mortarResources) {
 
-            var guid = function() {
+            var guid = function () {
                 function _p8(s) {
                     var p = (Math.random().toString(16) + "000000000").substr(2, 8);
                     return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
@@ -477,11 +427,11 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
                         }
 
                         //queue rules loading
-                        angular.forEach(editorConfig.stylesheets, function(val, key) {
+                        angular.forEach(editorConfig.stylesheets, function (val, key) {
                             stylesheets.push("../css/" + val + ".css?" + new Date().getTime());
 
-                            await.push(stylesheetResource.getRulesByName(val).then(function(rules) {
-                                angular.forEach(rules, function(rule) {
+                            await.push(stylesheetResource.getRulesByName(val).then(function (rules) {
+                                angular.forEach(rules, function (rule) {
                                     var r = {};
                                     r.title = rule.name;
                                     if (rule.selector[0] == ".") {
@@ -543,10 +493,10 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
 
                                     // Hookup hover
                                     $(editor.editorContainer).find(".mce-toolbar-grp").hoverIntent({
-                                        over: function() {
+                                        over: function () {
                                             $(this).find(".mce-toolbar").slideDown("fast");
                                         },
-                                        out: function() {
+                                        out: function () {
                                             $(this).find(".mce-toolbar").slideUp("fast");
                                         },
                                         interval: 50,
@@ -585,7 +535,9 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
                                 tinyMceService.createInsertEmbeddedMedia(editor, $scope);
 
                                 //Create the insert link plugin
-                                tinyMceService.createLinkPicker(editor, $scope);
+                                if (typeof tinyMceService.createLinkPicker !== "undefined") {
+                                    tinyMceService.createLinkPicker(editor, $scope);
+                                }
 
                                 //Create the insert macro plugin
                                 tinyMceService.createInsertMacro(editor, $scope);
@@ -652,64 +604,292 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
             };
 
         }
-]);
+    ]);
 
-angular.module("umbraco.directives").directive('mortarDoctypeItem',
-    function ($compile, $routeParams, dialogService, editorState) {
+angular.module("umbraco.directives").directive('mortarLinkItem',
+    [
+        "$compile",
+        "$routeParams",
+        "dialogService",
+        "notificationsService",
+        "entityResource",
+        "Our.Umbraco.Mortar.Resources.mortarResources",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
 
-        var link = function ($scope, element, attrs, ctrl) {
+            var link = function ($scope, element, attrs, ctrl) {
 
-            $scope.configure = function ()
-            {
-                var currentEditorState = editorState.current;
-                var callback = function () {
-                    // We create a new editor state in the dialog,
-                    // so be sure to set the previous one back 
-                    // when we are done.
-                    editorState.set(currentEditorState);
+                // Setup model
+                $scope.node = {
+                    name: "..."
                 };
 
-                dialogService.open({
-                    template: "/App_Plugins/Mortar/Views/mortar.docTypeDialog.html",
-                    scope: $scope,
-                    show: true,
-                    allowedDoctypes: $scope.layoutConfig.allowedDoctypes,
-                    callback: callback,
-                    closeCallback: callback
-                });
+                $scope.configure = function () {
+                    dialogService.treePicker(dialogConfig);
+                };
+
+                $scope.remove = function () {
+                    $scope.model = null;
+                };
+
+                var dialogConfig = {
+                    entityType: "Document",
+                    section: "content",
+                    treeAlias: "content",
+                    multiPicker: false,
+                    callback: function (data) {
+                        $scope.model.value = data.id;
+                        $scope.node = data;
+                    }
+                };
+
+                function init() {
+                    if ($scope.model.value && $scope.model.value != "-1") {
+                        // Grab the node from the id
+                        entityResource.getById($scope.model.value, "Document").then(function (data) {
+                            $scope.node = data;
+                        });
+                    } else if ($scope.model.value && $scope.model.value == "-1") {
+                        // Set model value back to empty
+                        $scope.model.value = "";
+                        // Show the content dialog
+                        $scope.configure();
+                    }
+                }
+
+                if ($scope.layoutConfig && "pickerDtdId" in $scope.layoutConfig) {
+                    mortarResources.getDataTypePreValues($scope.layoutConfig.pickerDtdId).then(function (pickerConfig) {
+                        // We only realy want to know where the picker should start
+                        if (pickerConfig.startNode.type == "content") {
+                            if (pickerConfig.startNode.query) {
+                                var rootId = $routeParams.id;
+                                entityResource.getByQuery(pickerConfig.startNode.query, rootId, "Document").then(function (ent) {
+                                    dialogConfig.startNodeId = ent.id;
+                                    init();
+                                });
+                            } else {
+                                dialogConfig.startNodeId = pickerConfig.startNode.id;
+                                init();
+                            }
+                        } else {
+                            init();
+                        }
+                    });
+                } else {
+                    init();
+                }
+
             };
 
-            $scope.remove = function () {
-                $scope.model = null;
+            return {
+                restrict: "E",
+                replace: true,
+                template: "<div class='mortar-item--link mortar-item--vcenter'>" +
+                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
+                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-link' /></a>" +
+                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
+                    "</div>" +
+                    "<div class='mortar-item__label'>{{node.name}}</div>" +
+                    "</div>",
+                scope: {
+                    model: '=',
+                    layoutConfig: '='
+                },
+                link: link
             };
 
-            if ($scope.model.value && $scope.model.value == "-1") {
-                // Set model value back to empty
-                $scope.model.value = "";
-                // Show the content dialog
-                $scope.configure();
-            }
+        }
+    ]);
 
-        };
+angular.module("umbraco.directives").directive('mortarMediaItem',
+    [
+        "$compile",
+        "$routeParams",
+        "dialogService",
+        "notificationsService",
+        "entityResource",
+        "Our.Umbraco.Mortar.Resources.mortarResources",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
 
-        return {
-            restrict: "E",
-            replace: true,
-            template: "<div class='mortar-item--link mortar-item--vcenter'>" +
-                "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
-                "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-code' /></a>" +
-                "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
-                "</div>" +
-                "<div class='mortar-item__label'>{{model.value['name']}}</div>" +
-                "</div>",
-            scope: {
-                model: '=',
-                layoutConfig: '='
-            },
-            link: link
-        };
+            var link = function ($scope, element, attrs, ctrl) {
 
-    });
+                // Setup model
+                $scope.node = {
+                    name: "...",
+                    url: ""
+                };
+
+                $scope.configure = function () {
+                    dialogService.mediaPicker(dialogConfig);
+                };
+
+                $scope.remove = function () {
+                    $scope.model = null;
+                };
+
+                var dialogConfig = {
+                    onlyImages: true,
+                    callback: function (data) {
+                        $scope.model.value = data.id;
+                        $scope.node.name = data.name;
+                        $scope.node.url = data.image + "?width=100&height=100";
+                    }
+                };
+
+                function init() {
+                    if ($scope.model.value && $scope.model.value != "-1") {
+                        // Grab the node from the id
+                        entityResource.getById($scope.model.value, "Media").then(function (data) {
+                            $scope.node.name = data.name;
+
+                            // Only set the URL if it's an image
+                            if (typeof data.metaData.umbracoFile !== "undefined") {
+                                $scope.node.url = data.metaData.umbracoFile.Value + "?width=100&height=100";
+                            }
+                        });
+                    } else if ($scope.model.value && $scope.model.value == "-1") {
+                        // Set model value back to empty
+                        $scope.model.value = "";
+                        // Show the content dialog
+                        $scope.configure();
+                    }
+                }
+
+                init();
+
+            };
+
+            return {
+                restrict: "E",
+                replace: true,
+                template: "<div class='mortar-item--media mortar-item--vcenter'>" +
+                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
+                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-picture' /></a>" +
+                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
+                    "</div>" +
+                    "<div class='mortar-item__label' ng-hide='node.url'>{{node.name}}</div>" +
+                    "<img class='mortar-item__image' ng-show='node.url' ng-src='{{node.url}}' />" +
+                    "</div>",
+                scope: {
+                    model: '=',
+                    layoutConfig: '='
+                },
+                link: link
+            };
+
+        }
+    ]);
+
+angular.module("umbraco.directives").directive('mortarEmbedItem',
+    [
+        "$compile",
+        "$routeParams",
+        "dialogService",
+        "notificationsService",
+        "entityResource",
+        "Our.Umbraco.Mortar.Resources.mortarResources",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+
+            var link = function ($scope, element, attrs, ctrl) {
+
+                // Setup model
+                $scope.configure = function () {
+                    dialogService.embedDialog(dialogConfig);
+                };
+
+                $scope.remove = function () {
+                    $scope.model = null;
+                };
+
+                var dialogConfig = {
+                    callback: function (data) {
+                        $scope.model.value = data;
+                    }
+                };
+
+                if ($scope.model.value && $scope.model.value == "-1") {
+                    // Set model value back to empty
+                    $scope.model.value = "";
+                    // Show the content dialog
+                    $scope.configure();
+                }
+
+            };
+
+            return {
+                restrict: "E",
+                replace: true,
+                template: "<div class='mortar-item--embed mortar-item--vcenter'>" +
+                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
+                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-display' /></a>" +
+                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
+                    "</div>" +
+                    "<div class='mortar-item__label' ng-hide='model.value'>...</div>" +
+                    "<div class=\"mortar-item__embed\" ng-show='model.value' ng-bind-html-unsafe=\"model.value\"></div>" +
+                    "</div>",
+                scope: {
+                    model: '=',
+                    layoutConfig: '='
+                },
+                link: link
+            };
+
+        }
+    ]);
+
+angular.module("umbraco.directives").directive('mortarDocTypeItem',
+    [
+        "Our.Umbraco.Mortar.Services.docTypeDialogService",
+        function (docTypeDialogService) {
+
+            var link = function ($scope, element, attrs, ctrl) {
+
+                $scope.configure = function () {
+                    docTypeDialogService.open({
+                        allowedDocTypes: $scope.layoutConfig.allowedDocTypes,
+                        dialogData: {
+                            docType: $scope.model.docType,
+                            value: $scope.model.value
+                        },
+                        callback: function (data) {
+                            console.log(data);
+                            $scope.model.docType = data.docType;
+                            $scope.model.value = data.value;
+                        }
+                    });
+                };
+
+                $scope.remove = function () {
+                    $scope.model = null;
+                };
+
+                if ($scope.model.value && $scope.model.value == "-1") {
+                    // Set model value back to empty
+                    $scope.model.value = "";
+                    // Show the content dialog
+                    $scope.configure();
+                }
+
+            };
+
+            return {
+                restrict: "E",
+                replace: true,
+                template: "<div class='mortar-item--link mortar-item--vcenter'>" +
+                    "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
+                    "<a href='#' ng-click=\"configure()\" prevent-default><i class='icon-code' /></a>" +
+                    "<a href='#' ng-click=\"remove()\" prevent-default><i class='icon-delete' /></a>" +
+                    "</div>" +
+                    "<div class='mortar-item__label'>{{model.value['name']}}</div>" +
+                    "</div>",
+                scope: {
+                    model: '=',
+                    layoutConfig: '='
+                },
+                link: link
+            };
+
+        }
+    ]);
 
 angular.module("umbraco.directives").directive('jsonTextarea', function () {
     return {
@@ -721,7 +901,7 @@ angular.module("umbraco.directives").directive('jsonTextarea', function () {
                     return angular.toJson(modelValue, true);
                 } catch (e) {
                     return modelValue;
-                } 
+                }
             });
             ctrl.$parsers.unshift(function (viewValue) {
                 try {
