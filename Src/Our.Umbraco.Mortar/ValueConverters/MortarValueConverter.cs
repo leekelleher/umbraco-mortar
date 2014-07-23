@@ -107,7 +107,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 		{
 			var fakePropType = InternalsUmbracoHelper.CreatePublishedPropertyType(propAlias, propEditorAlias); //new PublishedPropertyType(propAlias, propEditorAlias);
 			var fakeContentType = InternalsUmbracoHelper.CreatePublishedContentType(docTypeAlias, fakePropType); // new PublishedContentType(-1, docTypeAlias, new[] { fakePropType });
-			var fakeProp = InternalsUmbracoHelper.GetDetachedPublishedProperty(fakePropType, value, preview); // PublishedProperty.GetDetached(fakePropType.Nested(propertyType), value, preview);
+			var fakeProp = InternalsUmbracoHelper.GetDetachedPublishedProperty(fakePropType, propertyType, value, preview); // PublishedProperty.GetDetached(fakePropType.Nested(propertyType), value, preview);
 			return new DetachedPublishedContent(null, fakeContentType, new[] { fakeProp });
 		}
 
@@ -143,7 +143,8 @@ namespace Our.Umbraco.Mortar.ValueConverters
 					//	jProp.Value == null ? "" : jProp.Value.ToString(), preview);
 					//properties.Add(prop);
 
-					var prop = InternalsUmbracoHelper.GetDetachedPublishedProperty(propertyType,
+					var prop = InternalsUmbracoHelper.GetDetachedPublishedProperty(propType,
+						propertyType,
 						jProp.Value == null ? "" : jProp.Value.ToString(), preview);
 					properties.Add(prop);
 				}

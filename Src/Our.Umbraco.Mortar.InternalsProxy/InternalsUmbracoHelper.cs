@@ -24,9 +24,10 @@ namespace Our.Umbraco.Mortar.InternalsProxy
 	    }
 
 	    public static IPublishedProperty GetDetachedPublishedProperty(PublishedPropertyType propertyType,
+			PublishedPropertyType containerPropertyType,
 			object value, bool preview)
 	    {
-		    return PublishedProperty.GetDetached(propertyType.Nested(propertyType), value, preview);
+			return PublishedProperty.GetDetached(propertyType.Nested(containerPropertyType), value, preview);
 	    }
     }
 }
