@@ -69,6 +69,7 @@
   <Target Name="PrepairFiles" DependsOnTargets="Compile">
     <ItemGroup>
       <BinFiles Include="$(ProjectDir)\bin\$(BuildConfiguration)\$(ProjectName).dll" />
+      <BinFiles Include="$(ProjectDir)\bin\$(BuildConfiguration)\Umbraco.Tests.dll" />
       <WebFiles Include="$(ProjectDir)\Web\UI\**\*.*" />
       <PackageFile Include="$(RootDir)\Package.xml" />  
     </ItemGroup>

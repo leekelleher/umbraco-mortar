@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Our.Umbraco.Mortar.Helpers;
+using Our.Umbraco.Mortar.InternalsProxy;
 using Our.Umbraco.Mortar.Models;
 using Our.Umbraco.Mortar.Web.Extensions;
 using Our.Umbraco.Mortar.Web.PropertyEditors;
@@ -104,9 +105,9 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 		protected IPublishedContent ConvertDataToSource_Fake(PublishedPropertyType propertyType, string docTypeAlias, string propEditorAlias, string propAlias, object value, bool preview)
 		{
-			var fakePropType = new PublishedPropertyType(propAlias, propEditorAlias);
-			var fakeContentType = new PublishedContentType(-1, docTypeAlias, new[] { fakePropType });
-			var fakeProp = PublishedProperty.GetDetached(fakePropType.Nested(propertyType), value, preview);
+			var fakePropType = InternalsUmbracoHelper.CreatePublishedPropertyType(propAlias, propEditorAlias); //new PublishedPropertyType(propAlias, propEditorAlias);
+			var fakeContentType = InternalsUmbracoHelper.CreatePublishedContentType(docTypeAlias, fakePropType); // new PublishedContentType(-1, docTypeAlias, new[] { fakePropType });
+			var fakeProp = InternalsUmbracoHelper.GetDetachedPublishedProperty(fakePropType, value, preview); // PublishedProperty.GetDetached(fakePropType.Nested(propertyType), value, preview);
 			return new DetachedPublishedContent(null, fakeContentType, new[] { fakeProp });
 		}
 
@@ -138,7 +139,11 @@ namespace Our.Umbraco.Mortar.ValueConverters
 				var propType = contentType.GetPropertyType(jProp.Key);
 				if (propType != null)
 				{
-					var prop = PublishedProperty.GetDetached(propType.Nested(propertyType),
+					//var prop = PublishedProperty.GetDetached(propType.Nested(propertyType),
+					//	jProp.Value == null ? "" : jProp.Value.ToString(), preview);
+					//properties.Add(prop);
+
+					var prop = InternalsUmbracoHelper.GetDetachedPublishedProperty(propertyType,
 						jProp.Value == null ? "" : jProp.Value.ToString(), preview);
 					properties.Add(prop);
 				}
