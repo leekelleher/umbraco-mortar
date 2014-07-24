@@ -21,8 +21,6 @@ angular.module("umbraco.directives").directive('mortarLayout',
                 }
             }
 
-            //console.log($scope.model);
-
             $scope.removeRow = function (cellId, index) {
                 $scope.model.value[cellId].splice(index, 1);
             };
@@ -120,7 +118,7 @@ angular.module("umbraco.directives").directive('mortarLayout',
                 // Setup row layout buttons
                 var rowLayouts = [[100]];
                 if (id in $scope.model.layoutConfig && "layouts" in $scope.model.layoutConfig[id]) {
-                    rowLayouts = rowLayouts.concat($scope.model.layoutConfig[id].layouts);
+                    rowLayouts = $scope.model.layoutConfig[id].layouts;
                 }
 
                 var rowLayoutsContainer = $("<div class='row-layout-options' ng-hide=\"rowHasMaxItems('" + id + "')\" />");
