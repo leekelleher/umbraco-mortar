@@ -29,7 +29,8 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 		public static HtmlString RenderMortarItem(this HtmlHelper helper, MortarRow row,
 			MortarItem item,
 			string viewPath = "",
-			string actionName = "")
+			string actionName = "",
+			object model = null)
 		{
 			if (item == null)
 				return new HtmlString(string.Empty);
@@ -49,20 +50,21 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 					controllerName,
 					new
 					{
-						mortarModel = item.Value,
+						mortarModel = model ?? item.Value,
 						mortarRow = row,
 						mortarViewPath = viewPath
 					});
 			}
 
-			return helper.Partial(viewPath + item.Value.DocumentTypeAlias, item.Value);
+			return helper.Partial(viewPath + item.Value.DocumentTypeAlias, model ?? item.Value);
 		}
 
 		public static HtmlString RenderMortarItem(this HtmlHelper helper, RenderMortarItemViewModel item,
 			string viewPath = "",
-			string actionName = "")
+			string actionName = "",
+			object model = null)
 		{
-			return helper.RenderMortarItem(item.Row, item.Item, viewPath, actionName);
+			return helper.RenderMortarItem(item.Row, item.Item, viewPath, actionName, model);
 		}
 	}
 }
