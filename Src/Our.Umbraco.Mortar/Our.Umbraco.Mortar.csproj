@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\InternalExtensions.cs" />
     <Compile Include="Helpers\MortarHelper.cs" />
     <Compile Include="JsonConverters\MortarItemConverter.cs" />
     <Compile Include="Models\DetachedPublishedContent.cs" />
@@ -91,12 +92,6 @@
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.jsonTextarea.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.docTypeDialog.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Our.Umbraco.Mortar.InternalsProxy\Our.Umbraco.Mortar.InternalsProxy.csproj">
-      <Project>{c8e42e4b-e77c-415b-96c5-f3e027b76d53}</Project>
-      <Name>Our.Umbraco.Mortar.InternalsProxy</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

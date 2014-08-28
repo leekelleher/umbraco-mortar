@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Our.Umbraco.Mortar.Extensions;
 using Our.Umbraco.Mortar.Helpers;
-using Our.Umbraco.Mortar.InternalsProxy;
 using Our.Umbraco.Mortar.Models;
 using Our.Umbraco.Mortar.Web.Extensions;
 using Our.Umbraco.Mortar.Web.PropertyEditors;
@@ -105,9 +106,24 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 		protected IPublishedContent ConvertDataToSource_Fake(PublishedPropertyType propertyType, string docTypeAlias, string propEditorAlias, string propAlias, object value, bool preview)
 		{
-			var fakePropType = InternalsUmbracoHelper.CreatePublishedPropertyType(propAlias, propEditorAlias); //new PublishedPropertyType(propAlias, propEditorAlias);
-			var fakeContentType = InternalsUmbracoHelper.CreatePublishedContentType(docTypeAlias, fakePropType); // new PublishedContentType(-1, docTypeAlias, new[] { fakePropType });
-			var fakeProp = InternalsUmbracoHelper.GetDetachedPublishedProperty(fakePropType, propertyType, value, preview); // PublishedProperty.GetDetached(fakePropType.Nested(propertyType), value, preview);
+			var fakePropType = (PublishedPropertyType) typeof(PublishedPropertyType).GetConstructor(
+				BindingFlags.NonPublic | BindingFlags.Instance,
+				null, new[] {typeof (string), typeof (string)}, null)
+				.Invoke(new object[] { propAlias, propEditorAlias });
+
+			var fakeContentType = (PublishedContentType)typeof(PublishedContentType).GetConstructor(
+				BindingFlags.NonPublic | BindingFlags.Instance,
+				null, new[] { typeof(int), typeof(string), typeof(IEnumerable<PublishedPropertyType>) }, null)
+				.Invoke(new object[] { -1, docTypeAlias, new[] { fakePropType } });
+
+			var fakeNestedPropType = fakePropType.ExecuteMethod<PublishedPropertyType>("Nested",
+				propertyType);
+
+			var fakeProp = typeof(PublishedProperty).ExecuteMethod<IPublishedProperty>("GetDetached",
+				fakeNestedPropType,
+				(value == null ? "" : value.ToString()) as object,
+				preview);
+
 			return new DetachedPublishedContent(null, fakeContentType, new[] { fakeProp });
 		}
 
@@ -143,9 +159,12 @@ namespace Our.Umbraco.Mortar.ValueConverters
 					//	jProp.Value == null ? "" : jProp.Value.ToString(), preview);
 					//properties.Add(prop);
 
-					var prop = InternalsUmbracoHelper.GetDetachedPublishedProperty(propType,
-						propertyType,
-						jProp.Value == null ? "" : jProp.Value.ToString(), preview);
+					var nestedPropType = propType.ExecuteMethod<PublishedPropertyType>("Nested",
+						propertyType);
+					var prop = typeof(PublishedProperty).ExecuteMethod<IPublishedProperty>("GetDetached",
+						nestedPropType,
+						(jProp.Value == null ? "" : jProp.Value.ToString()) as object,
+						preview);
 					properties.Add(prop);
 				}
 			}
