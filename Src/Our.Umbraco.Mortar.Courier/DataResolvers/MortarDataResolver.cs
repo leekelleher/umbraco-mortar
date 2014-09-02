@@ -91,7 +91,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 				return;
 
 			// just look at the amount of dancing around we have to do in order to fake a `PublishedPropertyType`?!
-			var dataTypeId = PersistenceManager.Default.GetNodeId(propertyData.DataType, NodeObjectTypes.DataType);
+			var dataTypeId = ExecutionContext.DatabasePersistence.GetNodeId(propertyData.DataType, NodeObjectTypes.DataType);
 			var fakePropertyType = CreateFakePropertyType(dataTypeId, EditorAlias);
 
 			var converter = new MortarValueConverter();
@@ -120,7 +120,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 										if (direction == Direction.Packaging)
 											mortarItem.AdditionalInfo["docType"] = mortarItem.Value.DocumentTypeAlias;
 										else if (direction == Direction.Extracting)
-											mortarItem.AdditionalInfo["docType"] = PersistenceManager.Default.GetUniqueId(mortarItem.Value.DocumentTypeId, NodeObjectTypes.DocumentType).ToString();
+											mortarItem.AdditionalInfo["docType"] = ExecutionContext.DatabasePersistence.GetUniqueId(mortarItem.Value.DocumentTypeId, NodeObjectTypes.DocumentType).ToString();
 									}
 
 									// resolve the value's properties
@@ -221,7 +221,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 				if (propertyType == null)
 					continue;
 
-				var dataTypeGuid = PersistenceManager.Default.GetUniqueId(propertyType.DataTypeId, NodeObjectTypes.DataType);
+				var dataTypeGuid = ExecutionContext.DatabasePersistence.GetUniqueId(propertyType.DataTypeId, NodeObjectTypes.DataType);
 
 				var value = ResolvePropertyItemData(item, propertyItemProvider, propertyType, propertyValue.Value, dataTypeGuid, direction);
 
