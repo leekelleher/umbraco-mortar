@@ -16,5 +16,5 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Our.Umbraco.Mortar.Courier")]
 
-[assembly: AssemblyVersion("0.2.2")]
-[assembly: AssemblyFileVersion("0.2.2")]
+[assembly: AssemblyVersion("0.2.*")]
+[assembly: AssemblyInformationalVersion("0.2.2")]
