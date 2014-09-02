@@ -16,6 +16,7 @@ using Umbraco.Web.Models;
 
 namespace Our.Umbraco.Mortar.ValueConverters
 {
+	[PropertyValueType(typeof(MortarValue))]
 	[PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
 	public class MortarValueConverter : PropertyValueConverterBase
 	{
