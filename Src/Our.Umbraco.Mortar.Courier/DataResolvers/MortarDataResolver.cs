@@ -9,6 +9,7 @@ using Our.Umbraco.Mortar.Models;
 using Our.Umbraco.Mortar.ValueConverters;
 using Our.Umbraco.Mortar.Web.PropertyEditors;
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Courier.Core;
@@ -180,8 +181,15 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 
 			if (direction == Direction.Packaging)
 			{
-				// run the 'fake' item through Courier's data resolvers
-				ResolutionManager.Instance.PackagingItem(fakeItem, propertyItemProvider);
+				try
+				{
+					// run the 'fake' item through Courier's data resolvers
+					ResolutionManager.Instance.PackagingItem(fakeItem, propertyItemProvider);
+				}
+				catch (Exception ex)
+				{
+					LogHelper.Error<MortarDataResolver>(string.Concat("Error packaging data value: ", fakeItem.Name), ex);
+				}
 
 				// pass up the dependencies
 				if (fakeItem.Dependencies != null && fakeItem.Dependencies.Count > 0)
@@ -193,8 +201,15 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			}
 			else if (direction == Direction.Extracting)
 			{
-				// run the 'fake' item through Courier's data resolvers
-				ResolutionManager.Instance.ExtractingItem(fakeItem, propertyItemProvider);
+				try
+				{
+					// run the 'fake' item through Courier's data resolvers
+					ResolutionManager.Instance.ExtractingItem(fakeItem, propertyItemProvider);
+				}
+				catch (Exception ex)
+				{
+					LogHelper.Error<MortarDataResolver>(string.Concat("Error extracting data value: ", fakeItem.Name), ex);
+				}
 			}
 
 			// return the resolved data from the 'fake' item
