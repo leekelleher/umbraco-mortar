@@ -99,7 +99,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			var mortarValue = (MortarValue)converter.ConvertDataToSource(fakePropertyType, propertyData.Value, false);
 
 			// create a 'fake' provider, as ultimately only the 'Packaging' enum will be referenced.
-			var fakeItemProvider = new PropertyItemProvider();
+			var fakeItemProvider = new PropertyItemProvider() { ExecutionContext = this.ExecutionContext };
 
 			if (mortarValue != null)
 			{
