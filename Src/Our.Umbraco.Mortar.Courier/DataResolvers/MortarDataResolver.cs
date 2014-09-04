@@ -15,6 +15,7 @@ using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Courier.Core;
 using Umbraco.Courier.Core.Enums;
 using Umbraco.Courier.Core.Helpers;
+using Umbraco.Courier.Core.ProviderModel;
 using Umbraco.Courier.DataResolvers;
 using Umbraco.Courier.ItemProviders;
 using Umbraco.Web;
@@ -98,8 +99,8 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			var converter = new MortarValueConverter();
 			var mortarValue = (MortarValue)converter.ConvertDataToSource(fakePropertyType, propertyData.Value, false);
 
-			// create a 'fake' provider, as ultimately only the 'Packaging' enum will be referenced.
-			var fakeItemProvider = new PropertyItemProvider() { ExecutionContext = this.ExecutionContext };
+			// get the `PropertyItemProvider` from the collection.
+			var propertyItemProvider = ItemProviderCollection.Instance.GetProvider(ProviderIDCollection.propertyDataItemProviderGuid, this.ExecutionContext);
 
 			if (mortarValue != null)
 			{
@@ -108,7 +109,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 					foreach (var mortarRow in mortarBlock.Value)
 					{
 						if (mortarRow.Options != null)
-							mortarRow.RawOptions = ResolveMultiplePropertyItemData(item, fakeItemProvider, mortarRow.Options, mortarRow.RawOptions, direction);
+							mortarRow.RawOptions = ResolveMultiplePropertyItemData(item, propertyItemProvider, mortarRow.Options, mortarRow.RawOptions, direction);
 
 						foreach (var mortarItem in mortarRow.Items)
 						{
@@ -125,7 +126,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 									}
 
 									// resolve the value's properties
-									mortarItem.RawValue = ResolveMultiplePropertyItemData(item, fakeItemProvider, mortarItem.Value, mortarItem.RawValue, direction);
+									mortarItem.RawValue = ResolveMultiplePropertyItemData(item, propertyItemProvider, mortarItem.Value, mortarItem.RawValue, direction);
 
 									break;
 
@@ -145,7 +146,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 									var property = mortarItem.Value.GetProperty("bodyText");
 									var propertyType = mortarItem.Value.ContentType.GetPropertyType(property.PropertyTypeAlias);
 
-									mortarItem.RawValue = ResolvePropertyItemData(item, fakeItemProvider, propertyType, mortarItem.RawValue, Guid.Empty, direction);
+									mortarItem.RawValue = ResolvePropertyItemData(item, propertyItemProvider, propertyType, mortarItem.RawValue, Guid.Empty, direction);
 
 									break;
 
@@ -160,7 +161,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			}
 		}
 
-		private object ResolvePropertyItemData(Item item, PropertyItemProvider propertyItemProvider, PublishedPropertyType propertyType, object value, Guid dataTypeGuid, Direction direction = Direction.Packaging)
+		private object ResolvePropertyItemData(Item item, ItemProvider itemProvider, PublishedPropertyType propertyType, object value, Guid dataTypeGuid, Direction direction = Direction.Packaging)
 		{
 			// create a 'fake' item for Courier to process
 			var fakeItem = new ContentPropertyData()
@@ -184,7 +185,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 				try
 				{
 					// run the 'fake' item through Courier's data resolvers
-					ResolutionManager.Instance.PackagingItem(fakeItem, propertyItemProvider);
+					ResolutionManager.Instance.PackagingItem(fakeItem, itemProvider);
 				}
 				catch (Exception ex)
 				{
@@ -204,7 +205,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 				try
 				{
 					// run the 'fake' item through Courier's data resolvers
-					ResolutionManager.Instance.ExtractingItem(fakeItem, propertyItemProvider);
+					ResolutionManager.Instance.ExtractingItem(fakeItem, itemProvider);
 				}
 				catch (Exception ex)
 				{
@@ -219,7 +220,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			return value;
 		}
 
-		private JObject ResolveMultiplePropertyItemData(Item item, PropertyItemProvider propertyItemProvider, IPublishedContent content, object rawValue, Direction direction = Direction.Packaging)
+		private JObject ResolveMultiplePropertyItemData(Item item, ItemProvider itemProvider, IPublishedContent content, object rawValue, Direction direction = Direction.Packaging)
 		{
 			var propertyItemData = new Dictionary<string, object>();
 			var propertyValues = ((JObject)rawValue).ToObject<Dictionary<string, object>>();
@@ -238,7 +239,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 
 				var dataTypeGuid = ExecutionContext.DatabasePersistence.GetUniqueId(propertyType.DataTypeId, NodeObjectTypes.DataType);
 
-				var value = ResolvePropertyItemData(item, propertyItemProvider, propertyType, propertyValue.Value, dataTypeGuid, direction);
+				var value = ResolvePropertyItemData(item, itemProvider, propertyType, propertyValue.Value, dataTypeGuid, direction);
 
 				propertyItemData.Add(propertyValue.Key, value);
 			}
