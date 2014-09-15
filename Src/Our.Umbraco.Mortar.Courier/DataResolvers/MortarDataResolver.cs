@@ -92,7 +92,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			if (propertyData == null || propertyData.Value == null)
 				return;
 
-			// just look at the amount of dancing around we have to do in order to fake a `PublishedPropertyType`?!
+			// create a fake `PublishedPropertyType`
 			var dataTypeId = ExecutionContext.DatabasePersistence.GetNodeId(propertyData.DataType, NodeObjectTypes.DataType);
 			var fakePropertyType = CreateFakePropertyType(dataTypeId, EditorAlias);
 
@@ -113,6 +113,12 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 
 						foreach (var mortarItem in mortarRow.Items)
 						{
+							if (mortarItem.Type == null)
+							{
+								LogHelper.Debug<MortarDataResolver>(() => string.Format("MortarItem did not contain a value for Type, (from '{0}' block)", mortarBlock.Key));
+								continue;
+							}
+
 							switch (mortarItem.Type.ToUpperInvariant())
 							{
 								case "DOCTYPE":
