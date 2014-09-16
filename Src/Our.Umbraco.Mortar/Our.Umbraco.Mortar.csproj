@@ -70,6 +70,7 @@
     <Compile Include="Models\MortarRow.cs" />
     <Compile Include="Models\MortarValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\VersionInfo.cs" />
     <Compile Include="Web\Boostrapper.cs" />
     <Compile Include="Web\Controllers\MortarApiController.cs" />
     <Compile Include="ValueConverters\MortarValueConverter.cs" />
