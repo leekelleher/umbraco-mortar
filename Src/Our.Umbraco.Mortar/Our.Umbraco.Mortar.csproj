@@ -30,19 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ClientDependency.Core, Version=1.7.1.2, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\ClientDependency.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="ClientDependency.Core">
+      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\ClientDependency.Core.dll</HintPath>
     </Reference>
     <Reference Include="interfaces">
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\interfaces.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,18 +54,15 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="umbraco, Version=1.0.5211.22381, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\umbraco.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="umbraco">
+      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\umbraco.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Core, Version=1.0.5211.22376, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.2\lib\Umbraco.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Umbraco.Core">
+      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\Umbraco.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\InternalExtensions.cs" />
     <Compile Include="Helpers\MortarHelper.cs" />
     <Compile Include="JsonConverters\MortarItemConverter.cs" />
     <Compile Include="Models\DetachedPublishedContent.cs" />

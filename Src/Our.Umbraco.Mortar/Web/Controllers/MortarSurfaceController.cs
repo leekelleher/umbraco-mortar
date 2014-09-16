@@ -4,16 +4,19 @@ using Umbraco.Web.Mvc;
 
 namespace Our.Umbraco.Mortar.Web.Controllers
 {
-	public abstract class MortarSurfaceController : SurfaceController
+	public abstract class MortarSurfaceController : MortarSurfaceController<IPublishedContent>
+	{ }
+
+	public abstract class MortarSurfaceController<TModel> : SurfaceController
 	{
-		public IPublishedContent MortarModel
+		public TModel MortarModel
 		{
-			get { return ControllerContext.RouteData.Values["mortarModel"] as IPublishedContent; }
+			get { return (TModel)ControllerContext.RouteData.Values["mortarModel"]; }
 		}
 
 		public MortarRow MortarRow
 		{
-			get { return ControllerContext.RouteData.Values["mortarRow"] as MortarRow; }
+			get { return (MortarRow)ControllerContext.RouteData.Values["mortarRow"]; }
 		}
 
 		public string MortarViewPath

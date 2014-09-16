@@ -12,12 +12,12 @@ namespace Our.Umbraco.Mortar.Models
 		internal string LayoutString { get; set; }
 
 		[JsonIgnore]
-		public ReadOnlyCollection<int> Layout
+		public ReadOnlyCollection<decimal> Layout
 		{
 			get
 			{
 				return LayoutString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-					.Select(int.Parse)
+					.Select(decimal.Parse)
 					.ToList().AsReadOnly();
 			}
 		}
