@@ -15,6 +15,3 @@ using System.Runtime.InteropServices;
 [assembly: Guid("256C9CE9-7841-4EB4-8D85-0ED7DF8F0D6C")]
 
 [assembly: InternalsVisibleTo("Our.Umbraco.Mortar.Courier")]
-
-[assembly: AssemblyVersion("0.2.*")]
-[assembly: AssemblyInformationalVersion("0.2.2")]
