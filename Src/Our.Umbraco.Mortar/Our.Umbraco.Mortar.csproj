@@ -102,12 +102,6 @@
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>IF NOT "$(SolutionDir)" == "*Undefined*" (
-xcopy /s /y "$(TargetPath)" "C:\Users\Matt\Work\Sandbox\Umbraco\UmbracoCms.7.1.2\bin"
-xcopy /s /y "$(ProjectDir)Web\UI\App_Plugins\*.*" "C:\Users\Matt\Work\Sandbox\Umbraco\UmbracoCms.7.1.2\App_Plugins"
-)</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
