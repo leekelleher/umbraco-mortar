@@ -108,12 +108,12 @@ namespace Our.Umbraco.Mortar.ValueConverters
 		protected IPublishedContent ConvertDataToSource_Fake(PublishedPropertyType propertyType, string docTypeAlias, string propEditorAlias, string propAlias, object value, bool preview)
 		{
 			var fakePropType = (PublishedPropertyType) typeof(PublishedPropertyType).GetConstructor(
-				BindingFlags.NonPublic | BindingFlags.Instance,
+				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
 				null, new[] {typeof (string), typeof (string)}, null)
 				.Invoke(new object[] { propAlias, propEditorAlias });
 
 			var fakeContentType = (PublishedContentType)typeof(PublishedContentType).GetConstructor(
-				BindingFlags.NonPublic | BindingFlags.Instance,
+				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
 				null, new[] { typeof(int), typeof(string), typeof(IEnumerable<PublishedPropertyType>) }, null)
 				.Invoke(new object[] { -1, docTypeAlias, new[] { fakePropType } });
 
