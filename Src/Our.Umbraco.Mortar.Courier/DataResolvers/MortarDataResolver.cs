@@ -113,9 +113,15 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 
 						foreach (var mortarItem in mortarRow.Items)
 						{
+							if (mortarItem == null)
+							{
+								LogHelper.Warn<MortarDataResolver>("MortarItem appears to be null, (from '{0}' block)", () => mortarBlock.Key);
+								continue;
+							}
+
 							if (mortarItem.Type == null)
 							{
-								LogHelper.Debug<MortarDataResolver>(() => string.Format("MortarItem did not contain a value for Type, (from '{0}' block)", mortarBlock.Key));
+								LogHelper.Warn<MortarDataResolver>("MortarItem did not contain a value for Type, (from '{0}' block)", () => mortarBlock.Key);
 								continue;
 							}
 
