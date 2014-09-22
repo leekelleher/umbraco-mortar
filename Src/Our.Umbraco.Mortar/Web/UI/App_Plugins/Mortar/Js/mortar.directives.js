@@ -890,7 +890,7 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
     ]);
 
 angular.module("umbraco.directives").directive('jsonTextarea', function () {
-    return {
+    return { 
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, element, attr, ctrl) {

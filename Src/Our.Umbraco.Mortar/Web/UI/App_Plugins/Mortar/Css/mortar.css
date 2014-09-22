@@ -272,3 +272,11 @@
 .row-layout-option:hover td {
     border-color: #fff;
 }
+
+.mortar-dialog .ng-invalid .control-group .control-label {
+    color: #b94a48;
+}
+
+.mortar-dialog .ng-invalid .control-group .controls input {
+    border-color: #b94a48;
+}
