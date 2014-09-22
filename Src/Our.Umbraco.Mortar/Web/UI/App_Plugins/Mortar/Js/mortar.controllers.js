@@ -30,6 +30,11 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
             };
 
             $scope.save = function () {
+
+                // Make sure form is valid
+                if (!$scope.mortarForm.$valid)
+                    return;
+
                 // Copy property values to scope model value
                 if ($scope.node) {
                     var value = {
