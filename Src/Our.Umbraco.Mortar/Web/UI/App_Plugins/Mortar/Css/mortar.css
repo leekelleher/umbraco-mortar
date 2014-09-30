@@ -273,6 +273,10 @@
     border-color: #fff;
 }
 
+.mortar-dialog .control-group .controls .control-group .controls {
+    padding: 0 5px;
+}
+
 .mortar-dialog .ng-invalid .control-group .control-label {
     color: #b94a48;
 }
