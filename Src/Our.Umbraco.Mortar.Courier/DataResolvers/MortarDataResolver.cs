@@ -132,9 +132,16 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 									if (mortarItem.AdditionalInfo.ContainsKey("docType"))
 									{
 										if (direction == Direction.Packaging)
+										{
 											mortarItem.AdditionalInfo["docType"] = mortarItem.Value.DocumentTypeAlias;
+
+											// TODO: [LK] Need to look at adding the DocType as a dependency
+											item.Dependencies.Add(mortarItem.Value.DocumentTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid);
+										}
 										else if (direction == Direction.Extracting)
+										{
 											mortarItem.AdditionalInfo["docType"] = ExecutionContext.DatabasePersistence.GetUniqueId(mortarItem.Value.DocumentTypeId, NodeObjectTypes.DocumentType).ToString();
+										}
 									}
 
 									// resolve the value's properties
@@ -159,6 +166,8 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 									var propertyType = mortarItem.Value.ContentType.GetPropertyType(property.PropertyTypeAlias);
 
 									mortarItem.RawValue = ResolvePropertyItemData(item, propertyItemProvider, propertyType, mortarItem.RawValue, Guid.Empty, direction);
+
+									// TODO: [LK] Need to look at adding the DocType as a dependency
 
 									break;
 
