@@ -63,14 +63,19 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			ResolvePropertyData(item, propertyData, Direction.Packaging);
 		}
 
-		private object ConvertIdentifier(object value, Item item, Direction direction, Guid providerId)
+		private object ConvertIdentifier(object value, Item item, Direction direction, Guid providerId, string itemType)
 		{
 			if (value != null && !string.IsNullOrWhiteSpace(value.ToString()))
 			{
 				if (direction == Direction.Packaging)
 				{
 					var guid = Dependencies.ConvertIdentifier(value.ToString(), IdentifierReplaceDirection.FromNodeIdToGuid);
-					item.Dependencies.Add(guid, providerId);
+
+					// add dependency for the item
+					var name = string.Concat(itemType, " from picker");
+					var dependency = new Dependency(name, guid, providerId);
+					item.Dependencies.Add(dependency);
+
 					return guid;
 				}
 				else if (direction == Direction.Extracting)
@@ -132,9 +137,22 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 									if (mortarItem.AdditionalInfo.ContainsKey("docType"))
 									{
 										if (direction == Direction.Packaging)
-											mortarItem.AdditionalInfo["docType"] = mortarItem.Value.DocumentTypeAlias;
+										{
+											var docTypeAlias = mortarItem.Value.DocumentTypeAlias;
+											mortarItem.AdditionalInfo["docType"] = docTypeAlias;
+
+											if (direction == Direction.Packaging)
+											{
+												// add dependency for the DocType
+												var name = string.Concat("Document type: ", docTypeAlias);
+												var dependency = new Dependency(name, docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid);
+												item.Dependencies.Add(dependency);
+											}
+										}
 										else if (direction == Direction.Extracting)
+										{
 											mortarItem.AdditionalInfo["docType"] = ExecutionContext.DatabasePersistence.GetUniqueId(mortarItem.Value.DocumentTypeId, NodeObjectTypes.DocumentType).ToString();
+										}
 									}
 
 									// resolve the value's properties
@@ -147,11 +165,11 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 									break;
 
 								case "LINK":
-									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.documentItemProviderGuid);
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.documentItemProviderGuid, "Document");
 									break;
 
 								case "MEDIA":
-									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.mediaItemProviderGuid);
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.mediaItemProviderGuid, "Media");
 									break;
 
 								case "RICHTEXT":
@@ -159,7 +177,6 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 									var propertyType = mortarItem.Value.ContentType.GetPropertyType(property.PropertyTypeAlias);
 
 									mortarItem.RawValue = ResolvePropertyItemData(item, propertyItemProvider, propertyType, mortarItem.RawValue, Guid.Empty, direction);
-
 									break;
 
 								default:
