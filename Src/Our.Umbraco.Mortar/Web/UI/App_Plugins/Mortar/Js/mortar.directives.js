@@ -1,6 +1,6 @@
 ﻿/* Directives */
 angular.module("umbraco.directives").directive('mortarLayout',
-    function ($timeout, $compile, $routeParams, dialogService, notificationsService) {
+    function ($timeout, $compile, $routeParams, dialogService, notificationsService, localizationService) {
 
         var link = function ($scope, element, attrs, ctrl) {
 
@@ -22,7 +22,11 @@ angular.module("umbraco.directives").directive('mortarLayout',
             }
 
             $scope.removeRow = function (cellId, index) {
-                $scope.model.value[cellId].splice(index, 1);
+                localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                    if (confirm(value)) {
+                        $scope.model.value[cellId].splice(index, 1);
+                    }
+                });
             };
 
             $scope.addRow = function (cellId, layout) {
@@ -331,7 +335,8 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
         "angularHelper",
         "stylesheetResource",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($q, $timeout, tinyMceService, assetsService, angularHelper, stylesheetResource, mortarResources) {
+        "localizationService",
+        function ($q, $timeout, tinyMceService, assetsService, angularHelper, stylesheetResource, mortarResources, localizationService) {
 
             var guid = function () {
                 function _p8(s) {
@@ -346,7 +351,11 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
                 $scope.guid = guid();
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 $scope.toggleToolbar = function () {
@@ -612,7 +621,8 @@ angular.module("umbraco.directives").directive('mortarLinkItem',
         "notificationsService",
         "entityResource",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+        "localizationService",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources, localizationService) {
 
             var link = function ($scope, element, attrs, ctrl) {
 
@@ -626,7 +636,11 @@ angular.module("umbraco.directives").directive('mortarLinkItem',
                 };
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 var dialogConfig = {
@@ -706,7 +720,8 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
         "notificationsService",
         "entityResource",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+        "localizationService",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources, localizationService) {
 
             var link = function ($scope, element, attrs, ctrl) {
 
@@ -721,7 +736,11 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                 };
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 var dialogConfig = {
@@ -785,7 +804,8 @@ angular.module("umbraco.directives").directive('mortarEmbedItem',
         "notificationsService",
         "entityResource",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+        "localizationService",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources, localizationService) {
 
             var link = function ($scope, element, attrs, ctrl) {
 
@@ -795,7 +815,11 @@ angular.module("umbraco.directives").directive('mortarEmbedItem',
                 };
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 var dialogConfig = {
@@ -837,7 +861,8 @@ angular.module("umbraco.directives").directive('mortarEmbedItem',
 angular.module("umbraco.directives").directive('mortarDocTypeItem',
     [
         "Our.Umbraco.Mortar.Services.docTypeDialogService",
-        function (docTypeDialogService) {
+        "localizationService",
+        function (docTypeDialogService, localizationService) {
 
             var link = function ($scope, element, attrs, ctrl) {
 
@@ -857,7 +882,11 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
                 };
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 if ($scope.model.value && $scope.model.value == "-1") {
