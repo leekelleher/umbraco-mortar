@@ -27,6 +27,13 @@ angular.module('umbraco.resources').factory('Our.Umbraco.Mortar.Resources.mortar
                     $http.get(url),
                     'Failed to retrieve datatypes'
                 );
-            }
+            },
+            getDocTypePreview: function (guid) {
+                var url = "/umbraco/backoffice/MortarApi/MortarApi/GetDocTypePreview?guid=" + guid;
+                return umbRequestHelper.resourcePromise(
+                    $http.get(url),
+                    'Failed to retrieve doctype preview by guid'
+                );
+            },
         };
     });
