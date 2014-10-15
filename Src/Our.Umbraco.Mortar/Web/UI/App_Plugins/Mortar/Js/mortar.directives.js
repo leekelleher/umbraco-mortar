@@ -729,7 +729,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                     callback: function (data) {
                         $scope.model.value = data.id;
                         $scope.node.name = data.name;
-                        $scope.node.url = data.image + "?width=100&height=100";
+                        $scope.node.url = data.image + "?width=500&height=220&mode=max";
                     }
                 };
 
@@ -741,7 +741,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
 
                             // Only set the URL if it's an image
                             if (typeof data.metaData.umbracoFile !== "undefined") {
-                                $scope.node.url = data.metaData.umbracoFile.Value + "?width=100&height=100";
+                                $scope.node.url = data.metaData.umbracoFile.Value + "?width=500&height=220&mode=max";
                             }
                         });
                     } else if ($scope.model.value && $scope.model.value == "-1") {
