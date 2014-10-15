@@ -836,10 +836,20 @@ angular.module("umbraco.directives").directive('mortarEmbedItem',
 
 angular.module("umbraco.directives").directive('mortarDocTypeItem',
     [
+        "$compile",
         "Our.Umbraco.Mortar.Services.docTypeDialogService",
-        function (docTypeDialogService) {
+        "Our.Umbraco.Mortar.Resources.mortarResources",
+        function ($compile, docTypeDialogService, mortarResources) {
 
             var link = function ($scope, element, attrs, ctrl) {
+
+                mortarResources.getDocTypePreview($scope.model.docType).then(function (data) {
+                    if (data.view != "") {
+                        var label = element.find(".mortar-item__label");
+                        label.html(data.view).show();
+                        $compile(label.contents())($scope);
+                    }
+                });
 
                 $scope.configure = function () {
                     docTypeDialogService.open({
@@ -890,7 +900,7 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
     ]);
 
 angular.module("umbraco.directives").directive('jsonTextarea', function () {
-    return { 
+    return {
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, element, attr, ctrl) {
