@@ -104,4 +104,3 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
         }
 
     ]);
-
