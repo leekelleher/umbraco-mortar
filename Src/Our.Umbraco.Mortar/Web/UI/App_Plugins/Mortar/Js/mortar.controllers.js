@@ -60,6 +60,10 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
             function loadNode() {
                 mortarResources.getContentAliasByGuid($scope.dialogData.docType).then(function (data1) {
                     contentResource.getScaffold(-20, data1.alias).then(function (data) {
+
+                        // Set the ID of the node (to give context)
+                        data.id = editorState.current.id;
+
                         // Remove the last tab
                         data.tabs.pop();
 
