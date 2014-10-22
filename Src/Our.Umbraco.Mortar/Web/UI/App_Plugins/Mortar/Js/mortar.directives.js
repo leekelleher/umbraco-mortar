@@ -849,7 +849,6 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
                             value: $scope.model.value
                         },
                         callback: function (data) {
-                            console.log(data);
                             $scope.model.docType = data.docType;
                             $scope.model.value = data.value;
                         }
