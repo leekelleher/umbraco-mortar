@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Umbraco.Core;
+﻿using Umbraco.Core;
+using Umbraco.Core.Events;
+using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 
 namespace Our.Umbraco.Mortar.Web
@@ -15,7 +12,7 @@ namespace Our.Umbraco.Mortar.Web
 			DataTypeService.Saved += ExpireMortarCache;
 		}
 
-		private void ExpireMortarCache(IDataTypeService sender, global::Umbraco.Core.Events.SaveEventArgs<global::Umbraco.Core.Models.IDataTypeDefinition> e)
+		private void ExpireMortarCache(IDataTypeService sender, SaveEventArgs<IDataTypeDefinition> e)
 		{
 			foreach (var dataType in e.SavedEntities)
 			{

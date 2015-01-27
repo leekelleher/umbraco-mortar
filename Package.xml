@@ -7,14 +7,14 @@
 			<license url="http://www.opensource.org/licenses/MIT">MIT license</license>
 			<url>http://our.umbraco.org/projects/backoffice-extensions/mortar</url>
 			<requirements>
-				<major>7</major>
-				<minor>1</minor>
-				<patch>4</patch>
+				<major>0</major>
+				<minor>0</minor>
+				<patch>0</patch>
 			</requirements>
 		</package>
 		<author>
 			<name>Lee Kelleher, Matt Brailsford</name>
-			<website>http://our.umbraco.org</website>
+			<website>https://github.com/leekelleher/umbraco-mortar/graphs/contributors</website>
 		</author>
 		<readme><![CDATA[]]></readme>
 	</info>
