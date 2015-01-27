@@ -60,17 +60,21 @@ namespace Our.Umbraco.Mortar.ValueConverters
 									switch (item.Type.ToLowerInvariant())
 									{
 										case "richtext":
-											item.Value = ConvertDataToSource_Fake(propertyType, "MortarRichtext", Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue, preview); 
+											item.Value = ConvertDataToSource_Fake(propertyType, "MortarRichtext", Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue, preview);
 											break;
+
 										case "embed":
 											item.Value = ConvertDataToSource_Fake(propertyType, "MortarEmbed", Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue, preview);
 											break;
+
 										case "link":
 											item.Value = ConvertDataToSource_Link(propertyType, item.RawValue, preview);
 											break;
+
 										case "media":
 											item.Value = ConvertDataToSource_Media(propertyType, item.RawValue, preview);
 											break;
+
 										case "doctype":
 											Guid docTypeGuid;
 											if (item.AdditionalInfo.ContainsKey("docType")
@@ -87,6 +91,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 												item.Value = ConvertDataToSource_DocType(propertyType, docTypeAlias, item.RawValue, preview);
 											}
+
 											break;
 									}
 								}
@@ -107,9 +112,9 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 		protected IPublishedContent ConvertDataToSource_Fake(PublishedPropertyType propertyType, string docTypeAlias, string propEditorAlias, string propAlias, object value, bool preview)
 		{
-			var fakePropType = (PublishedPropertyType) typeof(PublishedPropertyType).GetConstructor(
+			var fakePropType = (PublishedPropertyType)typeof(PublishedPropertyType).GetConstructor(
 				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-				null, new[] {typeof (string), typeof (string)}, null)
+				null, new[] { typeof(string), typeof(string) }, null)
 				.Invoke(new object[] { propAlias, propEditorAlias });
 
 			var fakeContentType = (PublishedContentType)typeof(PublishedContentType).GetConstructor(
@@ -131,8 +136,8 @@ namespace Our.Umbraco.Mortar.ValueConverters
 		protected IPublishedContent ConvertDataToSource_Link(PublishedPropertyType propertyType, object value, bool preview)
 		{
 			int nodeId;
-			return int.TryParse(value.ToString(), out nodeId) 
-				? Umbraco.TypedContent(nodeId) 
+			return int.TryParse(value.ToString(), out nodeId)
+				? Umbraco.TypedContent(nodeId)
 				: null;
 		}
 

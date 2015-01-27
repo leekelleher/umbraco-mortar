@@ -111,9 +111,11 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 									case "richtext":
 										item.RawValue = ConvertDbToString_Fake(Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue);
 										break;
+
 									case "embed":
 										item.RawValue = ConvertDbToString_Fake(Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue);
 										break;
+
 									case "doctype":
 										Guid docTypeGuid;
 										if (item.AdditionalInfo.ContainsKey("docType")
@@ -125,6 +127,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 											var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
 											item.RawValue = ConvertDbToString_DocType(docTypeAlias, item.RawValue);
 										}
+
 										break;
 								}
 							}
@@ -163,6 +166,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 				// Loop through properties
 				var propValues = ((JObject)value);
 				var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
+
 				if (contentType != null && contentType.PropertyTypes != null)
 				{
 					foreach (var propKey in propValueKeys)
@@ -231,9 +235,11 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 									case "richtext":
 										item.RawValue = ConvertDbToEditor_Fake(Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue);
 										break;
+
 									case "embed":
 										item.RawValue = ConvertDbToEditor_Fake(Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue);
 										break;
+
 									case "doctype":
 										Guid docTypeGuid;
 										if (item.AdditionalInfo.ContainsKey("docType")
@@ -245,6 +251,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 											var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
 											item.RawValue = ConvertDbToEditor_DocType(docTypeAlias, item.RawValue);
 										}
+
 										break;
 								}
 							}
@@ -359,9 +366,11 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 									case "richtext":
 										item.RawValue = ConvertEditorToDb_Fake(Constants.PropertyEditors.TinyMCEAlias, item.RawValue);
 										break;
+
 									case "embed":
 										item.RawValue = ConvertEditorToDb_Fake(Constants.PropertyEditors.TextboxMultipleAlias, item.RawValue);
 										break;
+
 									case "doctype":
 										Guid docTypeGuid;
 										if (item.AdditionalInfo.ContainsKey("docType")
@@ -375,6 +384,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 											// Serialize the dictionary back
 											item.RawValue = ConvertEditorToDb_DocType(docTypeAlias, item.RawValue);
 										}
+
 										break;
 								}
 							}
