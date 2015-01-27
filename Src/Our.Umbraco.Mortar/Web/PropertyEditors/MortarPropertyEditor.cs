@@ -41,7 +41,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 			_defaultPreValues = new Dictionary<string, object>
 			{
 				{"gridLayout", "<table>\n\t<tr>\n\t\t<td id='main'></td>\n\t\t<td id='sidebar' width='25%'></td>\n\t</tr>\n</table>"},
-				{"gridConfig", "{'main':{'layouts':[[50,50],[25,25,25,25]]},'sidebar':{'maxItems':4}}"},
+				{"gridConfig", "{'main':{'layouts':[[100],[50,50],[25,25,25,25]]},'sidebar':{'maxItems':4}}"},
 				{"defaultConfig", "{'allowedDocTypes':['Widget$']}"}
 			};
 		}
