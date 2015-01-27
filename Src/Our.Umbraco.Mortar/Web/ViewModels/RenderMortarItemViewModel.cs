@@ -17,7 +17,7 @@ namespace Our.Umbraco.Mortar.Web.ViewModels
 
 		public MortarItem Item { get; private set; }
 
-		public int Width
+		public decimal Width
 		{
 			get { return Row.Layout[Index]; }
 		}

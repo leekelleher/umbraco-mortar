@@ -1,31 +1,27 @@
 ﻿/* Reset */
 .mortar,
-.mortar *
-{
-	-moz-box-sizing: border-box; 
-	-webkit-box-sizing: border-box; 
-	box-sizing: border-box;
-}
-	
-/* Layout */
-.mortar-layout > table 
-{
-	border-collapse: collapse;
-	border-spacing: 0;
-	width: 100%;
-}
-	
-.mortar-layout > table > tbody > tr > td
-{
-	position: relative;
-	border: solid 1px #ccc;
-    background: #f0f0f0;
-	padding: 10px;
-	vertical-align: top;
+.mortar * {
+    -moz-box-sizing: border-box; 
+    -webkit-box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
-.mortar-layout > table > tbody > tr > td.enabled 
-{
+/* Layout */
+.mortar-layout > table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.mortar-layout > table > tbody > tr > td {
+    position: relative;
+    border: solid 1px #ccc;
+    background: #f0f0f0;
+    padding: 10px;
+    vertical-align: top;
+}
+
+.mortar-layout > table > tbody > tr > td.enabled {
     background: transparent;
 }
 
@@ -106,15 +102,13 @@
     display: block;
 }
 
-.mortar-button-bar--tr 
-{
+.mortar-button-bar--tr {
     position: absolute;
     top: 0;
     right: 0;
 }
 
-.mortar-button-bar--tl 
-{
+.mortar-button-bar--tl {
     position: absolute;
     top: 0;
     left: 0;
@@ -152,8 +146,7 @@
 
 .mortar-item--link,
 .mortar-item--media,
-.mortar-item--embed
-{
+.mortar-item--embed {
     background: #e2e2e2 url(../images/cross.svg) center center no-repeat;
     background-size: 100% 100%;
     font-weight: bold;
@@ -163,7 +156,7 @@
 }
 
 .mortar-item--link .mortar-item__label,
-.mortar-item--media .mortar-item__label  {
+.mortar-item--media .mortar-item__label {
     background: #e2e2e2;
 }
 
@@ -271,4 +264,16 @@
 
 .row-layout-option:hover td {
     border-color: #fff;
+}
+
+.mortar-dialog .control-group .controls .control-group .controls {
+    padding: 0 5px;
+}
+
+.mortar-dialog .ng-invalid .control-group .control-label {
+    color: #b94a48;
+}
+
+.mortar-dialog .ng-invalid .control-group .controls input {
+    border-color: #b94a48;
 }

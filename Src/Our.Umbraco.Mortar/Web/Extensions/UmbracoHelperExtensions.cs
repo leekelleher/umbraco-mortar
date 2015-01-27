@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
 
@@ -14,7 +15,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 	{
 		public static bool SurfaceControllerExists(this UmbracoHelper helper, string controllerName, string actionName = "Index")
 		{
-			using (var timer = DisposableTimer.DebugDuration<UmbracoHelper>(string.Format("SurfaceControllerExists ({0}, {1})", controllerName, actionName)))
+			using (DisposableTimer.DebugDuration<UmbracoHelper>(string.Format("SurfaceControllerExists ({0}, {1})", controllerName, actionName)))
 			{
 				// Setup dummy route data
 				var rd = new RouteData();
@@ -22,9 +23,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 				rd.DataTokens.Add("umbraco", "true");
 
 				// Setup dummy request context
-				var rc = new RequestContext(
-					new HttpContextWrapper(HttpContext.Current),
-					rd);
+				var rc = new RequestContext(new HttpContextWrapper(HttpContext.Current), rd);
 
 				// Get controller factory
 				var cf = ControllerBuilder.Current.GetControllerFactory();
@@ -44,21 +43,18 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 						.Where(x => typeof(ActionResult).IsAssignableFrom(x.ReturnType)))
 					{
 						if (method.Name == actionName)
-						{
 							return true;
-						}
 
 						var attr = method.GetCustomAttribute<ActionNameAttribute>();
 						if (attr != null && attr.Name == actionName)
-						{
 							return true;
-						}
 					}
 
 					return false;
 				}
 				catch (Exception ex)
 				{
+					LogHelper.Error<UmbracoHelper>("Unable to find the SurfaceController", ex);
 					return false;
 				}
 			}

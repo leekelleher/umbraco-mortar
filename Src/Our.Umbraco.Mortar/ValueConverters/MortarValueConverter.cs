@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Our.Umbraco.Mortar.Extensions;
 using Our.Umbraco.Mortar.Helpers;
 using Our.Umbraco.Mortar.Models;
 using Our.Umbraco.Mortar.Web.Extensions;
@@ -16,6 +18,7 @@ using Umbraco.Web.Models;
 
 namespace Our.Umbraco.Mortar.ValueConverters
 {
+	[PropertyValueType(typeof(MortarValue))]
 	[PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
 	public class MortarValueConverter : PropertyValueConverterBase
 	{
@@ -57,17 +60,21 @@ namespace Our.Umbraco.Mortar.ValueConverters
 									switch (item.Type.ToLowerInvariant())
 									{
 										case "richtext":
-											item.Value = ConvertDataToSource_Fake(propertyType, "MortarRichtext", Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue, preview); 
+											item.Value = ConvertDataToSource_Fake(propertyType, "MortarRichtext", Constants.PropertyEditors.TinyMCEAlias, "bodyText", item.RawValue, preview);
 											break;
+
 										case "embed":
 											item.Value = ConvertDataToSource_Fake(propertyType, "MortarEmbed", Constants.PropertyEditors.TextboxMultipleAlias, "embedCode", item.RawValue, preview);
 											break;
+
 										case "link":
 											item.Value = ConvertDataToSource_Link(propertyType, item.RawValue, preview);
 											break;
+
 										case "media":
 											item.Value = ConvertDataToSource_Media(propertyType, item.RawValue, preview);
 											break;
+
 										case "doctype":
 											Guid docTypeGuid;
 											if (item.AdditionalInfo.ContainsKey("docType")
@@ -84,6 +91,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 												item.Value = ConvertDataToSource_DocType(propertyType, docTypeAlias, item.RawValue, preview);
 											}
+
 											break;
 									}
 								}
@@ -104,17 +112,32 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 		protected IPublishedContent ConvertDataToSource_Fake(PublishedPropertyType propertyType, string docTypeAlias, string propEditorAlias, string propAlias, object value, bool preview)
 		{
-			var fakePropType = new PublishedPropertyType(propAlias, propEditorAlias);
-			var fakeContentType = new PublishedContentType(-1, docTypeAlias, new[] { fakePropType });
-			var fakeProp = PublishedProperty.GetDetached(fakePropType.Nested(propertyType), value, preview);
+			var fakePropType = (PublishedPropertyType)typeof(PublishedPropertyType).GetConstructor(
+				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+				null, new[] { typeof(string), typeof(string) }, null)
+				.Invoke(new object[] { propAlias, propEditorAlias });
+
+			var fakeContentType = (PublishedContentType)typeof(PublishedContentType).GetConstructor(
+				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+				null, new[] { typeof(int), typeof(string), typeof(IEnumerable<PublishedPropertyType>) }, null)
+				.Invoke(new object[] { -1, docTypeAlias, new[] { fakePropType } });
+
+			var fakeNestedPropType = fakePropType.ExecuteMethod<PublishedPropertyType>("Nested",
+				propertyType);
+
+			var fakeProp = typeof(PublishedProperty).ExecuteMethod<IPublishedProperty>("GetDetached",
+				fakeNestedPropType,
+				(value == null ? string.Empty : value.ToString()) as object,
+				preview);
+
 			return new DetachedPublishedContent(null, fakeContentType, new[] { fakeProp });
 		}
 
 		protected IPublishedContent ConvertDataToSource_Link(PublishedPropertyType propertyType, object value, bool preview)
 		{
 			int nodeId;
-			return int.TryParse(value.ToString(), out nodeId) 
-				? Umbraco.TypedContent(nodeId) 
+			return int.TryParse(value.ToString(), out nodeId)
+				? Umbraco.TypedContent(nodeId)
 				: null;
 		}
 
@@ -138,8 +161,16 @@ namespace Our.Umbraco.Mortar.ValueConverters
 				var propType = contentType.GetPropertyType(jProp.Key);
 				if (propType != null)
 				{
-					var prop = PublishedProperty.GetDetached(propType.Nested(propertyType),
-						jProp.Value == null ? "" : jProp.Value.ToString(), preview);
+					//var prop = PublishedProperty.GetDetached(propType.Nested(propertyType),
+					//	jProp.Value == null ? string.Empty : jProp.Value.ToString(), preview);
+					//properties.Add(prop);
+
+					var nestedPropType = propType.ExecuteMethod<PublishedPropertyType>("Nested",
+						propertyType);
+					var prop = typeof(PublishedProperty).ExecuteMethod<IPublishedProperty>("GetDetached",
+						nestedPropType,
+						(jProp.Value == null ? string.Empty : jProp.Value.ToString()) as object,
+						preview);
 					properties.Add(prop);
 				}
 			}

@@ -14,27 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{5CF9324B
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "UmbracoCms.7.1.2", "http://localhost:56278", "{97275BED-AF29-42E8-B8D1-69065AA3D9A3}"
-	ProjectSection(WebsiteProperties) = preProject
-		UseIISExpress = "true"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_56278"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\..\Sandbox\Umbraco\UmbracoCms.7.1.2\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56278\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_56278"
-		Release.AspNetCompiler.PhysicalPath = "..\..\..\Sandbox\Umbraco\UmbracoCms.7.1.2\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56278\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		SlnRelativePath = "..\..\..\Sandbox\Umbraco\UmbracoCms.7.1.2\"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.Mortar.Courier", "Src\Our.Umbraco.Mortar.Courier\Our.Umbraco.Mortar.Courier.csproj", "{AC611B8C-44EF-450C-8B7A-D9988830D232}"
 EndProject
 Global
@@ -47,9 +26,6 @@ Global
 		{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97275BED-AF29-42E8-B8D1-69065AA3D9A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97275BED-AF29-42E8-B8D1-69065AA3D9A3}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{97275BED-AF29-42E8-B8D1-69065AA3D9A3}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{AC611B8C-44EF-450C-8B7A-D9988830D232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AC611B8C-44EF-450C-8B7A-D9988830D232}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC611B8C-44EF-450C-8B7A-D9988830D232}.Release|Any CPU.ActiveCfg = Release|Any CPU

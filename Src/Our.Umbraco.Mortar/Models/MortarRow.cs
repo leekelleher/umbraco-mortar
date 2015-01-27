@@ -1,7 +1,7 @@
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json;
+using Umbraco.Core;
 using Umbraco.Core.Models;
 
 namespace Our.Umbraco.Mortar.Models
@@ -12,13 +12,15 @@ namespace Our.Umbraco.Mortar.Models
 		internal string LayoutString { get; set; }
 
 		[JsonIgnore]
-		public ReadOnlyCollection<int> Layout
+		public ReadOnlyCollection<decimal> Layout
 		{
 			get
 			{
-				return LayoutString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-					.Select(int.Parse)
-					.ToList().AsReadOnly();
+				return LayoutString
+					.ToDelimitedList()
+					.Select(decimal.Parse)
+					.ToList()
+					.AsReadOnly();
 			}
 		}
 

@@ -30,6 +30,11 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
             };
 
             $scope.save = function () {
+
+                // Make sure form is valid
+                if (!$scope.mortarForm.$valid)
+                    return;
+
                 // Copy property values to scope model value
                 if ($scope.node) {
                     var value = {
@@ -55,6 +60,10 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
             function loadNode() {
                 mortarResources.getContentAliasByGuid($scope.dialogData.docType).then(function (data1) {
                     contentResource.getScaffold(-20, data1.alias).then(function (data) {
+
+                        // Set the ID of the node (to give context)
+                        data.id = editorState.current.id;
+
                         // Remove the last tab
                         data.tabs.pop();
 
@@ -99,4 +108,3 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
         }
 
     ]);
-

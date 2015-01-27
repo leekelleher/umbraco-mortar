@@ -366,6 +366,13 @@
             <param name="dc"></param>
             <param name="content"></param>
         </member>
+        <member name="M:Umbraco.Web.Cache.DistributedCacheExtensions.RemoveUnpublishedCachePermanently(Umbraco.Web.Cache.DistributedCache,System.Int32[])">
+            <summary>
+            invokes the unpublished page cache refresher to mark all ids for permanent removal
+            </summary>
+            <param name="dc"></param>
+            <param name="contentIds"></param>
+        </member>
         <member name="M:Umbraco.Web.Cache.DistributedCacheExtensions.RefreshMemberCache(Umbraco.Web.Cache.DistributedCache,Umbraco.Core.Models.IMember[])">
             <summary>
             Refreshes the cache among servers for a member
@@ -410,7 +417,14 @@
         </member>
         <member name="M:Umbraco.Web.Cache.DistributedCacheExtensions.RefreshMediaCache(Umbraco.Web.Cache.DistributedCache,Umbraco.Core.Models.IMedia[])">
             <summary>
-            Refreshes the cache amongst servers for a media item
+            Refreshes the cache amongst servers for media items
+            </summary>
+            <param name="dc"></param>
+            <param name="media"></param>
+        </member>
+        <member name="M:Umbraco.Web.Cache.DistributedCacheExtensions.RefreshMediaCacheAfterMoving(Umbraco.Web.Cache.DistributedCache,Umbraco.Core.Events.MoveEventInfo{Umbraco.Core.Models.IMedia}[])">
+            <summary>
+            Refreshes the cache amongst servers for a media item after it's been moved
             </summary>
             <param name="dc"></param>
             <param name="media"></param>
@@ -427,13 +441,19 @@
             look it up. Only here for legacy purposes.
             </remarks>
         </member>
-        <member name="M:Umbraco.Web.Cache.DistributedCacheExtensions.RemoveMediaCache(Umbraco.Web.Cache.DistributedCache,System.Boolean,Umbraco.Core.Models.IMedia[])">
+        <member name="M:Umbraco.Web.Cache.DistributedCacheExtensions.RemoveMediaCacheAfterRecycling(Umbraco.Web.Cache.DistributedCache,Umbraco.Core.Events.MoveEventInfo{Umbraco.Core.Models.IMedia}[])">
             <summary>
-            Removes the cache amongst servers for media items
+            Removes the cache among servers for media items when they are recycled
             </summary>
             <param name="dc"></param>
-            <param name="isPermanentlyDeleted"></param>
             <param name="media"></param>
+        </member>
+        <member name="M:Umbraco.Web.Cache.DistributedCacheExtensions.RemoveMediaCachePermanently(Umbraco.Web.Cache.DistributedCache,System.Int32[])">
+            <summary>
+            Removes the cache among servers for media items when they are permanently deleted
+            </summary>
+            <param name="dc"></param>
+            <param name="mediaIds"></param>
         </member>
         <member name="M:Umbraco.Web.Cache.DistributedCacheExtensions.ClearAllMacroCacheOnCurrentServer(Umbraco.Web.Cache.DistributedCache)">
             <summary>
@@ -523,9 +543,20 @@
             Class which listens to events on business level objects in order to invalidate the cache amongst servers when data changes
             </summary>
         </member>
+        <member name="M:Umbraco.Web.Cache.CacheRefresherEventHandler.ContentServiceTrashed(Umbraco.Core.Services.IContentService,Umbraco.Core.Events.MoveEventArgs{Umbraco.Core.Models.IContent})">
+            <summary>
+            Handles cache refreshing for when content is trashed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            This is for the unpublished page refresher - the entity will be unpublished before being moved to the trash
+            and the unpublished event will take care of remove it from any published caches
+            </remarks>
+        </member>
         <member name="M:Umbraco.Web.Cache.CacheRefresherEventHandler.ContentServiceCopied(Umbraco.Core.Services.IContentService,Umbraco.Core.Events.CopyEventArgs{Umbraco.Core.Models.IContent})">
             <summary>
-            Handles cache refreshgi for when content is copied
+            Handles cache refreshing for when content is copied
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
@@ -859,8 +890,21 @@
         </member>
         <member name="T:Umbraco.Web.Cache.UnpublishedPageCacheRefresher">
             <summary>
-            A cache refresher used for non-published content, this is primarily to notify Examine indexes to update
+            A cache refresher used for non-published content, this is primarily to notify Examine indexes to update and to refresh the RuntimeCacheRefresher
             </summary>
+        </member>
+        <member name="M:Umbraco.Web.Cache.UnpublishedPageCacheRefresher.DeserializeFromJsonPayload(System.String)">
+            <summary>
+            Converts the json to a JsonPayload object
+            </summary>
+            <param name="json"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.Cache.UnpublishedPageCacheRefresher.Refresh(System.String)">
+            <summary>
+            Implement the IJsonCacheRefresher so that we can bulk delete the cache based on multiple IDs for when the recycle bin is emptied
+            </summary>
+            <param name="jsonPayload"></param>
         </member>
         <member name="T:Umbraco.Web.Cache.UserCacheRefresher">
             <summary>
@@ -1395,11 +1439,6 @@
             controller as it will assign it GLOBALLY which is what you def do not want to do.
             </remarks>
         </member>
-        <member name="T:Umbraco.Web.WebApi.AngularJsonOnlyConfigurationAttribute">
-            <summary>
-            Applying this attribute to any webapi controller will ensure that it only contains one json formatter compatible with the angular json vulnerability prevention.
-            </summary>
-        </member>
         <member name="T:Umbraco.Web.Editors.ImagesController">
             <summary>
             A controller used to return images for media
@@ -1514,6 +1553,14 @@
             <summary>
             A model representing a media item to be saved
             </summary>
+        </member>
+        <member name="M:Umbraco.Web.Models.DetachedContent.#ctor(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.IPublishedProperty})">
+            <summary>
+            Initialized a new instance of the <see cref="T:Umbraco.Web.Models.DetachedContent"/> class with properties.
+            </summary>
+            <param name="properties">The properties</param>
+            <remarks>Properties must be detached or nested properties ie their property type must be detached or nested.
+            Such a detached content can be part of a published property value.</remarks>
         </member>
         <member name="T:Umbraco.Web.Install.InstallException">
             <summary>
@@ -1849,6 +1896,28 @@
             An object representing the property type validation settings
             </summary>
         </member>
+        <member name="T:Umbraco.Web.Models.PartialViewMacroModelExtensions">
+            <summary>
+            Extension methods for the PartialViewMacroModel object
+            </summary>
+        </member>
+        <member name="M:Umbraco.Web.Models.PartialViewMacroModelExtensions.GetParameterValue``1(Umbraco.Web.Models.PartialViewMacroModel,System.String,``0)">
+            <summary>
+            Attempt to get a Marco parameter from a PartialViewMacroModel and return a default value otherwise
+            </summary>
+            <param name="partialViewMacroModel"></param>
+            <param name="parameterAlias"></param>
+            <param name="defaultValue"></param>
+            <returns>Parameter value if available, the default value that was passed otherwise.</returns>       
+        </member>
+        <member name="M:Umbraco.Web.Models.PartialViewMacroModelExtensions.GetParameterValue``1(Umbraco.Web.Models.PartialViewMacroModel,System.String)">
+            <summary> 
+            Attempt to get a Marco parameter from a PartialViewMacroModel
+            </summary>
+            <param name="partialViewMacroModel"></param>
+            <param name="parameterAlias"></param>
+            <returns>Parameter value if available, the default value for the type otherwise.</returns>       
+        </member>
         <member name="T:Umbraco.Web.Models.PostRedirectModel">
             <summary>
             A base model containing a value to indicate to Umbraco where to redirect to after Posting if 
@@ -1861,26 +1930,22 @@
             redirected to the current Umbraco page
             </summary>
         </member>
-        <member name="M:Umbraco.Web.Models.PublishedProperty.MapProperties(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.PublishedContent.PublishedPropertyType},System.Collections.Generic.IEnumerable{Umbraco.Core.Models.Property},System.Func{Umbraco.Core.Models.PublishedContent.PublishedPropertyType,Umbraco.Core.Models.Property,System.Object,Umbraco.Core.Models.IPublishedProperty})">
+        <member name="M:Umbraco.Web.Models.PublishedProperty.GetDetached(Umbraco.Core.Models.PublishedContent.PublishedPropertyType,System.Object,System.Boolean)">
             <summary>
-            Maps a collection of Property to a collection of IPublishedProperty for a specified collection of PublishedPropertyType.
+            Creates a detached published property.
             </summary>
-            <param name="propertyTypes">The published property types.</param>
-            <param name="properties">The properties.</param>
-            <param name="map">A mapping function.</param>
-            <returns>A collection of IPublishedProperty corresponding to the collection of PublishedPropertyType
-            and taking values from the collection of Property.</returns>
-            <remarks>Ensures that all conversions took place correctly.</remarks>
+            <param name="propertyType">A published property type.</param>
+            <param name="value">The property data raw value.</param>
+            <param name="isPreviewing">A value indicating whether to evaluate the property value in previewing context.</param>
+            <returns>A detached published property holding the value.</returns>
         </member>
-        <member name="M:Umbraco.Web.Models.PublishedProperty.MapProperties(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.PublishedContent.PublishedPropertyType},System.Collections.Generic.IEnumerable{Umbraco.Core.Models.Property},Umbraco.Core.PropertyEditors.PropertyEditorResolver,Umbraco.Core.Services.IDataTypeService,System.Func{Umbraco.Core.Models.PublishedContent.PublishedPropertyType,Umbraco.Core.Models.Property,System.Object,Umbraco.Core.Models.IPublishedProperty})">
+        <member name="M:Umbraco.Web.Models.PublishedProperty.MapProperties(System.Collections.Generic.IEnumerable{Umbraco.Core.Models.PublishedContent.PublishedPropertyType},System.Collections.Generic.IEnumerable{Umbraco.Core.Models.Property},System.Func{Umbraco.Core.Models.PublishedContent.PublishedPropertyType,System.Object,Umbraco.Core.Models.IPublishedProperty})">
             <summary>
             Maps a collection of Property to a collection of IPublishedProperty for a specified collection of PublishedPropertyType.
             </summary>
             <param name="propertyTypes">The published property types.</param>
             <param name="properties">The properties.</param>
             <param name="map">A mapping function.</param>
-            <param name="propertyEditorResolver">A PropertyEditorResolver instance.</param>
-            <param name="dataTypeService">An IDataTypeService instance.</param>
             <returns>A collection of IPublishedProperty corresponding to the collection of PublishedPropertyType
             and taking values from the collection of Property.</returns>
             <remarks>Ensures that all conversions took place correctly.</remarks>
@@ -1900,6 +1965,15 @@
             Creates a new RedirectToUmbracoResult
             </summary>		
             <param name="umbracoContext"></param>
+        </member>
+        <member name="T:Umbraco.Web.PropertyEditors.TagsDataController">
+            <summary>
+            A controller used for type-ahead values for tags
+            </summary>
+            <remarks>
+            DO NOT inherit from UmbracoAuthorizedJsonController since we don't want to use the angularized
+            json formatter as it causes probs.
+            </remarks>
         </member>
         <member name="T:Umbraco.Web.PublishedCache.MemberPublishedContent">
             <summary>
@@ -2681,11 +2755,27 @@
             A custom validator to ensure that all values in the list are unique
             </summary>
         </member>
+        <member name="M:Umbraco.Web.PropertyEditors.ImageCropperPropertyEditor.#cctor">
+            <summary>
+            We're going to bind to the MediaService Saving event so that we can populate the umbracoFile size, type, etc... label fields
+            if we find any attached to the current media item.
+            </summary>
+            <remarks>
+            I think this kind of logic belongs on this property editor, I guess it could exist elsewhere but it all has to do with the cropper.
+            </remarks>
+        </member>
         <member name="M:Umbraco.Web.PropertyEditors.ImageCropperPropertyEditor.CreateValueEditor">
             <summary>
             Creates our custom value editor
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.PropertyEditors.ImageCropperPropertyEditor.ContentServiceCopied(Umbraco.Core.Services.IContentService,Umbraco.Core.Events.CopyEventArgs{Umbraco.Core.Models.IContent})">
+            <summary>
+            After the content is copied we need to check if there are files that also need to be copied
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
         </member>
         <member name="T:Umbraco.Web.PropertyEditors.PropertyValueEditorWrapper">
             <summary>
@@ -2848,12 +2938,6 @@
             Constructor
             </summary>
             <param name="umbracoContext"></param>
-        </member>
-        <member name="M:Umbraco.Web.Editors.MemberController.Initialize(System.Web.Http.Controllers.HttpControllerContext)">
-            <summary>
-            Ensure all GUIDs are formatted without hyphens
-            </summary>
-            <param name="controllerContext"></param>
         </member>
         <member name="M:Umbraco.Web.Editors.MemberController.GetByKey(System.Guid)">
             <summary>
@@ -3302,13 +3386,21 @@
         </member>
         <member name="T:Umbraco.Web.PropertyEditors.TagPropertyEditorTagDefinition">
             <summary>
-            Used to dynamically change the tag group based on the pre-values
+            Used to dynamically change the tag group and storage type based on the pre-values
             </summary>
         </member>
         <member name="P:Umbraco.Web.PropertyEditors.TagsPropertyEditor.DefaultPreValues">
             <summary>
             Override to supply the default group
             </summary>
+        </member>
+        <member name="M:Umbraco.Web.PropertyEditors.TagsPropertyEditor.TagPropertyValueEditor.ConvertEditorToDb(Umbraco.Core.Models.Editors.ContentPropertyData,System.Object)">
+            <summary>
+            This needs to return IEnumerable{string}
+            </summary>
+            <param name="editorValue"></param>
+            <param name="currentValue"></param>
+            <returns></returns>
         </member>
         <member name="T:Umbraco.Web.PropertyEditors.LabelPropertyEditor.LabelPropertyValueEditor">
             <summary>
@@ -3404,7 +3496,7 @@
             The ImageProcessor.Web Url.
             </returns>
         </member>
-        <member name="M:Umbraco.Web.ImageCropperTemplateExtensions.GetCropUrl(Umbraco.Core.Models.IPublishedContent,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.Nullable{Umbraco.Web.Models.ImageCropMode},System.Nullable{Umbraco.Web.Models.ImageCropAnchor},System.Boolean,System.Boolean,System.Boolean,System.String)">
+        <member name="M:Umbraco.Web.ImageCropperTemplateExtensions.GetCropUrl(Umbraco.Core.Models.IPublishedContent,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.Nullable{Umbraco.Web.Models.ImageCropMode},System.Nullable{Umbraco.Web.Models.ImageCropAnchor},System.Boolean,System.Boolean,System.Boolean,System.String,System.Nullable{Umbraco.Web.Models.ImageCropRatioMode},System.Boolean)">
             <summary>
             Gets the ImageProcessor Url from the IPublishedContent item.
             </summary>
@@ -3444,11 +3536,17 @@
             <param name="furtherOptions">
             The further options.
             </param>
+            <param name="ratioMode">
+            Use a dimension as a ratio
+            </param>  
+            <param name="upScale">
+            If the image should be upscaled to requested dimensions
+            </param>         
             <returns>
             The <see cref="T:System.String"/>.
             </returns>
         </member>
-        <member name="M:Umbraco.Web.ImageCropperTemplateExtensions.GetCropUrl(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.Nullable{Umbraco.Web.Models.ImageCropMode},System.Nullable{Umbraco.Web.Models.ImageCropAnchor},System.Boolean,System.Boolean,System.String,System.String)">
+        <member name="M:Umbraco.Web.ImageCropperTemplateExtensions.GetCropUrl(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.Nullable{Umbraco.Web.Models.ImageCropMode},System.Nullable{Umbraco.Web.Models.ImageCropAnchor},System.Boolean,System.Boolean,System.String,System.String,System.Nullable{Umbraco.Web.Models.ImageCropRatioMode},System.Boolean)">
             <summary>
             Gets the ImageProcessor Url from the image path.
             </summary>
@@ -3488,6 +3586,12 @@
             <param name="furtherOptions">
             The further options.
             </param>
+            <param name="ratioMode">
+            Use a dimension as a ratio
+            </param>  
+            <param name="upScale">
+            If the image should be upscaled to requested dimensions
+            </param>         
             <returns>
             The <see cref="T:System.String"/>.
             </returns>
@@ -3527,6 +3631,36 @@
             <summary>
             A class that exposes methods used to query tag data in views
             </summary>
+        </member>
+        <member name="M:Umbraco.Web.TagQuery.GetContentByTag(System.String,System.String)">
+            <summary>
+            Returns all content that is tagged with the specified tag value and optional tag group
+            </summary>
+            <param name="tag"></param>
+            <param name="tagGroup"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.TagQuery.GetContentByTagGroup(System.String)">
+            <summary>
+            Returns all content that has been tagged with any tag in the specified group
+            </summary>
+            <param name="tagGroup"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.TagQuery.GetMediaByTag(System.String,System.String)">
+            <summary>
+            Returns all Media that is tagged with the specified tag value and optional tag group
+            </summary>
+            <param name="tag"></param>
+            <param name="tagGroup"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.TagQuery.GetMediaByTagGroup(System.String)">
+            <summary>
+            Returns all Media that has been tagged with any tag in the specified group
+            </summary>
+            <param name="tagGroup"></param>
+            <returns></returns>
         </member>
         <member name="M:Umbraco.Web.TagQuery.GetAllTags(System.String)">
             <summary>
@@ -5289,6 +5423,11 @@
             <param name="transportContext"></param>
             <returns></returns>
         </member>
+        <member name="T:Umbraco.Web.WebApi.AngularJsonOnlyConfigurationAttribute">
+            <summary>
+            Applying this attribute to any webapi controller will ensure that it only contains one json formatter compatible with the angular json vulnerability prevention.
+            </summary>
+        </member>
         <member name="T:Umbraco.Web.WebApi.Binders.ContentItemBaseBinder`2">
             <summary>
             Binds the content model to the controller action for the posted multi-part Post
@@ -5498,24 +5637,6 @@
             <param name="filters"></param>
             <param name="index"></param>
             <returns></returns>
-        </member>
-        <member name="M:Umbraco.Web.WebApi.HttpControllerContextExtensions.SetOutgoingNoHyphenGuidFormat(System.Web.Http.Controllers.HttpControllerContext)">
-            <summary>
-            Sets the JSON GUID format to not have hyphens
-            </summary>
-            <param name="controllerContext"></param>
-        </member>
-        <member name="M:Umbraco.Web.WebApi.HttpControllerContextExtensions.SetOutgoingDateTimeFormat(System.Web.Http.Controllers.HttpControllerContext,System.String)">
-            <summary>
-            Sets the JSON datetime format to be a custom one
-            </summary>
-            <param name="controllerContext"></param>
-            <param name="format"></param>
-        </member>
-        <member name="M:Umbraco.Web.WebApi.HttpControllerContextExtensions.SetOutgoingDateTimeFormat(System.Web.Http.Controllers.HttpControllerContext)">
-            <summary>
-            Sets the JSON datetime format to be our regular iso standard
-            </summary>
         </member>
         <member name="T:Umbraco.Web.WebApi.CustomDateTimeConvertor">
             <summary>
@@ -5761,6 +5882,11 @@
             Specifies if the member should be logged in if they are succesfully created
             </summary>
         </member>
+        <member name="P:Umbraco.Web.Models.RegisterModel.CreatePersistentLoginCookie">
+            <summary>
+            Default is true to create a persistent cookie if LoginOnSuccess is true
+            </summary>
+        </member>
         <member name="T:Umbraco.Web.Models.RegisterModel.RegisterModelBinder">
             <summary>
             A custom model binder for MVC because the default ctor performs a lookup!
@@ -5825,6 +5951,23 @@
             </summary>
             <param name="username"></param>
             <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.Security.MembershipHelper.Logout">
+            <summary>
+            Logs out the current member
+            </summary>
+        </member>
+        <member name="M:Umbraco.Web.Security.MembershipHelper.GetCurrentMember">
+            <summary>
+            Returns the currently logged in member as IPublishedContent
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.Security.MembershipHelper.GetCurrentMemberId">
+            <summary>
+            Returns the currently logged in member id, -1 if they are not logged in
+            </summary>
             <returns></returns>
         </member>
         <member name="M:Umbraco.Web.Security.MembershipHelper.GetCurrentMemberProfileModel">
@@ -5896,7 +6039,7 @@
             Returns successful if the membershipuser required updating, otherwise returns failed if it didn't require updating.
             </returns>
         </member>
-        <member name="M:Umbraco.Web.Security.MembershipHelper.GetCurrentMember">
+        <member name="M:Umbraco.Web.Security.MembershipHelper.GetCurrentPersistedMember">
             <summary>
             Returns the currently logged in IMember object - this should never be exposed to the front-end since it's returning a business logic entity!
             </summary>
@@ -6179,6 +6322,13 @@
             Creates our custom value editor
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Umbraco.Web.PropertyEditors.FileUploadPropertyEditor.ContentServiceCopied(Umbraco.Core.Services.IContentService,Umbraco.Core.Events.CopyEventArgs{Umbraco.Core.Models.IContent})">
+            <summary>
+            After the content is copied we need to check if there are files that also need to be copied
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
         </member>
         <member name="T:Umbraco.Web.PropertyEditors.FileUploadPropertyEditor.FileUploadPreValueEditor">
             <summary>
@@ -8603,15 +8753,11 @@
         <member name="P:Umbraco.Web.UI.JavaScript.Resources.JsInitialize">
              <summary>
                Looks up a localized string similar to [
-                &apos;lib/jquery/jquery-ui-1.10.3.custom.min.js&apos;,
+                &apos;lib/jquery/jquery-2.0.3.min.js&apos;,
+                &apos;lib/angular/1.1.5/angular.min.js&apos;,
+                &apos;lib/underscore/underscore.js&apos;,
             
-                /*
                 &apos;lib/jquery/jquery-ui-1.10.3.custom.min.js&apos;,
-                &apos;lib/jquery/jquery.ui.core.min.js&apos;,
-                &apos;lib/jquery/jquery.ui.widget.min.js&apos;,
-                &apos;lib/jquery/jquery.ui.mouse.min.js&apos;,
-                &apos;lib/jquery/jquery.ui.sortable.min.js&apos;,
-                */
             
                 &apos;lib/angular/1.1.5/angular-cookies.min.js&apos;,
                 &apos;lib/angular/1.1.5/angular-mobile.js&apos;,
@@ -8619,46 +8765,21 @@
             
                 &apos;lib/angular/angular-ui-sortable.js&apos;,
                 
-                &apos;lib/jquery/jquery.u [rest of string was truncated]&quot;;.
-             </summary>
-        </member>
-        <member name="P:Umbraco.Web.UI.JavaScript.Resources.JsNoCache">
-             <summary>
-               Looks up a localized string similar to yepnope.addFilter(function (resourceObj) {
-                var url = resourceObj.url;
-                var rnd = ##rnd##;
-                var _op = &quot;?&quot;;
-                if(url.indexOf(&quot;lib/&quot;) === 0 || url.indexOf(&quot;js/umbraco.&quot;) === 0){
-                    return resourceObj;
-                }
-                if(url.indexOf(&quot;?&quot;) &gt; 0){
-                    _op = &quot;&amp;&quot;;
-                }
-            
-                resourceObj.url = resourceObj.url + _op + &quot;umb__rnd=&quot; + rnd;
-                return resourceObj;
-            });.
+                &apos;lib/jquery/jquery.upload/js/jquery.fileupload.js&apos;,
+                &apos;lib/jquery/jquery.upload/js/load-image.min.js&apos;,
+                &apos;lib/jquery/jquery.upload/js/ [rest of string was truncated]&quot;;.
              </summary>
         </member>
         <member name="P:Umbraco.Web.UI.JavaScript.Resources.Main">
              <summary>
-               Looks up a localized string similar to &quot;##JsNoCache##&quot;
-            yepnope({
-                load: [
-                     &apos;lib/jquery/jquery-2.0.3.min.js&apos;,
-                     &apos;lib/angular/1.1.5/angular.min.js&apos;,
-                     &apos;lib/underscore/underscore.js&apos;,
-                ],
-                complete: function () {
-                    yepnope({
-                        load: &quot;##JsInitialize##&quot;,
-                        complete: function () {
+               Looks up a localized string similar to LazyLoad.js(&quot;##JsInitialize##&quot;, function () {
+                //we need to set the legacy UmbClientMgr path
+                UmbClientMgr.setUmbracoPath(&apos;&quot;##UmbracoPath##&quot;&apos;);
             
-                            //we need to set the legacy UmbClientMgr path
-                            UmbClientMgr.setUmbracoPath(&apos;&quot;##UmbracoPath##&quot;&apos;);
-            
-                            jQuery(document).ready(function () {
-                                [rest of string was truncated]&quot;;.
+                jQuery(document).ready(function () {
+                    angular.bootstrap(document, [&apos;umbraco&apos;]);
+                });
+            });.
              </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "P:Umbraco.Web.UI.JavaScript.Resources.ServerVariables" -->
@@ -11021,15 +11142,15 @@
             <returns>The route.</returns>
             <remarks>The value of <paramref name="preview"/> overrides the context.</remarks>
         </member>
-        <member name="M:Umbraco.Web.PublishedCache.IPublishedContentCache.CreateFragment(System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Boolean,System.Boolean)">
+        <member name="M:Umbraco.Web.PublishedCache.IPublishedContentCache.CreateDetachedProperty(Umbraco.Core.Models.PublishedContent.PublishedPropertyType,System.Object,System.Boolean)">
             <summary>
-            Creates a content fragment.
+            Creates a detached property.
             </summary>
-            <param name="contentTypeAlias">The content type alias.</param>
-            <param name="dataValues">The content property raw values.</param>
-            <param name="isPreviewing">A value indicating whether the fragment is previewing.</param>
-            <param name="managed">A value indicating whether the fragment is managed by the cache.</param>
-            <returns>The newly created content fragment.</returns>
+            <param name="propertyType">The published property type.</param>
+            <param name="value">The value.</param>
+            <param name="isPreviewing">A value indicating whether the property is created within a previewing context.</param>
+            <returns>A detached property.</returns>
+            <remarks>Implementations must check that propertyType.IsDetachedOrNested is true.</remarks>
         </member>
         <member name="T:Umbraco.Web.PublishedContentExtensions">
             <summary>
@@ -12720,6 +12841,17 @@
             <remarks>
             We need to do this on the Started event as to guarantee that all resolvers are setup properly.
             </remarks>		
+        </member>
+        <member name="M:Umbraco.Web.Search.ExamineEvents.ContentTypeCacheRefresherCacheUpdated(Umbraco.Web.Cache.ContentTypeCacheRefresher,Umbraco.Core.Cache.CacheRefresherEventArgs)">
+            <summary>
+            This is used to refresh content indexers IndexData based on the DataService whenever a content type is changed since
+            properties may have been added/removed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            See: http://issues.umbraco.org/issue/U4-4798
+            </remarks>
         </member>
         <member name="M:Umbraco.Web.Search.ExamineEvents.MediaCacheRefresherCacheUpdated(Umbraco.Web.Cache.MediaCacheRefresher,Umbraco.Core.Cache.CacheRefresherEventArgs)">
             <summary>
@@ -17524,6 +17656,24 @@
             <summary>
             Summary description for helper.
             </summary>
+        </member>
+        <member name="M:umbraco.helper.parseAttribute(System.Collections.IDictionary,System.String)">
+            <summary>
+            This method will parse the attribute value to look for some special syntax such as
+                [@requestKey]
+                [%sessionKey]
+                [#pageElement]
+                [$recursiveValue]
+            </summary>
+            <param name="pageElements"></param>
+            <param name="attributeValue"></param>
+            <returns></returns>
+            <remarks>
+            You can even apply fallback's separated by comma's like:
+            
+                [@requestKey],[%sessionKey]
+            
+            </remarks>
         </member>
         <member name="T:umbraco.item">
             <summary>
