@@ -16,9 +16,11 @@ namespace Our.Umbraco.Mortar.Models
 		{
 			get
 			{
-				return LayoutString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+				return LayoutString
+					.ToDelimitedList()
 					.Select(decimal.Parse)
-					.ToList().AsReadOnly();
+					.ToList()
+					.AsReadOnly();
 			}
 		}
 

@@ -31,7 +31,8 @@ namespace Our.Umbraco.Mortar.JsonConverters
 			{
 				Type = tempDictionary["type"].ToString(),
 				RawValue = tempDictionary["value"],
-				AdditionalInfo = tempDictionary.Where(x => x.Key != "type" && x.Key != "value")
+				AdditionalInfo = tempDictionary
+					.Where(x => x.Key != "type" && x.Key != "value")
 					.ToDictionary(k => k.Key, v => v.Value.ToString())
 			};
 

@@ -11,9 +11,11 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 {
 	public static class MortarExtensions
 	{
-		public static HelperResult RenderMortarItems(this HtmlHelper helper,
+		public static HelperResult RenderMortarItems(
+			this HtmlHelper helper,
 			MortarRow row,
-			Func<RenderMortarItemViewModel, HelperResult> template)
+			Func<RenderMortarItemViewModel,
+			HelperResult> template)
 		{
 			return new HelperResult(writer =>
 			{
@@ -26,7 +28,9 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			});
 		}
 
-		public static HtmlString RenderMortarItem(this HtmlHelper helper, MortarRow row,
+		public static HtmlString RenderMortarItem(
+			this HtmlHelper helper,
+			MortarRow row,
 			MortarItem item,
 			string viewPath = "",
 			string actionName = "",
@@ -59,7 +63,9 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			return helper.Partial(viewPath + item.Value.DocumentTypeAlias, model ?? item.Value);
 		}
 
-		public static HtmlString RenderMortarItem(this HtmlHelper helper, RenderMortarItemViewModel item,
+		public static HtmlString RenderMortarItem(
+			this HtmlHelper helper,
+			RenderMortarItemViewModel item,
 			string viewPath = "",
 			string actionName = "",
 			object model = null)
