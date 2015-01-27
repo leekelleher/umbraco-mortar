@@ -1,6 +1,6 @@
 ﻿/* Directives */
 angular.module("umbraco.directives").directive('mortarLayout',
-    function ($timeout, $compile, $routeParams, dialogService, notificationsService) {
+    function ($timeout, $compile, $routeParams, dialogService, notificationsService, localizationService) {
 
         var link = function ($scope, element, attrs, ctrl) {
 
@@ -22,7 +22,11 @@ angular.module("umbraco.directives").directive('mortarLayout',
             }
 
             $scope.removeRow = function (cellId, index) {
-                $scope.model.value[cellId].splice(index, 1);
+                localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                    if (confirm(value)) {
+                        $scope.model.value[cellId].splice(index, 1);
+                    }
+                });
             };
 
             $scope.addRow = function (cellId, layout) {
@@ -220,9 +224,9 @@ angular.module("umbraco.directives").directive('mortarRow',
 
                 // Create the toolbar
                 template.append($("<div class='mortar-row__button-bar mortar-button-bar mortar-button-bar--vertical mortar-button-bar--tl'>" +
-                    "<a href='#' ng-click=\"$parent.removeRow(cellId, $parent.$index)\" prevent-default><i class='icon-delete' /></a>" +
+                    "<a href='#' ng-click=\"$parent.removeRow(cellId, $parent.$index)\" prevent-default><i class='icon-trash' /></a>" +
                     "<a href='#' class='mortar-row__options' ng-click=\"showOptions()\" ng-show='canShowOptions()' prevent-default><i class='icon-settings' /></a>" +
-                    "<a href='#' class='mortar-row__sort' ng-show='$parent.model.value[cellId].length > 1' prevent-default><i class='icon-list' /></a>" +
+                    "<a href='#' class='mortar-row__sort' ng-show='$parent.model.value[cellId].length > 1' prevent-default><i class='icon-navigation-vertical' /></a>" +
                     "</div>"));
 
                 // Create the table
@@ -331,7 +335,8 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
         "angularHelper",
         "stylesheetResource",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($q, $timeout, tinyMceService, assetsService, angularHelper, stylesheetResource, mortarResources) {
+        "localizationService",
+        function ($q, $timeout, tinyMceService, assetsService, angularHelper, stylesheetResource, mortarResources, localizationService) {
 
             var guid = function () {
                 function _p8(s) {
@@ -346,7 +351,11 @@ angular.module("umbraco.directives").directive('mortarRichtextItem',
                 $scope.guid = guid();
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 $scope.toggleToolbar = function () {
@@ -612,7 +621,8 @@ angular.module("umbraco.directives").directive('mortarLinkItem',
         "notificationsService",
         "entityResource",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+        "localizationService",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources, localizationService) {
 
             var link = function ($scope, element, attrs, ctrl) {
 
@@ -626,7 +636,11 @@ angular.module("umbraco.directives").directive('mortarLinkItem',
                 };
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 var dialogConfig = {
@@ -706,7 +720,8 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
         "notificationsService",
         "entityResource",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+        "localizationService",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources, localizationService) {
 
             var link = function ($scope, element, attrs, ctrl) {
 
@@ -721,7 +736,11 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                 };
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 var dialogConfig = {
@@ -729,7 +748,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
                     callback: function (data) {
                         $scope.model.value = data.id;
                         $scope.node.name = data.name;
-                        $scope.node.url = data.image + "?width=100&height=100";
+                        $scope.node.url = data.image + "?width=500&height=220&mode=max";
                     }
                 };
 
@@ -741,7 +760,7 @@ angular.module("umbraco.directives").directive('mortarMediaItem',
 
                             // Only set the URL if it's an image
                             if (typeof data.metaData.umbracoFile !== "undefined") {
-                                $scope.node.url = data.metaData.umbracoFile.Value + "?width=100&height=100";
+                                $scope.node.url = data.metaData.umbracoFile.Value + "?width=500&height=220&mode=max";
                             }
                         });
                     } else if ($scope.model.value && $scope.model.value == "-1") {
@@ -785,7 +804,8 @@ angular.module("umbraco.directives").directive('mortarEmbedItem',
         "notificationsService",
         "entityResource",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources) {
+        "localizationService",
+        function ($compile, $routeParams, dialogService, notificationsService, entityResource, mortarResources, localizationService) {
 
             var link = function ($scope, element, attrs, ctrl) {
 
@@ -795,7 +815,11 @@ angular.module("umbraco.directives").directive('mortarEmbedItem',
                 };
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 var dialogConfig = {
@@ -838,8 +862,9 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
     [
         "$compile",
         "Our.Umbraco.Mortar.Services.docTypeDialogService",
+        "localizationService",
         "Our.Umbraco.Mortar.Resources.mortarResources",
-        function ($compile, docTypeDialogService, mortarResources) {
+        function ($compile, docTypeDialogService, localizationService, mortarResources) {
 
             var link = function ($scope, element, attrs, ctrl) {
 
@@ -859,7 +884,6 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
                             value: $scope.model.value
                         },
                         callback: function (data) {
-                            console.log(data);
                             $scope.model.docType = data.docType;
                             $scope.model.value = data.value;
                         }
@@ -867,7 +891,11 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
                 };
 
                 $scope.remove = function () {
-                    $scope.model = null;
+                    localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
+                        if (confirm(value)) {
+                            $scope.model = null;
+                        }
+                    });
                 };
 
                 if ($scope.model.value && $scope.model.value == "-1") {
