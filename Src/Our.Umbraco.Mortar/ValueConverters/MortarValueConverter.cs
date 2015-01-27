@@ -127,7 +127,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 			var fakeProp = typeof(PublishedProperty).ExecuteMethod<IPublishedProperty>("GetDetached",
 				fakeNestedPropType,
-				(value == null ? "" : value.ToString()) as object,
+				(value == null ? string.Empty : value.ToString()) as object,
 				preview);
 
 			return new DetachedPublishedContent(null, fakeContentType, new[] { fakeProp });
@@ -162,14 +162,14 @@ namespace Our.Umbraco.Mortar.ValueConverters
 				if (propType != null)
 				{
 					//var prop = PublishedProperty.GetDetached(propType.Nested(propertyType),
-					//	jProp.Value == null ? "" : jProp.Value.ToString(), preview);
+					//	jProp.Value == null ? string.Empty : jProp.Value.ToString(), preview);
 					//properties.Add(prop);
 
 					var nestedPropType = propType.ExecuteMethod<PublishedPropertyType>("Nested",
 						propertyType);
 					var prop = typeof(PublishedProperty).ExecuteMethod<IPublishedProperty>("GetDetached",
 						nestedPropType,
-						(jProp.Value == null ? "" : jProp.Value.ToString()) as object,
+						(jProp.Value == null ? string.Empty : jProp.Value.ToString()) as object,
 						preview);
 					properties.Add(prop);
 				}
