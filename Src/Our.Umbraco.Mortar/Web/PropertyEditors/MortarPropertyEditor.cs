@@ -42,7 +42,9 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 			{
 				{"gridLayout", "<table>\n\t<tr>\n\t\t<td id='main'></td>\n\t\t<td id='sidebar' width='25%'></td>\n\t</tr>\n</table>"},
 				{"gridConfig", "{'main':{'layouts':[[100],[50,50],[25,25,25,25]]},'sidebar':{'maxItems':4}}"},
-				{"defaultConfig", "{'allowedDocTypes':['Widget$']}"}
+				{"defaultConfig", "{'allowedDocTypes':['Widget$']}"},
+				{"customCssPath", ""},
+				{"customJsPath", ""}
 			};
 		}
 
@@ -63,6 +65,12 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 
 			[PreValueField("defaultConfig", "Default Config", "/App_Plugins/Mortar/Views/mortar.jsonTextarea.html", Description = "Provide a default config that applies to all grid cells. This should be in the form of a JSON object.")]
 			public string DefaultConfig { get; set; }
+
+			[PreValueField("customCssPath", "Custom CSS path", "textstring", Description = "(Optional) Enter the path of a CSS file to apply custom styles to Mortar.")]
+			public string CustomCss { get; set; }
+
+			[PreValueField("customJsPath", "Custom JavaScript path", "textstring", Description = "(Optional) Enter the path of a JavaScript file to apply custom functionality to Mortar.")]
+			public string CustomJs { get; set; }
 		}
 
 		#endregion
