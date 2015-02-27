@@ -17,7 +17,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 
 namespace Our.Umbraco.Mortar.ValueConverters
-{
+{ 
 	[PropertyValueType(typeof(MortarValue))]
 	[PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
 	public class MortarValueConverter : PropertyValueConverterBase
@@ -137,7 +137,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 		{
 			int nodeId;
 			return int.TryParse(value.ToString(), out nodeId)
-				? Umbraco.TypedContent(nodeId)
+				? UmbracoContext.Current.ContentCache.GetById(preview, nodeId)
 				: null;
 		}
 
@@ -145,7 +145,7 @@ namespace Our.Umbraco.Mortar.ValueConverters
 		{
 			int nodeId;
 			return int.TryParse(value.ToString(), out nodeId)
-				? Umbraco.TypedMedia(nodeId)
+				? UmbracoContext.Current.MediaCache.GetById(preview, nodeId)
 				: null;
 		}
 
