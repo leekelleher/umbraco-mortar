@@ -38,10 +38,11 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			// Hat-Tip: https://gist.github.com/sniffdk/7600822
 			if (UmbracoContext.Current == null)
 			{
-				if (HttpContext.Current == null)
-					HttpContext.Current = new HttpContext(new HttpRequest("", "http://tempuri.org", ""), new HttpResponse(new StringWriter()));
+				var httpContext = HttpContext.Current != null
+					? HttpContext.Current
+					: new HttpContext(new HttpRequest(string.Empty, "http://tempuri.org", string.Empty), new HttpResponse(new StringWriter()));
 
-				UmbracoContext.EnsureContext(new HttpContextWrapper(HttpContext.Current), ApplicationContext.Current, true);
+				UmbracoContext.EnsureContext(new HttpContextWrapper(httpContext), ApplicationContext.Current, true);
 			}
 		}
 
