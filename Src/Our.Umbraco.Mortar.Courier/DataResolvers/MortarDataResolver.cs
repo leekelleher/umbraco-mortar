@@ -116,9 +116,27 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
                                     if (mortarItem.AdditionalInfo.ContainsKey("docType"))
                                     {
                                         docTypeAlias = mortarItem.AdditionalInfo["docType"];
+                                        DocumentType docType;
+                                        Guid docTypeGuid;
+                                        if (Guid.TryParse(docTypeAlias, out docTypeGuid))
+                                        {
+                                            docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
+                                                new ItemIdentifier(docTypeGuid.ToString(),
+                                                    ProviderIDCollection.documentTypeItemProviderGuid));
+                                            docTypeAlias = docType.Alias;
+                                        }
+                                        else
+                                        {
+                                            docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
+                                                new ItemIdentifier(docTypeAlias,
+                                                    ProviderIDCollection.documentTypeItemProviderGuid));
+                                            docTypeGuid = docType.UniqueId;
+                                        }
 
                                         if (direction == Direction.Packaging)
                                         {
+                                            mortarItem.AdditionalInfo["docType"] = docTypeAlias;
+
                                             // add dependency for the DocType
                                             var name = string.Concat("Document type: ", docTypeAlias);
                                             var dependency = new Dependency(name, docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid);
@@ -126,10 +144,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
                                         }
                                         else if (direction == Direction.Extracting)
                                         {
-                                            var docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
-                                                    new ItemIdentifier(docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid));
-                                            
-                                            mortarItem.AdditionalInfo["docType"] = docType.UniqueId.ToString();
+                                            mortarItem.AdditionalInfo["docType"] = docTypeGuid.ToString();
                                         }
                                     }
 
