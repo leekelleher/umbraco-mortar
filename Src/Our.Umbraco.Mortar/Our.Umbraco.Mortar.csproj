@@ -31,34 +31,36 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ClientDependency.Core">
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\ClientDependency.Core.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\packages\ClientDependency.1.7.1.2\lib\ClientDependency.Core.dll</HintPath>
     </Reference>
     <Reference Include="interfaces">
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\interfaces.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\packages\UmbracoCms.Core.7.1.4\lib\interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>False</Private>
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.4.0.20710.0\lib\net40\System.Web.Http.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="umbraco">
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\umbraco.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\packages\UmbracoCms.Core.7.1.4\lib\umbraco.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.Core">
-      <HintPath>..\..\Packages\UmbracoCms.Core.7.1.4\lib\Umbraco.Core.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\packages\UmbracoCms.Core.7.1.4\lib\Umbraco.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -93,6 +95,10 @@
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.jsonTextarea.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.docTypeDialog.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
