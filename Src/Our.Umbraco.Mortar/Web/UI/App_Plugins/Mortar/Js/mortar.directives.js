@@ -868,13 +868,15 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
 
             var link = function ($scope, element, attrs, ctrl) {
 
-                mortarResources.getDocTypePreview($scope.model.docType).then(function (data) {
-                    if (data.view != "") {
-                        var label = element.find(".mortar-item__label");
-                        label.html(data.view).show();
-                        $compile(label.contents())($scope);
-                    }
-                });
+                if ($scope.layoutConfig.enablePreview) {
+                    mortarResources.getDocTypePreview($scope.model.docType).then(function (data) {
+                        if (data.view != "") {
+                            var label = element.find(".mortar-item__label");
+                            label.html(data.view).show();
+                            $compile(label.contents())($scope);
+                        }
+                    });
+                }
 
                 $scope.configure = function () {
                     docTypeDialogService.open({
