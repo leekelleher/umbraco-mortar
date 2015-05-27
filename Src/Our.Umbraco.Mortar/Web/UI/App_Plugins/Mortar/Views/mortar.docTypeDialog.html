@@ -10,8 +10,9 @@
 
         <div ng-switch-when="edit">
 
-            <div style="margin-bottom: -25px;" ng-show="dialogOptions.requireName">
-                <umb-property property="nameProperty" >
+            <div class="mortar-dialog-header" ng-show="dialogOptions.requireName">
+                <h3><i class="icon {{node.icon}}"></i> {{node.contentTypeName}}</h3>
+                <umb-property property="nameProperty">
                     <input type="text" name="widgetName" ng-model="nameProperty.value" id="{{nameProperty.alias}}"
                            class="umb-editor umb-textstring textstring"
                            ng-required="dialogOptions.requireName" />

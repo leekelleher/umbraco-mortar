@@ -266,6 +266,23 @@
     border-color: #fff;
 }
 
+.mortar-dialog .mortar-dialog-header {
+    margin-bottom: -25px;
+}
+
+.mortar-dialog .mortar-dialog-header .umb-control-group
+{
+    border-bottom: none;
+}
+
+.mortar-dialog .mortar-dialog-header h3 {
+    margin: 0;
+}
+
+.mortar-dialog .mortar-dialog-header h3 i {
+    font-size: inherit;
+}
+
 .mortar-dialog .control-group .controls .control-group .controls {
     padding: 0 5px;
 }
