@@ -43,7 +43,12 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			ResolvePropertyData(item, propertyData, Direction.Packaging);
 		}
 
-		private object ConvertIdentifier(object value, Item item, Direction direction, Guid providerId, string itemType)
+		private object ConvertIdentifier(
+			object value,
+			Item item,
+			Direction direction,
+			Guid providerId,
+			string itemType)
 		{
 			if (value != null && !string.IsNullOrWhiteSpace(value.ToString()))
 			{
@@ -76,115 +81,130 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			var dataTypeId = ExecutionContext.DatabasePersistence.GetNodeId(propertyData.DataType, NodeObjectTypes.DataType);
 
 			// deserialize the current Property's value into a 'MortarValue'
-            var mortarValue = JsonConvert.DeserializeObject<MortarValue>(propertyData.Value.ToString());
+			var mortarValue = JsonConvert.DeserializeObject<MortarValue>(propertyData.Value.ToString());
 
-            // get the `PropertyItemProvider` from the collection.
-            var propertyItemProvider = ItemProviderCollection.Instance.GetProvider(ProviderIDCollection.propertyDataItemProviderGuid, this.ExecutionContext);
+			// get the `PropertyItemProvider` from the collection.
+			var propertyItemProvider = ItemProviderCollection.Instance.GetProvider(ProviderIDCollection.propertyDataItemProviderGuid, this.ExecutionContext);
 
-            if (mortarValue != null)
-            {
-                foreach (var mortarBlock in mortarValue)
-                {
-                    foreach (var mortarRow in mortarBlock.Value)
-                    {
-                        var rowOptionsDocTypeAlias = MortarHelper.GetRowOptionsDocType(dataTypeId, mortarBlock.Key);
-                        if (!string.IsNullOrWhiteSpace(rowOptionsDocTypeAlias))
-                        {
-                            mortarRow.RawOptions = ResolveMultiplePropertyItemData(item, propertyItemProvider,
-                                mortarRow.RawOptions, rowOptionsDocTypeAlias, direction);
-                        }
+			if (mortarValue != null)
+			{
+				foreach (var mortarBlock in mortarValue)
+				{
+					foreach (var mortarRow in mortarBlock.Value)
+					{
+						var rowOptionsDocTypeAlias = MortarHelper.GetRowOptionsDocType(dataTypeId, mortarBlock.Key);
+						if (!string.IsNullOrWhiteSpace(rowOptionsDocTypeAlias))
+						{
+							mortarRow.RawOptions = ResolveMultiplePropertyItemData(item, propertyItemProvider,
+								mortarRow.RawOptions, rowOptionsDocTypeAlias, direction);
+						}
 
-                        foreach (var mortarItem in mortarRow.Items)
-                        {
-                            if (mortarItem == null)
-                            {
-                                CourierLogHelper.Warn<MortarDataResolver>("MortarItem appears to be null, (from '{0}' block)", () => mortarBlock.Key);
-                                continue;
-                            }
+						foreach (var mortarItem in mortarRow.Items)
+						{
+							if (mortarItem == null)
+							{
+								CourierLogHelper.Warn<MortarDataResolver>("MortarItem appears to be null, (from '{0}' block)", () => mortarBlock.Key);
+								continue;
+							}
 
-                            if (mortarItem.Type == null)
-                            {
-                                CourierLogHelper.Warn<MortarDataResolver>("MortarItem did not contain a value for Type, (from '{0}' block)", () => mortarBlock.Key);
-                                continue;
-                            }
+							if (mortarItem.Type == null)
+							{
+								CourierLogHelper.Warn<MortarDataResolver>("MortarItem did not contain a value for Type, (from '{0}' block)", () => mortarBlock.Key);
+								continue;
+							}
 
-                            switch (mortarItem.Type.ToUpperInvariant())
-                            {
-                                case "DOCTYPE":
-                                    // resolve the doctype alias/guid
-                                    string docTypeAlias = string.Empty;
-                                    if (mortarItem.AdditionalInfo.ContainsKey("docType"))
-                                    {
-                                        docTypeAlias = mortarItem.AdditionalInfo["docType"];
-                                        DocumentType docType;
-                                        Guid docTypeGuid;
-                                        if (Guid.TryParse(docTypeAlias, out docTypeGuid))
-                                        {
-                                            docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
-                                                new ItemIdentifier(docTypeGuid.ToString(),
-                                                    ProviderIDCollection.documentTypeItemProviderGuid));
-                                            docTypeAlias = docType.Alias;
-                                        }
-                                        else
-                                        {
-                                            docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
-                                                new ItemIdentifier(docTypeAlias,
-                                                    ProviderIDCollection.documentTypeItemProviderGuid));
-                                            docTypeGuid = docType.UniqueId;
-                                        }
+							switch (mortarItem.Type.ToUpperInvariant())
+							{
+								case "DOCTYPE":
+									// resolve the doctype alias/guid
+									string docTypeAlias = string.Empty;
 
-                                        if (direction == Direction.Packaging)
-                                        {
-                                            mortarItem.AdditionalInfo["docType"] = docTypeAlias;
+									if (mortarItem.AdditionalInfo.ContainsKey("docType"))
+									{
+										docTypeAlias = mortarItem.AdditionalInfo["docType"];
+										DocumentType docType;
+										Guid docTypeGuid;
 
-                                            // add dependency for the DocType
-                                            var name = string.Concat("Document type: ", docTypeAlias);
-                                            var dependency = new Dependency(name, docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid);
-                                            item.Dependencies.Add(dependency);
-                                        }
-                                        else if (direction == Direction.Extracting)
-                                        {
-                                            mortarItem.AdditionalInfo["docType"] = docTypeGuid.ToString();
-                                        }
-                                    }
+										if (Guid.TryParse(docTypeAlias, out docTypeGuid))
+										{
+											docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
+												new ItemIdentifier(docTypeGuid.ToString(),
+													ProviderIDCollection.documentTypeItemProviderGuid));
+											docTypeAlias = docType.Alias;
+										}
+										else
+										{
+											docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
+												new ItemIdentifier(docTypeAlias,
+													ProviderIDCollection.documentTypeItemProviderGuid));
+											docTypeGuid = docType.UniqueId;
+										}
 
-                                    // resolve the value's properties
-                                    mortarItem.RawValue = ResolveMultiplePropertyItemData(item, propertyItemProvider, mortarItem.RawValue, docTypeAlias, direction);
+										if (direction == Direction.Packaging)
+										{
+											mortarItem.AdditionalInfo["docType"] = docTypeAlias;
 
-                                    break;
+											// add dependency for the DocType
+											var name = string.Concat("Document type: ", docTypeAlias);
+											var dependency = new Dependency(name, docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid);
 
-                                case "EMBED":
-                                    // we don't need Courier to process the embed code - it's pure HTML
-                                    break;
+											item.Dependencies.Add(dependency);
+										}
+										else if (direction == Direction.Extracting)
+										{
+											mortarItem.AdditionalInfo["docType"] = docTypeGuid.ToString();
+										}
+									}
 
-                                case "LINK":
-                                    mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.documentItemProviderGuid, "Document");
-                                    break;
+									// resolve the value's properties
+									mortarItem.RawValue = ResolveMultiplePropertyItemData(item, propertyItemProvider, mortarItem.RawValue, docTypeAlias, direction);
 
-                                case "MEDIA":
-                                    mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.mediaItemProviderGuid, "Media");
-                                    break;
+									break;
 
-                                case "RICHTEXT":
-                                    //From the 'MortarValueConverter' it appears that the DocumentTypeAlias, PropertyEditorAlias and PropertyTypeAlias are 
-                                    //all constants, so we reuse them here.
-                                    mortarItem.RawValue = ResolvePropertyItemData(item, propertyItemProvider, mortarItem.RawValue,
-                                        Constants.PropertyEditors.TinyMCEAlias, "bodyText", Guid.Empty, direction);
-                                    break;
+								case "EMBED":
+									// we don't need Courier to process the embed code - it's pure HTML
+									break;
 
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
+								case "LINK":
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.documentItemProviderGuid, "Document");
+									break;
 
-                propertyData.Value = JsonConvert.SerializeObject(mortarValue);
-            }
+								case "MEDIA":
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.mediaItemProviderGuid, "Media");
+									break;
+
+								case "RICHTEXT":
+									// From the 'MortarValueConverter' it appears that the DocumentTypeAlias,
+									// PropertyEditorAlias and PropertyTypeAlias are all constants, so we reuse them here.
+									mortarItem.RawValue = ResolvePropertyItemData(
+										item,
+										propertyItemProvider,
+										mortarItem.RawValue,
+										Constants.PropertyEditors.TinyMCEAlias,
+										"bodyText",
+										Guid.Empty,
+										direction);
+									break;
+
+								default:
+									break;
+							}
+						}
+					}
+				}
+
+				propertyData.Value = JsonConvert.SerializeObject(mortarValue);
+			}
 		}
 
-        private object ResolvePropertyItemData(Item item, ItemProvider itemProvider, object value, string propertyEditorAlias, 
-            string propertyTypeAlias, Guid dataTypeGuid, Direction direction = Direction.Packaging)
+		private object ResolvePropertyItemData(
+			Item item,
+			ItemProvider itemProvider,
+			object value,
+			string propertyEditorAlias,
+			string propertyTypeAlias,
+			Guid dataTypeGuid,
+			Direction direction = Direction.Packaging)
 		{
 			// create a 'fake' item for Courier to process
 			var fakeItem = new ContentPropertyData
@@ -229,8 +249,8 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 				{
 					// run the 'fake' item through Courier's data resolvers
 					ResolutionManager.Instance.ExtractingItem(fakeItem, itemProvider);
-                    item.Status = ItemStatus.NeedPostProcessing;
-                    item.PostProcess = true;
+					item.Status = ItemStatus.NeedPostProcessing;
+					item.PostProcess = true;
 				}
 				catch (Exception ex)
 				{
@@ -245,45 +265,56 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			return value;
 		}
 
-	    private JObject ResolveMultiplePropertyItemData(Item item, ItemProvider itemProvider,
-	        object rawValue, string docTypeAlias, Direction direction)
-	    {
-            var propertyItemData = new Dictionary<string, object>();
-            var propertyValues = ((JObject)rawValue).ToObject<Dictionary<string, object>>();
+		private JObject ResolveMultiplePropertyItemData(
+			Item item,
+			ItemProvider itemProvider,
+			object rawValue,
+			string docTypeAlias,
+			Direction direction)
+		{
+			var propertyItemData = new Dictionary<string, object>();
+			var propertyValues = ((JObject)rawValue).ToObject<Dictionary<string, object>>();
 
-	        var documentType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
-	            new ItemIdentifier(docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid));
-	        if (documentType == null)
-                return ((JObject)rawValue);
+			var documentType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(new ItemIdentifier(docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid));
 
-	        foreach (var propertyValue in propertyValues)
-	        {
-                if (propertyValue.Key.InvariantEquals("name"))
-                {
-                    propertyItemData.Add(propertyValue.Key, propertyValue.Value);
-                    continue;
-                }
+			if (documentType == null)
+				return ((JObject)rawValue);
 
-	            var propertyType = documentType.Properties.FirstOrDefault(x => x.Alias.Equals(propertyValue.Key));
-                if(propertyType == null)
-                    continue;
+			foreach (var propertyValue in propertyValues)
+			{
+				if (propertyValue.Key.InvariantEquals("name"))
+				{
+					propertyItemData.Add(propertyValue.Key, propertyValue.Value);
+					continue;
+				}
 
-	            var dataType = ExecutionContext.DatabasePersistence.RetrieveItem<DataType>(
-	                new ItemIdentifier(propertyType.DataTypeDefinitionId.ToString(),
-	                    ProviderIDCollection.dataTypeItemProviderGuid));
-                if(dataType == null)
-                    continue;
+				var propertyType = documentType.Properties.FirstOrDefault(x => x.Alias.Equals(propertyValue.Key));
+				if (propertyType == null)
+					continue;
 
-	            var dataTypeGuid = propertyType.DataTypeDefinitionId;
-	            var propertyTypeAlias = propertyType.Alias;
-	            var propertyEditorAlias = dataType.PropertyEditorAlias;
-                var value = ResolvePropertyItemData(item, itemProvider, propertyValue.Value, propertyEditorAlias,
-                    propertyTypeAlias, dataTypeGuid, direction);
+				var dataType = ExecutionContext.DatabasePersistence.RetrieveItem<DataType>(
+					new ItemIdentifier(propertyType.DataTypeDefinitionId.ToString(),
+						ProviderIDCollection.dataTypeItemProviderGuid));
 
-                propertyItemData.Add(propertyValue.Key, value);
-	        }
+				if (dataType == null)
+					continue;
 
-            return JObject.FromObject(propertyItemData);
-	    }
+				var dataTypeGuid = propertyType.DataTypeDefinitionId;
+				var propertyTypeAlias = propertyType.Alias;
+				var propertyEditorAlias = dataType.PropertyEditorAlias;
+				var value = ResolvePropertyItemData(
+					item,
+					itemProvider,
+					propertyValue.Value,
+					propertyEditorAlias,
+					propertyTypeAlias,
+					dataTypeGuid,
+					direction);
+
+				propertyItemData.Add(propertyValue.Key, value);
+			}
+
+			return JObject.FromObject(propertyItemData);
+		}
 	}
 }
