@@ -266,6 +266,10 @@
     border-color: #fff;
 }
 
+.mortar-dialog .mortar-dialog-loading {
+    background: transparent url(/umbraco/assets/img/loader.gif) center center no-repeat;
+}
+
 .mortar-dialog .mortar-dialog-header {
     margin-bottom: -25px;
 }
