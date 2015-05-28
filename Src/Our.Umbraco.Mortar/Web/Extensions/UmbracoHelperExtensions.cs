@@ -11,6 +11,9 @@ using Umbraco.Web.Mvc;
 
 namespace Our.Umbraco.Mortar.Web.Extensions
 {
+	// TODO: [LK:2015-05-28] Wondering why these extension methods need to be hooked on an UmbracoHelper instance?
+	// Since the `helper` parameter isn't used within the methods. We could create our own `SurfaceControllerHelper`?
+	// The reason for this would be to reduce the creation of the `UmbracoHelper` instance in `MortarExtensions.RenderMortarItem`
 	internal static class UmbracoHelperExtensions
 	{
 		public static bool SurfaceControllerExists(this UmbracoHelper helper, string controllerName, string actionName = "Index")
