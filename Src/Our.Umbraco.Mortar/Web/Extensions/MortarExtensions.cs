@@ -36,7 +36,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			string actionName = "",
 			object model = null)
 		{
-			if (item == null)
+			if (item == null || item.Value == null)
 				return new HtmlString(string.Empty);
 
 			if (!string.IsNullOrWhiteSpace(viewPath))
