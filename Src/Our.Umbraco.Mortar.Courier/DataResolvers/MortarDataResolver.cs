@@ -78,13 +78,13 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 				return;
 
 			// create a fake `PublishedPropertyType`
-			var dataTypeId = ExecutionContext.DatabasePersistence.GetNodeId(propertyData.DataType, NodeObjectTypes.DataType);
+			var dataTypeId = ExecutionContext.DatabasePersistence.GetNodeId(propertyData.DataType, UmbracoNodeObjectTypeIds.DataType);
 
 			// deserialize the current Property's value into a 'MortarValue'
 			var mortarValue = JsonConvert.DeserializeObject<MortarValue>(propertyData.Value.ToString());
 
 			// get the `PropertyItemProvider` from the collection.
-			var propertyItemProvider = ItemProviderCollection.Instance.GetProvider(ProviderIDCollection.propertyDataItemProviderGuid, this.ExecutionContext);
+			var propertyItemProvider = ItemProviderCollection.Instance.GetProvider(ItemProviderIds.propertyDataItemProviderGuid, this.ExecutionContext);
 
 			if (mortarValue != null)
 			{
@@ -129,14 +129,14 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 										{
 											docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
 												new ItemIdentifier(docTypeGuid.ToString(),
-													ProviderIDCollection.documentTypeItemProviderGuid));
+													ItemProviderIds.documentTypeItemProviderGuid));
 											docTypeAlias = docType.Alias;
 										}
 										else
 										{
 											docType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(
 												new ItemIdentifier(docTypeAlias,
-													ProviderIDCollection.documentTypeItemProviderGuid));
+													ItemProviderIds.documentTypeItemProviderGuid));
 											docTypeGuid = docType.UniqueId;
 										}
 
@@ -146,7 +146,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 
 											// add dependency for the DocType
 											var name = string.Concat("Document type: ", docTypeAlias);
-											var dependency = new Dependency(name, docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid);
+											var dependency = new Dependency(name, docTypeAlias, ItemProviderIds.documentTypeItemProviderGuid);
 
 											item.Dependencies.Add(dependency);
 										}
@@ -166,11 +166,11 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 									break;
 
 								case "LINK":
-									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.documentItemProviderGuid, "Document");
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ItemProviderIds.documentItemProviderGuid, "Document");
 									break;
 
 								case "MEDIA":
-									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ProviderIDCollection.mediaItemProviderGuid, "Media");
+									mortarItem.RawValue = ConvertIdentifier(mortarItem.RawValue, item, direction, ItemProviderIds.mediaItemProviderGuid, "Media");
 									break;
 
 								case "RICHTEXT":
@@ -275,7 +275,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			var propertyItemData = new Dictionary<string, object>();
 			var propertyValues = ((JObject)rawValue).ToObject<Dictionary<string, object>>();
 
-			var documentType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(new ItemIdentifier(docTypeAlias, ProviderIDCollection.documentTypeItemProviderGuid));
+			var documentType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(new ItemIdentifier(docTypeAlias, ItemProviderIds.documentTypeItemProviderGuid));
 
 			if (documentType == null)
 				return ((JObject)rawValue);
@@ -294,7 +294,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 
 				var dataType = ExecutionContext.DatabasePersistence.RetrieveItem<DataType>(
 					new ItemIdentifier(propertyType.DataTypeDefinitionId.ToString(),
-						ProviderIDCollection.dataTypeItemProviderGuid));
+						ItemProviderIds.dataTypeItemProviderGuid));
 
 				if (dataType == null)
 					continue;
