@@ -17,7 +17,7 @@ using Umbraco.Web;
 using Umbraco.Web.Models;
 
 namespace Our.Umbraco.Mortar.ValueConverters
-{ 
+{
 	[PropertyValueType(typeof(MortarValue))]
 	[PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
 	public class MortarValueConverter : PropertyValueConverterBase
@@ -135,18 +135,66 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 		protected IPublishedContent ConvertDataToSource_Link(PublishedPropertyType propertyType, object value, bool preview)
 		{
-			int nodeId;
-			return int.TryParse(value.ToString(), out nodeId)
-				? UmbracoContext.Current.ContentCache.GetById(preview, nodeId)
-				: null;
+			var nodeId = 0;
+
+			if (value is int || value is long)
+			{
+				nodeId = Convert.ToInt32(value);
+			}
+			else if (value is string)
+			{
+				var id = (string)value;
+
+				if (!int.TryParse(id, out nodeId))
+				{
+					// We make an assumption that Courier has successfully resolved the GUID back to an INT,
+					// but failing that we will perform a check, just in case the value is still a GUID.
+					Guid guid;
+					if (Guid.TryParse(id, out guid))
+					{
+						var entity = ApplicationContext.Current.Services.EntityService.GetByKey(guid, UmbracoObjectTypes.Document);
+						if (entity != null)
+							nodeId = entity.Id;
+					}
+				}
+			}
+
+			if (nodeId > 0)
+				return UmbracoContext.Current.ContentCache.GetById(preview, nodeId);
+
+			return null;
 		}
 
 		protected IPublishedContent ConvertDataToSource_Media(PublishedPropertyType propertyType, object value, bool preview)
 		{
-			int nodeId;
-			return int.TryParse(value.ToString(), out nodeId)
-				? UmbracoContext.Current.MediaCache.GetById(preview, nodeId)
-				: null;
+			var nodeId = 0;
+
+			if (value is int || value is long)
+			{
+				nodeId = Convert.ToInt32(value);
+			}
+			else if (value is string)
+			{
+				var id = (string)value;
+
+				if (!int.TryParse(id, out nodeId))
+				{
+					// We make an assumption that Courier has successfully resolved the GUID back to an INT,
+					// but failing that we will perform a check, just in case the value is still a GUID.
+					Guid guid;
+					if (Guid.TryParse(id, out guid))
+					{
+						var entity = ApplicationContext.Current.Services.EntityService.GetByKey(guid, UmbracoObjectTypes.Media);
+						if (entity != null)
+							nodeId = entity.Id;
+					}
+				}
+			}
+
+			if (nodeId > 0)
+				return UmbracoContext.Current.MediaCache.GetById(preview, nodeId);
+
+			return null;
 		}
 
 		protected IPublishedContent ConvertDataToSource_DocType(PublishedPropertyType propertyType, string docTypeAlias, object value, bool preview)
