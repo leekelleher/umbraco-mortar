@@ -36,7 +36,7 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			string actionName = "",
 			object model = null)
 		{
-			if (item == null)
+			if (item == null || item.Value == null)
 				return new HtmlString(string.Empty);
 
 			if (!string.IsNullOrWhiteSpace(viewPath))
@@ -46,6 +46,8 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 				actionName = item.Value.DocumentTypeAlias;
 
 			var controllerName = string.Concat(item.Value.DocumentTypeAlias, "Surface");
+
+			// TODO: [LK:2015-05-28] Wondering why we need to create an UmbracoHelper instance?
 			var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
 
 			if (umbracoHelper.SurfaceControllerExists(controllerName, actionName, true))
