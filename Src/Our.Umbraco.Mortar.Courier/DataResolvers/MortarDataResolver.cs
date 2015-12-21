@@ -272,13 +272,30 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 			string docTypeAlias,
 			Direction direction)
 		{
+			// if we return a `null`, then JSON serialization will throw an `ArgumentNullException`,
+			// so we return an empty `JObject` instead.
+			var defaultValue = new JObject();
+
+			if (rawValue == null)
+				return defaultValue;
+
+			var rawJson = rawValue.ToString();
+
+			if (string.IsNullOrWhiteSpace(rawJson))
+				return defaultValue;
+
+			var jobj = JObject.Parse(rawJson);
+
+			if (jobj == null)
+				return defaultValue;
+
 			var propertyItemData = new Dictionary<string, object>();
-			var propertyValues = ((JObject)rawValue).ToObject<Dictionary<string, object>>();
+			var propertyValues = jobj.ToObject<Dictionary<string, object>>();
 
 			var documentType = ExecutionContext.DatabasePersistence.RetrieveItem<DocumentType>(new ItemIdentifier(docTypeAlias, ItemProviderIds.documentTypeItemProviderGuid));
 
 			if (documentType == null)
-				return ((JObject)rawValue);
+				return jobj;
 
 			foreach (var propertyValue in propertyValues)
 			{
