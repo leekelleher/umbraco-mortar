@@ -193,7 +193,13 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 		protected IPublishedContent ConvertDataToSource_DocType(PublishedPropertyType propertyType, string docTypeAlias, object value, bool preview)
 		{
+			if (propertyType == null || value == null)
+				return default(DetachedPublishedContent);
+
 			var contentType = PublishedContentType.Get(PublishedItemType.Content, docTypeAlias);
+			if (contentType == null)
+				return default(DetachedPublishedContent);
+
 			var properties = new List<IPublishedProperty>();
 
 			// Convert all the properties
