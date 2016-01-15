@@ -28,7 +28,7 @@ namespace Our.Umbraco.Mortar.Models
 
 		public override int Id
 		{
-			get { return 0; }
+			get { return default(int); }
 		}
 
 		public override string Name
@@ -74,7 +74,9 @@ namespace Our.Umbraco.Mortar.Models
 		public override IPublishedProperty GetProperty(string alias, bool recurse)
 		{
 			if (recurse)
+			{
 				throw new NotSupportedException();
+			}
 
 			return GetProperty(alias);
 		}
@@ -91,52 +93,52 @@ namespace Our.Umbraco.Mortar.Models
 
 		public override int TemplateId
 		{
-			get { return 0; }
+			get { return default(int); }
 		}
 
 		public override int SortOrder
 		{
-			get { return 0; }
+			get { return default(int); }
 		}
 
 		public override string UrlName
 		{
-			get { return null; }
+			get { return _name.ToUrlSegment(); }
 		}
 
 		public override string WriterName
 		{
-			get { return null; }
+			get { return default(string); }
 		}
 
 		public override string CreatorName
 		{
-			get { return null; }
+			get { return default(string); }
 		}
 
 		public override int WriterId
 		{
-			get { return 0; }
+			get { return default(int); }
 		}
 
 		public override int CreatorId
 		{
-			get { return 0; }
+			get { return default(int); }
 		}
 
 		public override string Path
 		{
-			get { return null; }
+			get { return default(string); }
 		}
 
 		public override DateTime CreateDate
 		{
-			get { return DateTime.MinValue; }
+			get { return default(DateTime); }
 		}
 
 		public override DateTime UpdateDate
 		{
-			get { return DateTime.MinValue; }
+			get { return default(DateTime); }
 		}
 
 		public override Guid Version
@@ -146,7 +148,7 @@ namespace Our.Umbraco.Mortar.Models
 
 		public override int Level
 		{
-			get { return 0; }
+			get { return default(int); }
 		}
 	}
 }

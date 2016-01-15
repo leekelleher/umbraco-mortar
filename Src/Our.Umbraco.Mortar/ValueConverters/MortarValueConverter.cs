@@ -22,12 +22,6 @@ namespace Our.Umbraco.Mortar.ValueConverters
 	[PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
 	public class MortarValueConverter : PropertyValueConverterBase
 	{
-		private UmbracoHelper _umbraco;
-		internal UmbracoHelper Umbraco
-		{
-			get { return _umbraco ?? (_umbraco = new UmbracoHelper(UmbracoContext.Current)); }
-		}
-
 		public override bool IsConverter(PublishedPropertyType propertyType)
 		{
 			return propertyType.PropertyEditorAlias.InvariantEquals(MortarPropertyEditor.PropertyEditorAlias);
@@ -199,7 +193,13 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 		protected IPublishedContent ConvertDataToSource_DocType(PublishedPropertyType propertyType, string docTypeAlias, object value, bool preview)
 		{
+			if (propertyType == null || value == null)
+				return default(DetachedPublishedContent);
+
 			var contentType = PublishedContentType.Get(PublishedItemType.Content, docTypeAlias);
+			if (contentType == null)
+				return default(DetachedPublishedContent);
+
 			var properties = new List<IPublishedProperty>();
 
 			// Convert all the properties
