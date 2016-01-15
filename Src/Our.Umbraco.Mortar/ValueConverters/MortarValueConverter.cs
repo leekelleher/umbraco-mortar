@@ -22,12 +22,6 @@ namespace Our.Umbraco.Mortar.ValueConverters
 	[PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
 	public class MortarValueConverter : PropertyValueConverterBase
 	{
-		private UmbracoHelper _umbraco;
-		internal UmbracoHelper Umbraco
-		{
-			get { return _umbraco ?? (_umbraco = new UmbracoHelper(UmbracoContext.Current)); }
-		}
-
 		public override bool IsConverter(PublishedPropertyType propertyType)
 		{
 			return propertyType.PropertyEditorAlias.InvariantEquals(MortarPropertyEditor.PropertyEditorAlias);
