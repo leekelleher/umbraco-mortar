@@ -1,6 +1,6 @@
 ﻿/* Directives */
 angular.module("umbraco.directives").directive('mortarLayout',
-    function ($timeout, $compile, $routeParams, dialogService, notificationsService, localizationService) {
+    function ($timeout, $compile, $routeParams, assetsService, dialogService, notificationsService, localizationService) {
 
         var link = function ($scope, element, attrs, ctrl) {
 
@@ -19,6 +19,16 @@ angular.module("umbraco.directives").directive('mortarLayout',
                             $scope.model.layoutConfig[key]);
                     }
                 }
+            }
+
+            // Load custom CSS
+            if ($scope.model.config.customCssPath) {
+                assetsService.loadCss($scope.model.config.customCssPath);
+            }
+
+            // Load custom JavaScript
+            if ($scope.model.config.customJsPath) {
+                assetsService.loadJs($scope.model.config.customJsPath);
             }
 
             $scope.removeRow = function (cellId, index) {
