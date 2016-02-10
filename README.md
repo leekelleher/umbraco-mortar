@@ -1,4 +1,4 @@
-Mortar
-======
+# Mortar
 
-Mortar is the ultimate content builder for Umbraco 7 
+_Probably the best_ content builder for Umbraco 7
+
