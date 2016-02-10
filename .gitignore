@@ -12,5 +12,4 @@ Thumbs.db
 .vs
 
 artifacts/
-packages/*/**
-build/*
+src/packages/*/**
