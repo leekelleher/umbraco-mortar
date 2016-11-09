@@ -51,6 +51,9 @@ namespace Our.Umbraco.Mortar.ValueConverters
 							{
 								if (item != null && item.RawValue != null)
 								{
+									if (item.AdditionalInfo.ContainsKey("disabled") && item.AdditionalInfo["disabled"].InvariantEquals(bool.TrueString))
+										continue;
+
 									switch (item.Type.ToLowerInvariant())
 									{
 										case "richtext":

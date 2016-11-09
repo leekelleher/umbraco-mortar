@@ -890,6 +890,13 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
                     });
                 };
 
+                $scope.disable = function () {
+                    // TODO: [LK] Work magic here - set the container's CSS class as "disabled"
+                    var container = element.find(".mortar-item--link");
+                    container.toggleClass("disabled");
+                    $scope.model.disabled = $scope.model.disabled == true ? false : true;
+                };
+
                 $scope.remove = function () {
                     localizationService.localize("defaultdialogs_confirmSure").then(function (value) {
                         if (confirm(value)) {
@@ -913,6 +920,7 @@ angular.module("umbraco.directives").directive('mortarDocTypeItem',
                 template: "<div class='mortar-item--link mortar-item--vcenter'>" +
                     "<div class='mortar-button-bar mortar-button-bar--horizontal mortar-button-bar--tr'>" +
                     "<a href='#' ng-click=\"configure()\" prevent-default title='Edit'><i class='icon-code' /></a>" +
+                    "<a href='#' ng-click=\"disable()\" prevent-default title='Disable'><i class='icon-block' /></a>" +
                     "<a href='#' ng-click=\"remove()\" prevent-default title='Delete'><i class='icon-trash' /></a>" +
                     "</div>" +
                     "<div class='mortar-item__label'>{{model.value['name']}}</div>" +
