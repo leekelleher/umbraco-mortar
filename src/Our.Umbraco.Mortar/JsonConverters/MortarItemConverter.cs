@@ -25,7 +25,7 @@ namespace Our.Umbraco.Mortar.JsonConverters
 
 			// Make sure keys are in camelCase
 			tempDictionary = tempDictionary
-				.ToDictionary(x => Char.ToLowerInvariant(x.Key[0]) + x.Key.Substring(1), x => x.Value);
+				.ToDictionary(x => char.ToLowerInvariant(x.Key[0]) + x.Key.Substring(1), x => x.Value);
 
 			var item = new MortarItem
 			{
