@@ -2,11 +2,11 @@
 angular.module('umbraco.resources').factory('Our.Umbraco.Mortar.Resources.mortarResources',
     function($q, $http, umbRequestHelper) {
         return {
-            getContentAliasByGuid: function (guid) {
-                var url = "/umbraco/backoffice/MortarApi/MortarApi/GetContentTypeAliasByGuid?guid=" + guid;
+            getContentTypeAlias: function (docTypeId) {
+                var url = "/umbraco/backoffice/MortarApi/MortarApi/GetContentTypeAlias?docTypeId=" + docTypeId;
                 return umbRequestHelper.resourcePromise(
                     $http.get(url),
-                    'Failed to retrieve datatype alias by guid'
+                    'Failed to retrieve the content type alias'
                 );
             },
             getContentTypes: function (allowedContentTypes) {
@@ -18,21 +18,21 @@ angular.module('umbraco.resources').factory('Our.Umbraco.Mortar.Resources.mortar
                 }
                 return umbRequestHelper.resourcePromise(
                     $http.get(url),
-                    'Failed to retrieve datatypes'
+                    'Failed to retrieve the content types'
                 );
             },
             getDataTypePreValues: function (dtdId) {
                 var url = "/umbraco/backoffice/MortarApi/MortarApi/GetDataTypePreValues?dtdid=" + dtdId;
                 return umbRequestHelper.resourcePromise(
                     $http.get(url),
-                    'Failed to retrieve datatypes'
+                    'Failed to retrieve the datatype prevalues'
                 );
             },
-            getDocTypePreview: function (guid) {
-                var url = "/umbraco/backoffice/MortarApi/MortarApi/GetDocTypePreview?guid=" + guid;
+            getDocTypePreview: function (docTypeId) {
+                var url = "/umbraco/backoffice/MortarApi/MortarApi/GetDocTypePreview?docTypeId=" + docTypeId;
                 return umbRequestHelper.resourcePromise(
                     $http.get(url),
-                    'Failed to retrieve doctype preview by guid'
+                    'Failed to retrieve the content type preview'
                 );
             },
         };

@@ -17,11 +17,17 @@ namespace Our.Umbraco.Mortar.Web.Controllers
 	public class MortarApiController : UmbracoAuthorizedJsonController
 	{
 		[HttpGet]
-		public object GetContentTypeAliasByGuid([ModelBinder] Guid guid)
+		public object GetContentTypeAlias(string docTypeId)
 		{
+			var docTypeAlias = docTypeId;
+
+			Guid docTypeGuid;
+			if (Guid.TryParse(docTypeId, out docTypeGuid))
+				docTypeAlias = Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+
 			return new
 			{
-				alias = Services.ContentTypeService.GetAliasByGuid(guid)
+				alias = docTypeAlias
 			};
 		}
 
@@ -74,21 +80,25 @@ namespace Our.Umbraco.Mortar.Web.Controllers
 		}
 
 		[HttpGet]
-		public object GetDocTypePreview([ModelBinder] Guid guid)
+		public object GetDocTypePreview(string docTypeId)
 		{
 			var path = IOHelper.MapPath("~/App_Plugins/Mortar/Views/Previews/{0}.html");
 			var view = string.Empty;
 
-			var file = string.Format(path, guid);
+			var file = string.Format(path, docTypeId);
 			if (System.IO.File.Exists(file))
 				view = System.IO.File.ReadAllText(file);
 
 			if (string.IsNullOrWhiteSpace(view))
 			{
-				var alias = Services.ContentTypeService.GetAliasByGuid(guid);
-				var file2 = string.Format(path, alias);
-				if (System.IO.File.Exists(file2))
-					view = System.IO.File.ReadAllText(file2);
+				Guid docTypeGuid;
+				if (Guid.TryParse(docTypeId, out docTypeGuid))
+				{
+					var docTypeAlias = Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+					var file2 = string.Format(path, docTypeAlias);
+					if (System.IO.File.Exists(file2))
+						view = System.IO.File.ReadAllText(file2);
+				}
 			}
 
 			return new { view = view };

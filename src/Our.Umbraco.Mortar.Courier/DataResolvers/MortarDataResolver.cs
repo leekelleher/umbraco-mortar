@@ -152,7 +152,8 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 										}
 										else if (direction == Direction.Extracting)
 										{
-											mortarItem.AdditionalInfo["docType"] = docTypeGuid.ToString();
+											// NOTE: [LK] In v0.4.0 we swapped the usage from the DocType's GUID back to the alias.
+											mortarItem.AdditionalInfo["docType"] = docTypeAlias; // docTypeGuid.ToString();
 										}
 									}
 
@@ -305,7 +306,7 @@ namespace Our.Umbraco.Mortar.Courier.DataResolvers
 					continue;
 				}
 
-				var propertyType = documentType.Properties.FirstOrDefault(x => x.Alias.Equals(propertyValue.Key));
+				var propertyType = documentType.Properties.FirstOrDefault(x => x.Alias.InvariantEquals(propertyValue.Key));
 				if (propertyType == null)
 					continue;
 

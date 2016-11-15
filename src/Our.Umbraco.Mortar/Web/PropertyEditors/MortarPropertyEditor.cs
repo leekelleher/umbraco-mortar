@@ -117,14 +117,25 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 										break;
 
 									case "doctype":
-										Guid docTypeGuid;
+
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
-											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace()
-											&& Guid.TryParse(item.AdditionalInfo["docType"], out docTypeGuid))
+											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
 										{
 											// Lookup the doctype
-											var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+											var docTypeAlias = item.AdditionalInfo["docType"];
+
+											// We make an assumption that the docTypeAlias is a Guid and attempt to parse it,
+											// failing that we assume that the docTypeAlias is the actual alias.
+											Guid docTypeGuid;
+											if (Guid.TryParse(docTypeAlias, out docTypeGuid))
+											{
+												docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+
+												// NOTE: [LK] As of v0.4.0 we want to persist the DocType's alias
+												item.AdditionalInfo["docType"] = docTypeAlias;
+											}
+
 											item.RawValue = ConvertDbToString_DocType(docTypeAlias, item.RawValue);
 										}
 
@@ -172,7 +183,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 					foreach (var propKey in propValueKeys)
 					{
 						// Lookup the property type on the content type
-						var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+						var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias.InvariantEquals(propKey));
 
 						if (propType == null)
 						{
@@ -241,14 +252,25 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 										break;
 
 									case "doctype":
-										Guid docTypeGuid;
+
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
-											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace()
-											&& Guid.TryParse(item.AdditionalInfo["docType"], out docTypeGuid))
+											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
 										{
 											// Lookup the doctype
-											var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+											var docTypeAlias = item.AdditionalInfo["docType"];
+
+											// We make an assumption that the docTypeAlias is a Guid and attempt to parse it,
+											// failing that we assume that the docTypeAlias is the actual alias.
+											Guid docTypeGuid;
+											if (Guid.TryParse(docTypeAlias, out docTypeGuid))
+											{
+												docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+
+												// NOTE: [LK] As of v0.4.0 we want to persist the DocType's alias
+												item.AdditionalInfo["docType"] = docTypeAlias;
+											}
+
 											item.RawValue = ConvertDbToEditor_DocType(docTypeAlias, item.RawValue);
 										}
 
@@ -301,7 +323,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 						foreach (var propKey in propValueKeys)
 						{
 							// Lookup the property type on the content type
-							var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+							var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias.InvariantEquals(propKey));
 
 							if (propType == null)
 							{
@@ -372,14 +394,23 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 										break;
 
 									case "doctype":
-										Guid docTypeGuid;
 										if (item.AdditionalInfo.ContainsKey("docType")
 											&& item.AdditionalInfo["docType"] != null
-											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace()
-											&& Guid.TryParse(item.AdditionalInfo["docType"], out docTypeGuid))
+											&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
 										{
 											// Lookup the doctype
-											var docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+											var docTypeAlias = item.AdditionalInfo["docType"];
+
+											// We make an assumption that the docTypeAlias is a Guid and attempt to parse it,
+											// failing that we assume that the docTypeAlias is the actual alias.
+											Guid docTypeGuid;
+											if (Guid.TryParse(docTypeAlias, out docTypeGuid))
+											{
+												docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+
+												// NOTE: [LK] As of v0.4.0 we want to persist the DocType's alias
+												item.AdditionalInfo["docType"] = docTypeAlias;
+											}
 
 											// Serialize the dictionary back
 											item.RawValue = ConvertEditorToDb_DocType(docTypeAlias, item.RawValue);
@@ -422,7 +453,7 @@ namespace Our.Umbraco.Mortar.Web.PropertyEditors
 					foreach (var propKey in propValueKeys)
 					{
 						// Fetch the current property type
-						var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+						var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias.InvariantEquals(propKey));
 
 						if (propType == null)
 						{

@@ -22,7 +22,7 @@
 		<AuthorName>Lee Kelleher</AuthorName>
 		<PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
 		<ProjectUrl>https://github.com/leekelleher/umbraco-mortar</ProjectUrl>
-		<AppVeyorBuildVersion>0.1.8.$(APPVEYOR_BUILD_NUMBER)</AppVeyorBuildVersion>
+		<AppVeyorBuildVersion>0.1.9.$(APPVEYOR_BUILD_NUMBER)</AppVeyorBuildVersion>
 	</PropertyGroup>
 
 	<!-- NUGET ONLY PROPERTIES -->

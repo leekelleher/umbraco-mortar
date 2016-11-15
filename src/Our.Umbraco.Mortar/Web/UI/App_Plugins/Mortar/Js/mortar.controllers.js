@@ -25,7 +25,7 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
 
             $scope.selectDocType = function () {
                 $scope.dialogMode = "edit";
-                $scope.dialogData.docType = $scope.selectedDocType.guid;
+                $scope.dialogData.docType = $scope.selectedDocType.alias;
                 loadNode();
             };
 
@@ -50,6 +50,7 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
                         }
                     }
                     $scope.dialogData.value = value;
+                    $scope.dialogData.docType = $scope.node.contentTypeAlias;
                 } else {
                     $scope.dialogData.value = null;
                 }
@@ -58,7 +59,7 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
             };
 
             function loadNode() {
-                mortarResources.getContentAliasByGuid($scope.dialogData.docType).then(function (data1) {
+                mortarResources.getContentTypeAlias($scope.dialogData.docType).then(function (data1) {
                     contentResource.getScaffold(-20, data1.alias).then(function (data) {
 
                         // Set the ID of the node (to give context)
@@ -98,7 +99,7 @@ angular.module("umbraco").controller("Our.Umbraco.Mortar.Dialogs.docTypeDialog",
                 mortarResources.getContentTypes($scope.dialogOptions.allowedDocTypes).then(function (docTypes) {
                     $scope.docTypes = docTypes;
                     if ($scope.docTypes.length == 1) {
-                        $scope.dialogData.docType = $scope.docTypes[0].guid;
+                        $scope.dialogData.docType = $scope.docTypes[0].alias;
                         $scope.dialogMode = "edit";
                         loadNode();
                     }

@@ -70,7 +70,6 @@ namespace Our.Umbraco.Mortar.ValueConverters
 											break;
 
 										case "doctype":
-											Guid docTypeGuid;
 											if (item.AdditionalInfo.ContainsKey("docType")
 												&& item.AdditionalInfo["docType"] != null
 												&& !item.AdditionalInfo["docType"].IsNullOrWhiteSpace())
@@ -80,8 +79,14 @@ namespace Our.Umbraco.Mortar.ValueConverters
 
 												// We make an assumption that the docTypeAlias is a Guid and attempt to parse it,
 												// failing that we assume that the docTypeAlias is the actual alias.
+												Guid docTypeGuid;
 												if (Guid.TryParse(docTypeAlias, out docTypeGuid))
+												{
 													docTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(docTypeGuid);
+
+													// NOTE: [LK] As of v0.4.0 we want to persist the DocType's alias
+													item.AdditionalInfo["docType"] = docTypeAlias;
+												}
 
 												item.Value = ConvertDataToSource_DocType(propertyType, docTypeAlias, item.RawValue, preview);
 											}
