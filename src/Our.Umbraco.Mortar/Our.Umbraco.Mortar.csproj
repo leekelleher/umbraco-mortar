@@ -85,7 +85,7 @@
     <Compile Include="Web\Controllers\MortarSurfaceController.cs" />
     <Compile Include="Web\Extensions\ContentTypeServiceExtensions.cs" />
     <Compile Include="Web\Extensions\MortarExtensions.cs" />
-    <Compile Include="Web\Extensions\UmbracoHelperExtensions.cs" />
+    <Compile Include="Web\Helpers\SurfaceControllerHelper.cs" />
     <Compile Include="Web\PropertyEditors\MortarPropertyEditor.cs" />
     <Compile Include="Web\ViewModels\RenderMortarItemViewModel.cs" />
   </ItemGroup>

@@ -9,14 +9,11 @@ using Umbraco.Core.Logging;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
 
-namespace Our.Umbraco.Mortar.Web.Extensions
+namespace Our.Umbraco.Mortar.Web.Helpers
 {
-	// TODO: [LK:2015-05-28] Wondering why these extension methods need to be hooked on an UmbracoHelper instance?
-	// Since the `helper` parameter isn't used within the methods. We could create our own `SurfaceControllerHelper`?
-	// The reason for this would be to reduce the creation of the `UmbracoHelper` instance in `MortarExtensions.RenderMortarItem`
-	internal static class UmbracoHelperExtensions
+	internal static class SurfaceControllerHelper
 	{
-		public static bool SurfaceControllerExists(this UmbracoHelper helper, string controllerName, string actionName = "Index")
+		public static bool SurfaceControllerExists(string controllerName, string actionName = "Index")
 		{
 			using (DisposableTimer.DebugDuration<UmbracoHelper>(string.Format("SurfaceControllerExists ({0}, {1})", controllerName, actionName)))
 			{
@@ -63,14 +60,14 @@ namespace Our.Umbraco.Mortar.Web.Extensions
 			}
 		}
 
-		public static bool SurfaceControllerExists(this UmbracoHelper helper, string name, string actionName = "Index", bool cacheResult = true)
+		public static bool SurfaceControllerExists(string name, string actionName = "Index", bool cacheResult = true)
 		{
 			if (!cacheResult)
-				return SurfaceControllerExists(helper, name, actionName);
+				return SurfaceControllerExists(name, actionName);
 
 			return (bool)ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
 				string.Join("_", new[] { "Our.Umbraco.Mortar.Web.Extensions.UmbracoHelperExtensions.SurfaceControllerExists", name, actionName }),
-				() => SurfaceControllerExists(helper, name, actionName));
+				() => SurfaceControllerExists(name, actionName));
 		}
 	}
 }
