@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildPackages" ToolsVersion="4.0">
+
+	<!-- PATHS -->
+	<PropertyGroup>
+		<RootDir>$(MSBuildProjectDirectory)\..</RootDir>
+		<ArtifactsDir>$(RootDir)\artifacts</ArtifactsDir>
+	</PropertyGroup>
+
+	<!-- CLEAN -->
+	<Target Name="Clean">
+		<RemoveDir Directories="$(ArtifactsDir)" Condition="Exists('$(ArtifactsDir)')" />
+		<MakeDir Directories="$(ArtifactsDir)" />
+	</Target>
+
+	<!-- TARGETS -->
+	<Target Name="BuildPackages" DependsOnTargets="Clean">
+		<MSBuild Projects="$(MSBuildProjectDirectory)\Mortar.proj" />
+		<MSBuild Projects="$(MSBuildProjectDirectory)\Mortar.Courier.proj" />
+	</Target>
+
+</Project>

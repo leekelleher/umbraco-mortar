@@ -1,0 +1,46 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.Mortar", "Our.Umbraco.Mortar\Our.Umbraco.Mortar.csproj", "{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F70B6E09-0450-4683-B5CD-88EDD89B0678}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{5CF9324B-2A85-4FFE-A908-0F79E6021388}"
+	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
+		..\build-appveyor.cmd = ..\build-appveyor.cmd
+		..\build.cmd = ..\build.cmd
+		..\build\install.ps1 = ..\build\install.ps1
+		..\build\Mortar.Courier.proj = ..\build\Mortar.Courier.proj
+		..\build\Mortar.proj = ..\build\Mortar.proj
+		..\build\package.nuspec = ..\build\package.nuspec
+		..\build\package.proj = ..\build\package.proj
+		..\build\package.xml = ..\build\package.xml
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.Mortar.Courier", "Our.Umbraco.Mortar.Courier\Our.Umbraco.Mortar.Courier.csproj", "{AC611B8C-44EF-450C-8B7A-D9988830D232}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FA3B3C0-74E3-4031-ADD3-40BEC471B156}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC611B8C-44EF-450C-8B7A-D9988830D232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC611B8C-44EF-450C-8B7A-D9988830D232}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC611B8C-44EF-450C-8B7A-D9988830D232}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC611B8C-44EF-450C-8B7A-D9988830D232}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5CF9324B-2A85-4FFE-A908-0F79E6021388} = {F70B6E09-0450-4683-B5CD-88EDD89B0678}
+	EndGlobalSection
+EndGlobal
