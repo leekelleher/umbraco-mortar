@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,6 +10,7 @@ using Our.Umbraco.Mortar.Models;
 using Our.Umbraco.Mortar.Web.Extensions;
 using Our.Umbraco.Mortar.Web.PropertyEditors;
 using Umbraco.Core;
+using Umbraco.Core.Configuration;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.PublishedContent;
@@ -116,10 +118,28 @@ namespace Our.Umbraco.Mortar.ValueConverters
 				null, new[] { typeof(string), typeof(string) }, null)
 				.Invoke(new object[] { propAlias, propEditorAlias });
 
-			var fakeContentType = (PublishedContentType)typeof(PublishedContentType).GetConstructor(
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-				null, new[] { typeof(int), typeof(string), typeof(IEnumerable<PublishedPropertyType>) }, null)
-				.Invoke(new object[] { -1, docTypeAlias, new[] { fakePropType } });
+			PublishedContentType fakeContentType;
+			if (UmbracoVersion.Current >= new Version(7, 4, 2))
+			{
+				// NOTE: The internal ctor for PublishedContentType was amends in Umbraco v7.4.2
+				// A `compositionAliases` (IEnumerable<string>) parameter was added. [LK:2017-04-07]
+				// https://github.com/umbraco/Umbraco-CMS/commit/b52c480da35b591455f7521057267263dfa33a83#diff-ce595685f47a1a9015fcedc153fce6ceR35
+				fakeContentType = (PublishedContentType)typeof(PublishedContentType).GetConstructor(
+					BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+					null,
+					new[] { typeof(int), typeof(string), typeof(IEnumerable<string>), typeof(IEnumerable<PublishedPropertyType>) },
+					null)
+					.Invoke(new object[] { -1, docTypeAlias, Enumerable.Empty<string>(), new[] { fakePropType } });
+			}
+			else
+			{
+				fakeContentType = (PublishedContentType)typeof(PublishedContentType).GetConstructor(
+					BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+					null,
+					new[] { typeof(int), typeof(string), typeof(IEnumerable<PublishedPropertyType>) },
+					null)
+					.Invoke(new object[] { -1, docTypeAlias, new[] { fakePropType } });
+			}
 
 			var fakeNestedPropType = fakePropType.ExecuteMethod<PublishedPropertyType>("Nested",
 				propertyType);

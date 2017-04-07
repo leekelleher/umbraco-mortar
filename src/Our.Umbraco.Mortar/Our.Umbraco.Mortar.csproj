@@ -73,6 +73,8 @@
     <Compile Include="Extensions\InternalExtensions.cs" />
     <Compile Include="Helpers\MortarHelper.cs" />
     <Compile Include="JsonConverters\MortarItemConverter.cs" />
+    <Compile Include="Web\MortarConstants.cs" />
+    <Compile Include="Web\Migrations\TargetZeroFiveZero\UpdatePropertyData.cs" />
     <Compile Include="Models\DetachedPublishedContent.cs" />
     <Compile Include="Models\MortarItem.cs" />
     <Compile Include="Models\MortarRow.cs" />
@@ -98,6 +100,7 @@
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.services.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.resources.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.directives.js" />
+    <None Include="Web\UI\App_Plugins\Mortar\version" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.jsonTextarea.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.docTypeDialog.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.html" />

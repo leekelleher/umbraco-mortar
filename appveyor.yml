@@ -1,5 +1,5 @@
 # version format
-version: 0.4.0.{build}
+version: 0.5.0.{build}
 
 # UMBRACO_PACKAGE_PRERELEASE_SUFFIX if a rtm release build this should be blank, otherwise if empty will default to alpha
 # example UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
@@ -35,12 +35,12 @@ deploy:
       branch: master
       appveyor_repo_tag: true        # deploy on tag push only
 
-     # NuGet Deployment for releases
-  - provider: NuGet
-    server: 
-    api_key:
-      secure: CGzDKxw4QI/z2VSe9ceiYlIabqGXHolgBgVNWWZjVAJ2V5WLF11IFdlp9r5Qp+Sw
-    artifact: /.*\.nupkg/
-    on:
-      branch: master
-      appveyor_repo_tag: true
+#     # NuGet Deployment for releases
+#  - provider: NuGet
+#    server: 
+#    api_key:
+#      secure: CGzDKxw4QI/z2VSe9ceiYlIabqGXHolgBgVNWWZjVAJ2V5WLF11IFdlp9r5Qp+Sw
+#    artifact: /.*\.nupkg/
+#    on:
+#      branch: master
+#      appveyor_repo_tag: true
