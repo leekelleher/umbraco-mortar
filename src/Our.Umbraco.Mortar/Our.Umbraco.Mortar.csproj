@@ -98,6 +98,7 @@
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.services.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.resources.js" />
     <Content Include="Web\UI\App_Plugins\Mortar\Js\mortar.directives.js" />
+    <None Include="Web\UI\App_Plugins\Mortar\version" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.jsonTextarea.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.docTypeDialog.html" />
     <Content Include="Web\UI\App_Plugins\Mortar\Views\mortar.html" />

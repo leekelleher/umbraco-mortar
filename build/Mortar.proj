@@ -105,6 +105,11 @@
 			OutputFile="$(CoreProjectDir)\Properties\VersionInfo.cs"
 			AssemblyVersion="@(VersionMajor).@(VersionMinor).*"
 			AssemblyInformationalVersion="$(ProductVersion)"/>
+		<WriteLinesToFile
+			File="$(CoreProjectDir)\Web\UI\App_Plugins\Mortar\version"
+			Lines="$(ProductVersion.Split('-')[0])"
+			Overwrite="True"
+			Encoding="Unicode" />
 	</Target>
 
 	<!-- COMPILE -->
