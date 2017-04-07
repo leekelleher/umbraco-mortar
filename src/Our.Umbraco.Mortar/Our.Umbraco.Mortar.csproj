@@ -73,6 +73,8 @@
     <Compile Include="Extensions\InternalExtensions.cs" />
     <Compile Include="Helpers\MortarHelper.cs" />
     <Compile Include="JsonConverters\MortarItemConverter.cs" />
+    <Compile Include="Web\MortarConstants.cs" />
+    <Compile Include="Web\Migrations\TargetZeroFiveZero\UpdatePropertyData.cs" />
     <Compile Include="Models\DetachedPublishedContent.cs" />
     <Compile Include="Models\MortarItem.cs" />
     <Compile Include="Models\MortarRow.cs" />
